@@ -541,22 +541,6 @@ export function ChatDashboard() {
 
         <div className="flex flex-1 flex-col gap-6 overflow-hidden px-4 pb-8 pt-4 lg:flex-row lg:gap-8 lg:px-8">
           <div className="flex flex-1 flex-col gap-6 overflow-hidden">
-            <section className="space-y-3 rounded-3xl border border-border/60 bg-background/95 px-6 py-6 shadow-sm">
-              <div className="text-primary">
-                <span className="text-xs font-semibold tracking-[0.25em] uppercase">
-                  Compliance Workbench
-                </span>
-              </div>
-              <div className="space-y-2">
-                <h1 className="text-2xl font-semibold sm:text-3xl">
-                  Orchestrate compliance conversations and evidence flows
-                </h1>
-                <p className="text-sm text-muted-foreground sm:text-base">
-                  Chat with the swarm copilot, import artifacts, and monitor audit readiness in a single workspace.
-                </p>
-              </div>
-            </section>
-
             <div className="lg:hidden">
               <WorkspaceFolderSelector
                 folders={folders}
@@ -599,8 +583,8 @@ export function ChatDashboard() {
                       folders={folders}
                       activeFolderId={activeFolderId}
                       selectedFolderIds={selectedFolderIds}
-                      onSelectActiveFolder={handleSelectFolder}
-                      onToggleFolderSelection={handleToggleFolderSelection}
+                      onSelectFolder={handleSelectFolder}
+                      onToggleFolder={handleToggleFolderSelection}
                       onCreateFolder={handleCreateFolder}
                       onFilesAdded={handleFilesAdded}
                       onRemoveDocument={handleRemoveDocument}
@@ -857,8 +841,8 @@ type FilesViewProps = {
   folders: WorkspaceFolder[];
   activeFolderId: string;
   selectedFolderIds: string[];
-  onSelectActiveFolder: (folderId: string) => void;
-  onToggleFolderSelection: (folderId: string) => void;
+  onSelectFolder: (folderId: string) => void;
+  onToggleFolder: (folderId: string) => void;
   onCreateFolder: () => void;
   onFilesAdded: (folderId: string, files: FileList | File[]) => void;
   onRemoveDocument: (folderId: string, documentId: string) => void;
@@ -870,8 +854,8 @@ function FilesView({
   folders,
   activeFolderId,
   selectedFolderIds,
-  onSelectActiveFolder,
-  onToggleFolderSelection,
+  onSelectFolder,
+  onToggleFolder,
   onCreateFolder,
   onFilesAdded,
   onRemoveDocument,
@@ -884,9 +868,9 @@ function FilesView({
 
   useEffect(() => {
     if (!activeFolder && folders.length) {
-      onSelectActiveFolder(folders[0].id);
+      onSelectFolder(folders[0].id);
     }
-  }, [activeFolder, folders, onSelectActiveFolder]);
+  }, [activeFolder, folders, onSelectFolder]);
 
   const handleFileInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -951,7 +935,7 @@ function FilesView({
               size="sm"
               variant={isInContext ? "default" : "outline"}
               className="gap-2"
-              onClick={() => onToggleFolderSelection(activeFolder.id)}
+              onClick={() => onToggleFolder(activeFolder.id)}
             >
               {isInContext ? "In AI context" : "Add to context"}
             </Button>
@@ -1389,31 +1373,26 @@ function WorkspaceFolderSelector({
 }: WorkspaceFolderSelectorProps) {
   if (!folders.length) {
     return (
-      <div className="rounded-3xl border border-border/60 bg-background/95 px-6 py-6 text-center shadow-sm">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold text-muted-foreground">Workspace folders</h2>
-          <Button variant="outline" size="sm" className="gap-2" onClick={onCreateFolder}>
-            <FolderPlus className="h-4 w-4" />
-            New folder
-          </Button>
-        </div>
-        <p className="mt-3 text-xs text-muted-foreground">
-          Organize evidence into folders to control what the swarm uses for context.
-        </p>
+      <div className="rounded-2xl border border-border/60 bg-background/95 px-4 py-4 text-center text-xs text-muted-foreground">
+        <p>No folders yet. Create one to start importing evidence.</p>
+        <Button variant="outline" size="sm" className="mt-3 gap-2" onClick={onCreateFolder}>
+          <FolderPlus className="h-4 w-4" />
+          New folder
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4 rounded-3xl border border-border/60 bg-background/95 px-6 py-6 shadow-sm">
-      <div className="flex items-center justify-between gap-3">
-        <h2 className="text-sm font-semibold text-muted-foreground">Workspace folders</h2>
+    <div className="space-y-2">
+      <div className="flex items-center justify-between text-xs font-semibold text-muted-foreground">
+        <span>Workspace folders</span>
         <Button variant="outline" size="sm" className="gap-2" onClick={onCreateFolder}>
           <FolderPlus className="h-4 w-4" />
-          New folder
+          New
         </Button>
       </div>
-      <div className="mt-3 flex flex-col gap-2">
+      <div className="flex flex-col gap-1">
         {folders.map((folder) => {
           const isActive = folder.id === activeFolderId;
           const isSelected = selectedFolderIds.includes(folder.id);
@@ -1421,71 +1400,51 @@ function WorkspaceFolderSelector({
           const docCount = folder.documents.length;
 
           return (
-            <div
+            <button
               key={folder.id}
-              className={cn(
-                "flex cursor-pointer items-start justify-between gap-3 rounded-2xl border bg-background/90 p-4 shadow-sm transition",
-                isActive ? "border-primary shadow" : "border-border/70 hover:border-primary/60"
-              )}
+              type="button"
               onClick={() => onSelectFolder(folder.id)}
+              className={cn(
+                "flex w-full items-center justify-between rounded-lg border px-3 py-2 text-left text-sm transition",
+                isActive ? "border-primary bg-primary/10 text-primary" : "border-border/60 hover:border-primary/40"
+              )}
             >
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <p className="text-sm font-semibold leading-tight">{folder.name}</p>
-                  <p className="text-xs text-muted-foreground/80">
-                    {relativeTime(folder.createdAt)} · {docCount} files
-                  </p>
+              <div className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <span className="font-medium text-foreground">{folder.name}</span>
+                  {isActive ? (
+                    <Badge variant="outline" className="text-[10px] text-primary">
+                      Active
+                    </Badge>
+                  ) : null}
                 </div>
-                {isActive ? (
-                  <Badge variant="outline" className="text-[11px] text-primary">
-                    Active
-                  </Badge>
-                ) : null}
-              </div>
-              {folder.description ? (
-                <p className="mt-2 text-xs text-muted-foreground/80">
-                  {folder.description}
-                </p>
-              ) : null}
-              <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                <span className="inline-flex items-center gap-1">
-                  <Files className="h-3.5 w-3.5" /> {docCount}
-                </span>
-                <span
-                  className={cn(
-                    "inline-flex items-center gap-1",
-                    flaggedCount ? "text-destructive" : "text-muted-foreground"
-                  )}
-                >
-                  <ShieldAlert className="h-3.5 w-3.5" /> {flaggedCount} flagged
-                </span>
-              </div>
-              <div className="flex flex-col items-end gap-2">
-                <Button
-                  size="sm"
-                  variant={isSelected ? "default" : "outline"}
-                  className="gap-2"
-                  onClick={(event) => {
-                    event.stopPropagation();
-                    onToggleFolder(folder.id);
-                  }}
-                >
-                  {isSelected ? "In context" : "Add to context"}
-                </Button>
-                {!isActive ? (
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={(event) => {
-                      event.stopPropagation();
-                      onSelectFolder(folder.id);
-                    }}
+                <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
+                  <span className="inline-flex items-center gap-1">
+                    <Files className="h-3 w-3" /> {docCount}
+                  </span>
+                  <span
+                    className={cn(
+                      "inline-flex items-center gap-1",
+                      flaggedCount ? "text-destructive" : "text-muted-foreground"
+                    )}
                   >
-                    Set active
-                  </Button>
-                ) : null}
+                    <ShieldAlert className="h-3 w-3" /> {flaggedCount}
+                  </span>
+                  <span>{relativeTime(folder.createdAt)}</span>
+                </div>
               </div>
-            </div>
+              <Button
+                size="sm"
+                variant={isSelected ? "default" : "outline"}
+                className="gap-1"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onToggleFolder(folder.id);
+                }}
+              >
+                {isSelected ? "In" : "Add"}
+              </Button>
+            </button>
           );
         })}
       </div>
