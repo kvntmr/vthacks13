@@ -3,7 +3,8 @@
 import React, { useState, useCallback, useMemo } from "react";
 import Spreadsheet, { 
   Matrix, 
-  CellBase
+  CellBase,
+  DataViewer
 } from "react-spreadsheet";
 import { 
   Bold, 
@@ -51,6 +52,39 @@ interface EnhancedCell extends CellBase {
   };
 }
 
+// Custom DataViewer component to handle formatting
+const CustomDataViewer: React.FC<{ cell: EnhancedCell }> = ({ cell }) => {
+  const style: React.CSSProperties = {
+    fontWeight: cell.bold ? 'bold' : 'normal',
+    fontStyle: cell.italic ? 'italic' : 'normal',
+    textDecoration: cell.underline ? 'underline' : 'none',
+    backgroundColor: cell.backgroundColor || 'transparent',
+    color: cell.textColor || 'inherit',
+    textAlign: cell.alignment || 'left',
+    borderTop: cell.border?.top ? '2px solid #374151' : 'none',
+    borderRight: cell.border?.right ? '2px solid #374151' : 'none',
+    borderBottom: cell.border?.bottom ? '2px solid #374151' : 'none',
+    borderLeft: cell.border?.left ? '2px solid #374151' : 'none',
+    padding: '4px 8px',
+    minHeight: '20px',
+    display: 'flex',
+    alignItems: 'center',
+    ...cell.style
+  };
+
+  // Ensure good contrast for text visibility
+  const textColor = cell.textColor || (cell.backgroundColor && cell.backgroundColor !== '#ffffff' ? '#ffffff' : '#000000');
+
+  return (
+    <div 
+      style={{ ...style, color: textColor }} 
+      className={`${cell.className || ''} ${cell.bold ? 'font-bold' : ''} ${cell.italic ? 'italic' : ''} ${cell.underline ? 'underline' : ''}`}
+    >
+      {cell.value}
+    </div>
+  );
+};
+
 interface SpreadsheetToolbarProps {
   onBold: () => void;
   onItalic: () => void;
@@ -58,6 +92,9 @@ interface SpreadsheetToolbarProps {
   onAlignLeft: () => void;
   onAlignCenter: () => void;
   onAlignRight: () => void;
+  onBackgroundColor: (color: string) => void;
+  onTextColor: (color: string) => void;
+  onClearFormatting: () => void;
   onAddRow: () => void;
   onAddColumn: () => void;
   onDeleteRow: () => void;
@@ -73,6 +110,8 @@ interface SpreadsheetToolbarProps {
   onSave: () => void;
   canUndo: boolean;
   canRedo: boolean;
+  selectedCell?: { row: number; column: number } | null;
+  data: Matrix<EnhancedCell>;
 }
 
 const SpreadsheetToolbar: React.FC<SpreadsheetToolbarProps> = ({
@@ -82,6 +121,9 @@ const SpreadsheetToolbar: React.FC<SpreadsheetToolbarProps> = ({
   onAlignLeft,
   onAlignCenter,
   onAlignRight,
+  onBackgroundColor,
+  onTextColor,
+  onClearFormatting,
   onAddRow,
   onAddColumn,
   onDeleteRow,
@@ -96,8 +138,11 @@ const SpreadsheetToolbar: React.FC<SpreadsheetToolbarProps> = ({
   onRedo,
   onSave,
   canUndo,
-  canRedo
+  canRedo,
+  selectedCell,
+  data
 }) => {
+  const currentCell = selectedCell ? data[selectedCell.row]?.[selectedCell.column] : null;
   return (
     <div className="flex flex-wrap items-center gap-2 p-3 bg-gray-50 border-b border-gray-200">
       {/* File Operations */}
@@ -149,21 +194,27 @@ const SpreadsheetToolbar: React.FC<SpreadsheetToolbarProps> = ({
       <div className="flex items-center gap-1 border-r border-gray-300 pr-2">
         <button
           onClick={onBold}
-          className="p-2 hover:bg-gray-200 rounded transition-colors"
+          className={`p-2 hover:bg-gray-200 rounded transition-colors ${
+            currentCell?.bold ? 'bg-blue-100 text-blue-600' : ''
+          }`}
           title="Bold (Ctrl+B)"
         >
           <Bold className="w-4 h-4" />
         </button>
         <button
           onClick={onItalic}
-          className="p-2 hover:bg-gray-200 rounded transition-colors"
+          className={`p-2 hover:bg-gray-200 rounded transition-colors ${
+            currentCell?.italic ? 'bg-blue-100 text-blue-600' : ''
+          }`}
           title="Italic (Ctrl+I)"
         >
           <Italic className="w-4 h-4" />
         </button>
         <button
           onClick={onUnderline}
-          className="p-2 hover:bg-gray-200 rounded transition-colors"
+          className={`p-2 hover:bg-gray-200 rounded transition-colors ${
+            currentCell?.underline ? 'bg-blue-100 text-blue-600' : ''
+          }`}
           title="Underline (Ctrl+U)"
         >
           <Underline className="w-4 h-4" />
@@ -174,24 +225,87 @@ const SpreadsheetToolbar: React.FC<SpreadsheetToolbarProps> = ({
       <div className="flex items-center gap-1 border-r border-gray-300 pr-2">
         <button
           onClick={onAlignLeft}
-          className="p-2 hover:bg-gray-200 rounded transition-colors"
+          className={`p-2 hover:bg-gray-200 rounded transition-colors ${
+            currentCell?.alignment === 'left' ? 'bg-blue-100 text-blue-600' : ''
+          }`}
           title="Align Left"
         >
           <AlignLeft className="w-4 h-4" />
         </button>
         <button
           onClick={onAlignCenter}
-          className="p-2 hover:bg-gray-200 rounded transition-colors"
+          className={`p-2 hover:bg-gray-200 rounded transition-colors ${
+            currentCell?.alignment === 'center' ? 'bg-blue-100 text-blue-600' : ''
+          }`}
           title="Align Center"
         >
           <AlignCenter className="w-4 h-4" />
         </button>
         <button
           onClick={onAlignRight}
-          className="p-2 hover:bg-gray-200 rounded transition-colors"
+          className={`p-2 hover:bg-gray-200 rounded transition-colors ${
+            currentCell?.alignment === 'right' ? 'bg-blue-100 text-blue-600' : ''
+          }`}
           title="Align Right"
         >
           <AlignRight className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* Colors */}
+      <div className="flex items-center gap-2 border-r border-gray-300 pr-2">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium text-gray-700">Background:</span>
+          <input
+            type="color"
+            value={currentCell?.backgroundColor || '#ffffff'}
+            onChange={(e) => onBackgroundColor(e.target.value)}
+            className="w-8 h-8 border-2 border-gray-300 rounded cursor-pointer hover:border-blue-400 transition-colors"
+            title="Background Color"
+          />
+          <div className="flex gap-1">
+            {['#ffffff', '#fef3c7', '#d1fae5', '#dbeafe', '#fce7f3', '#f3e8ff'].map((color) => (
+              <button
+                key={color}
+                onClick={() => onBackgroundColor(color)}
+                className={`w-6 h-6 rounded border-2 ${
+                  currentCell?.backgroundColor === color ? 'border-blue-500' : 'border-gray-300'
+                } hover:border-blue-400 transition-colors`}
+                style={{ backgroundColor: color }}
+                title={`Set background to ${color}`}
+              />
+            ))}
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium text-gray-700">Text:</span>
+          <input
+            type="color"
+            value={currentCell?.textColor || '#000000'}
+            onChange={(e) => onTextColor(e.target.value)}
+            className="w-8 h-8 border-2 border-gray-300 rounded cursor-pointer hover:border-blue-400 transition-colors"
+            title="Text Color"
+          />
+          <div className="flex gap-1">
+            {['#000000', '#dc2626', '#059669', '#2563eb', '#7c3aed', '#db2777'].map((color) => (
+              <button
+                key={color}
+                onClick={() => onTextColor(color)}
+                className={`w-6 h-6 rounded border-2 ${
+                  currentCell?.textColor === color ? 'border-blue-500' : 'border-gray-300'
+                } hover:border-blue-400 transition-colors`}
+                style={{ backgroundColor: color }}
+                title={`Set text color to ${color}`}
+              />
+            ))}
+          </div>
+        </div>
+        <button
+          onClick={onClearFormatting}
+          className="px-3 py-1 text-sm bg-gray-200 hover:bg-gray-300 rounded transition-colors"
+          title="Clear All Formatting"
+        >
+          Clear
         </button>
       </div>
 
@@ -396,6 +510,32 @@ const EnhancedSpreadsheet: React.FC<EnhancedSpreadsheetProps> = ({
     onDataChange?.(newData);
   }, [data, selectedCell, onDataChange, saveToHistory]);
 
+  // Clear formatting function
+  const clearFormatting = useCallback(() => {
+    if (!selectedCell) return;
+    
+    const newData = data.map((row, rowIndex) =>
+      row.map((cell, colIndex) => {
+        if (rowIndex === selectedCell.row && colIndex === selectedCell.column) {
+          return { 
+            ...cell, 
+            bold: false,
+            italic: false,
+            underline: false,
+            backgroundColor: undefined,
+            textColor: undefined,
+            alignment: undefined,
+            border: undefined
+          };
+        }
+        return cell;
+      })
+    );
+    setData(newData);
+    saveToHistory(newData);
+    onDataChange?.(newData);
+  }, [data, selectedCell, onDataChange, saveToHistory]);
+
   // Formula parser - temporarily disabled for debugging
   // const formulaParser = useMemo(() => {
   //   if (!enableFormulas) return undefined;
@@ -501,15 +641,24 @@ const EnhancedSpreadsheet: React.FC<EnhancedSpreadsheetProps> = ({
           break;
         case 'b':
           event.preventDefault();
-          applyFormatting({ bold: !data[selectedCell?.row || 0]?.[selectedCell?.column || 0]?.bold });
+          if (selectedCell) {
+            const currentCell = data[selectedCell.row]?.[selectedCell.column];
+            applyFormatting({ bold: !currentCell?.bold });
+          }
           break;
         case 'i':
           event.preventDefault();
-          applyFormatting({ italic: !data[selectedCell?.row || 0]?.[selectedCell?.column || 0]?.italic });
+          if (selectedCell) {
+            const currentCell = data[selectedCell.row]?.[selectedCell.column];
+            applyFormatting({ italic: !currentCell?.italic });
+          }
           break;
         case 'u':
           event.preventDefault();
-          applyFormatting({ underline: !data[selectedCell?.row || 0]?.[selectedCell?.column || 0]?.underline });
+          if (selectedCell) {
+            const currentCell = data[selectedCell.row]?.[selectedCell.column];
+            applyFormatting({ underline: !currentCell?.underline });
+          }
           break;
       }
     }
@@ -530,12 +679,24 @@ const EnhancedSpreadsheet: React.FC<EnhancedSpreadsheetProps> = ({
     <div className="w-full h-full flex flex-col" onKeyDown={handleKeyDown} tabIndex={0}>
       {showToolbar && (
         <SpreadsheetToolbar
-          onBold={() => applyFormatting({ bold: true })}
-          onItalic={() => applyFormatting({ italic: true })}
-          onUnderline={() => applyFormatting({ underline: true })}
+          onBold={() => {
+            const currentCell = selectedCell ? data[selectedCell.row]?.[selectedCell.column] : null;
+            applyFormatting({ bold: !currentCell?.bold });
+          }}
+          onItalic={() => {
+            const currentCell = selectedCell ? data[selectedCell.row]?.[selectedCell.column] : null;
+            applyFormatting({ italic: !currentCell?.italic });
+          }}
+          onUnderline={() => {
+            const currentCell = selectedCell ? data[selectedCell.row]?.[selectedCell.column] : null;
+            applyFormatting({ underline: !currentCell?.underline });
+          }}
           onAlignLeft={() => applyFormatting({ alignment: 'left' })}
           onAlignCenter={() => applyFormatting({ alignment: 'center' })}
           onAlignRight={() => applyFormatting({ alignment: 'right' })}
+          onBackgroundColor={(color) => applyFormatting({ backgroundColor: color })}
+          onTextColor={(color) => applyFormatting({ textColor: color })}
+          onClearFormatting={clearFormatting}
           onAddRow={() => addRow()}
           onAddColumn={() => addColumn()}
           onDeleteRow={() => selectedCell && deleteRow(selectedCell.row)}
@@ -551,6 +712,8 @@ const EnhancedSpreadsheet: React.FC<EnhancedSpreadsheetProps> = ({
           onSave={() => onSave?.(data)}
           canUndo={historyIndex > 0}
           canRedo={historyIndex < history.length - 1}
+          selectedCell={selectedCell}
+          data={data}
         />
       )}
 
@@ -598,6 +761,7 @@ const EnhancedSpreadsheet: React.FC<EnhancedSpreadsheetProps> = ({
         <Spreadsheet
           data={currentData}
           onChange={handleDataChange}
+          DataViewer={CustomDataViewer}
           onSelect={(selected) => {
             if (selected.length > 0) {
               setSelectedCell({ row: selected[0].row, column: selected[0].column });
