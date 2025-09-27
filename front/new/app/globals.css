@@ -315,3 +315,65 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Enhanced DataGrid Styles */
+.rdg {
+  border: 1px solid hsl(var(--border));
+  border-radius: 0;
+}
+
+.rdg-header-row {
+  background-color: hsl(var(--muted));
+  border-bottom: 1px solid hsl(var(--border));
+}
+
+.rdg-header-cell {
+  border-right: 1px solid hsl(var(--border));
+  font-weight: 500;
+  font-size: 0.75rem;
+  text-align: center;
+  padding: 8px 4px;
+}
+
+.rdg-cell {
+  border-right: 1px solid hsl(var(--border));
+  border-bottom: 1px solid hsl(var(--border));
+  padding: 0;
+}
+
+.rdg-cell:focus-within {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: -2px;
+}
+
+.rdg-cell input {
+  border: none;
+  outline: none;
+  background: transparent;
+  padding: 8px;
+  width: 100%;
+  height: 100%;
+  font-size: 0.875rem;
+}
+
+.rdg-cell input:focus {
+  background: hsl(var(--accent));
+}
+
+/* Dark mode adjustments */
+.rdg-dark {
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+}
+
+.rdg-dark .rdg-header-row {
+  background-color: hsl(var(--muted));
+}
+
+.rdg-dark .rdg-cell {
+  border-color: hsl(var(--border));
+}
+
+.rdg-dark .rdg-cell input {
+  color: hsl(var(--foreground));
+}
