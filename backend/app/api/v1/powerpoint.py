@@ -14,7 +14,12 @@ from app.services.powerpoint_parser import PowerPointParser
 router = APIRouter(prefix="/powerpoint", tags=["powerpoint"])
 
 # Initialize the parser
-powerpoint_parser = PowerPointParser()
+# Set the TESSDATA_PREFIX environment variable to point to our tessdata directory
+tessdata_path = os.path.join(os.path.dirname(__file__), "..", "..", "services", "tessdata")
+os.environ["TESSDATA_PREFIX"] = tessdata_path
+
+# Initialize parser (tesseract should be in PATH, so we don't need to specify the executable path)
+powerpoint_parser = PowerPointParser("")
 
 # Request/Response Models
 class PowerPointParseRequest(BaseModel):
