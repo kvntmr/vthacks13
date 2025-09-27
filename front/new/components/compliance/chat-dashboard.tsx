@@ -15,6 +15,8 @@ import {
   Activity,
   Bot,
   CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
   Folder,
   FolderPlus,
   Files,
@@ -48,7 +50,7 @@ import {
 } from "@/components/ui/select";
 
 type DocumentStatus = "Queued" | "Indexed" | "Flagged";
-
+//complianceDocument type used throughout the compliance workspace
 type ComplianceDocument = {
   id: string;
   name: string;
@@ -59,6 +61,7 @@ type ComplianceDocument = {
   summary?: string;
 };
 
+//chat message type (user/ai)
 type ChatMessage = {
   id: string;
   role: "user" | "assistant";
@@ -121,6 +124,7 @@ const VIEW_OPTIONS: Array<{ id: ActiveView; label: string; icon: ElementType }> 
   { id: "agents", label: "Agents", icon: Users },
 ];
 
+// Seed folders for demo workspace state
 const INITIAL_FOLDERS: WorkspaceFolder[] = [
   {
     id: "folder-pci",
@@ -273,14 +277,20 @@ const QUICK_PROMPT_TOOLTIPS: Record<string, string> = {
   "Assign swarm agents": "Dispatch specialized agents to gather evidence and notify control owners.",
 };
 
+// Main orchestrator for the compliance workspace experience
 export function ChatDashboard() {
+  // Track all available evidence folders in memory
   const [folders, setFolders] = useState<WorkspaceFolder[]>(INITIAL_FOLDERS);
+  // Maintain which folders feed the AI context
   const [selectedFolderIds, setSelectedFolderIds] = useState<string[]>(() =>
     INITIAL_FOLDERS[0] ? [INITIAL_FOLDERS[0].id] : []
   );
   const [activeFolderId, setActiveFolderId] = useState<string>(INITIAL_FOLDERS[0]?.id ?? "");
+  // Sidebar navigation state (chat / files / insights / agents)
   const [activeView, setActiveView] = useState<ActiveView>("chat");
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
+  // Resolve the currently focused folder once state changes
   const activeFolder = useMemo(
     () => folders.find((folder) => folder.id === activeFolderId) ?? folders[0] ?? null,
     [folders, activeFolderId]
@@ -309,6 +319,7 @@ export function ChatDashboard() {
     [folders, selectedFolderIds]
   );
 
+  // Flatten documents from the folders currently in context
   const documents = useMemo(() => {
     if (selectedFolders.length) {
       return selectedFolders.flatMap((folder) => folder.documents);
@@ -316,6 +327,7 @@ export function ChatDashboard() {
     return activeFolder ? activeFolder.documents : [];
   }, [selectedFolders, activeFolder]);
 
+  // Derive high-level metrics used by the sidebar tiles
   const metrics = useMemo(() => {
     const queued = documents.filter((doc) => doc.status === "Queued").length;
     const flagged = documents.filter((doc) => doc.status === "Flagged").length;
@@ -330,6 +342,7 @@ export function ChatDashboard() {
     };
   }, [documents]);
 
+  // Guard division when no documents are selected
   const coveragePercent = useMemo(() => {
     if (!metrics.total) {
       return 0;
@@ -349,6 +362,7 @@ export function ChatDashboard() {
     [documents]
   );
 
+  // Build a concise label describing the selected folder scope
   const folderContextLabel = useMemo(() => {
     if (!selectedFolders.length) {
       return "No folders selected";
@@ -365,6 +379,7 @@ export function ChatDashboard() {
     return `${selectedFolders[0].name}, ${selectedFolders[1].name} +${selectedFolders.length - 2}`;
   }, [selectedFolders, folders.length]);
 
+  // Highlight flagged docs and high risk findings that intersect selection
   const criticalAlerts = useMemo(() => {
     const flaggedDocs = selectedFolders
       .flatMap((folder) => folder.documents)
@@ -388,6 +403,7 @@ export function ChatDashboard() {
     return [...flaggedDocs, ...highSeverityFindings].slice(0, 4);
   }, [selectedFolders, selectedDocumentIds]);
 
+  // Toggle folders in/out of AI context, keeping at least one active
   const handleToggleFolderSelection = useCallback((folderId: string) => {
     setSelectedFolderIds((prev) => {
       const exists = prev.includes(folderId);
@@ -406,6 +422,7 @@ export function ChatDashboard() {
     setSelectedFolderIds((prev) => (prev.includes(folderId) ? prev : [...prev, folderId]));
   }, []);
 
+  // Simple prompt-driven folder creation for the prototype
   const handleCreateFolder = useCallback(() => {
     if (typeof window === "undefined") return;
 
@@ -427,6 +444,7 @@ export function ChatDashboard() {
     setSelectedFolderIds((prev) => [...prev, newFolder.id]);
   }, []);
 
+  // Append new uploads into the correct folder container
   const handleFilesAdded = useCallback((folderId: string, files: FileList | File[]) => {
     const parsedFiles = Array.from(files);
     if (!parsedFiles.length) return;
@@ -472,15 +490,31 @@ export function ChatDashboard() {
 
   return (
     <div className="flex min-h-screen bg-muted/15 text-foreground">
-      <aside className="hidden w-64 flex-col border-r border-border/60 bg-background/95 px-5 py-6 lg:flex">
-        <div className="flex items-center gap-2 text-primary">
-          <Sparkles className="h-5 w-5" />
-          <span className="text-sm font-semibold tracking-[0.25em] uppercase">Swarm</span>
+      {/* Desktop navigation and folder picker */}
+      <aside
+        className={cn("hidden flex-col border-r border-border/60 bg-background/95 transition-all duration-200 lg:flex",
+          isSidebarOpen ? "w-64 px-5 py-6" : "w-16 px-2 py-6")}
+      >
+        <div className="flex items-center justify-between gap-2 text-primary">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-5 w-5" />
+            {isSidebarOpen && (
+              <span className="text-sm font-semibold tracking-[0.25em] uppercase">Swarm</span>
+            )}
+          </div>
+          <Button
+            size="icon"
+            variant="ghost"
+            className="h-7 w-7 text-muted-foreground"
+            onClick={() => setIsSidebarOpen((prev) => !prev)}
+          >
+            {isSidebarOpen ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+          </Button>
         </div>
-        <p className="mt-2 text-xs text-muted-foreground/80">
-          AI-powered compliance workbench
-        </p>
-        <nav className="mt-8 flex flex-col gap-1">
+        {isSidebarOpen && (
+          <p className="mt-2 text-xs text-muted-foreground/80">AI-powered compliance workbench</p>
+        )}
+        <nav className={cn("flex flex-col gap-1 transition-all", isSidebarOpen ? "mt-8" : "mt-6 items-center gap-2")}> 
           {VIEW_OPTIONS.map((option) => {
             const isActive = activeView === option.id;
 
@@ -492,18 +526,20 @@ export function ChatDashboard() {
                   "justify-start gap-3 border border-transparent",
                   isActive
                     ? "bg-primary text-primary-foreground shadow"
-                    : "bg-transparent text-muted-foreground hover:bg-muted/60"
+                    : "bg-transparent text-muted-foreground hover:bg-muted/60",
+                  !isSidebarOpen && "justify-center"
                 )}
                 onClick={() => setActiveView(option.id)}
               >
                 <option.icon className="h-4 w-4" />
-                {option.label}
+                {isSidebarOpen && option.label}
               </Button>
             );
           })}
         </nav>
 
-        <div className="mt-6 overflow-y-auto pr-1">
+        <div className="mt-6 overflow-y-auto pr-1 space-y-3">
+          {isSidebarOpen && (
           <WorkspaceFolderSelector
             folders={folders}
             selectedFolderIds={selectedFolderIds}
@@ -512,6 +548,7 @@ export function ChatDashboard() {
             onToggleFolder={handleToggleFolderSelection}
             onCreateFolder={handleCreateFolder}
           />
+          )}
         </div>
 
         <div className="mt-auto text-xs text-muted-foreground/70">
@@ -519,7 +556,9 @@ export function ChatDashboard() {
         </div>
       </aside>
 
+      {/* Main workspace column */}
       <div className="flex min-h-screen flex-1 flex-col lg:overflow-hidden">
+        {/* Mobile view selector */}
         <header className="flex items-center justify-between gap-3 border-b border-border/60 bg-background/95 px-4 py-4 lg:hidden">
           <div className="flex items-center gap-2 text-primary">
             <Sparkles className="h-5 w-5" />
@@ -539,8 +578,10 @@ export function ChatDashboard() {
           </Select>
         </header>
 
+        {/* Workspace content + metrics sidebar */}
         <div className="flex flex-1 flex-col gap-6 overflow-hidden px-4 pb-8 pt-4 lg:flex-row lg:gap-8 lg:px-8">
           <div className="flex flex-1 flex-col gap-6 overflow-hidden">
+            {/* Folder picker fallback on mobile */}
             <div className="lg:hidden">
               <WorkspaceFolderSelector
                 folders={folders}
@@ -552,6 +593,7 @@ export function ChatDashboard() {
               />
             </div>
 
+            {/* Active view container */}
             <section className="flex flex-1 flex-col overflow-hidden rounded-3xl border border-border/60 bg-background/95 shadow-sm">
               <div className="flex-1 overflow-hidden px-4 pb-6 pt-4 sm:px-6">
                 {criticalAlerts.length > 0 ? <AlertStrip alerts={criticalAlerts} /> : null}
@@ -625,6 +667,7 @@ export function ChatDashboard() {
             </section>
           </div>
 
+          {/* Metrics sidebar */}
           <aside className="w-full shrink-0 space-y-4 rounded-3xl border border-border/60 bg-background/95 px-6 py-6 shadow-sm lg:w-80">
             <h2 className="text-sm font-semibold text-muted-foreground">Key health metrics</h2>
             <div className="grid gap-3">
@@ -669,6 +712,7 @@ type ChatViewProps = {
   contextLabel: string;
 };
 
+// Chat surface primitive bound to the selected folder context
 function ChatView({ documents, metrics, quickPrompts, contextLabel }: ChatViewProps) {
   const [messages, setMessages] = useState<ChatMessage[]>(INITIAL_MESSAGES);
   const [input, setInput] = useState("");
@@ -757,6 +801,7 @@ function ChatView({ documents, metrics, quickPrompts, contextLabel }: ChatViewPr
   return (
     <div className="flex h-full flex-col gap-4">
       <div className="flex flex-wrap gap-2">
+        {/* Quick glance chips summarising chat scope */}
         <StatusChip icon={Files}>{documents.length} files in context</StatusChip>
         <StatusChip icon={ShieldAlert}>{metrics.flagged} urgent flags</StatusChip>
         {metrics.latestUpload ? (
@@ -765,7 +810,8 @@ function ChatView({ documents, metrics, quickPrompts, contextLabel }: ChatViewPr
         <StatusChip icon={Folder}>{contextLabel}</StatusChip>
       </div>
 
-      <div className="flex flex-1 min-h-[60vh] flex-col gap-4 overflow-hidden">
+        <div className="flex flex-1 min-h-[60vh] flex-col gap-4 overflow-hidden">
+          {/* Conversation history */}
         <div className="flex flex-1 overflow-hidden rounded-2xl border border-border/60 bg-muted/20">
           <ScrollArea className="flex-1 pr-3">
             <div className="flex min-h-full flex-col gap-4 p-4">
@@ -780,6 +826,7 @@ function ChatView({ documents, metrics, quickPrompts, contextLabel }: ChatViewPr
 
         <div className="space-y-3">
           <TooltipProvider>
+            {/* Suggested task buttons */}
             <div className="flex flex-wrap gap-2">
               {quickPrompts.map((prompt) => {
                 const tooltip = QUICK_PROMPT_TOOLTIPS[prompt.label];
@@ -916,6 +963,7 @@ function FilesView({
         fullHeight && "flex h-full flex-col gap-4"
       )}
     >
+      {/* Folder-level actions */}
       <div className="flex flex-col gap-2 rounded-2xl border border-border/60 bg-background/80 px-4 py-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2">
@@ -958,6 +1006,7 @@ function FilesView({
         ) : null}
       </div>
 
+      {/* Upload target */}
       <div
         onDragOver={(event) => {
           event.preventDefault();
@@ -997,6 +1046,7 @@ function FilesView({
         <input ref={fileInputRef} type="file" multiple className="hidden" onChange={handleFileInputChange} />
       </div>
 
+      {/* File list */}
       <div
         className={cn(
           "rounded-2xl border border-border/60 bg-muted/20",
@@ -1047,6 +1097,7 @@ type InsightsViewProps = {
   fullHeight?: boolean;
 };
 
+// Insights dashboard summarising findings and escalations
 function InsightsView({ metrics, documents, findings, compact = false, fullHeight = false }: InsightsViewProps) {
   const flaggedDocs = documents.filter((doc) => doc.status === "Flagged");
 
@@ -1172,6 +1223,7 @@ type AgentsViewProps = {
   fullHeight?: boolean;
 };
 
+// Progress tracker for swarm agent workloads
 function AgentsView({ agents, compact = false, fullHeight = false }: AgentsViewProps) {
   const averageProgress = Math.round(
     agents.reduce((acc, agent) => acc + agent.progress, 0) / agents.length
@@ -1363,6 +1415,7 @@ type WorkspaceFolderSelectorProps = {
   onCreateFolder: () => void;
 };
 
+// Compact list used in sidebar / mobile to manage folder scope
 function WorkspaceFolderSelector({
   folders,
   selectedFolderIds,
@@ -1583,6 +1636,7 @@ function AlertStrip({ alerts }: { alerts: AlertItem[] }) {
   );
 }
 
+// Convert timestamps into friendly freshness descriptors for tiles
 function getFreshnessDescriptor(timestamp: string): { label: string; tone: MetricTone } {
   try {
     const parsed = new Date(timestamp);
