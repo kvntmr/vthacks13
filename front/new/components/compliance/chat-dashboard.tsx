@@ -1,12 +1,22 @@
 "use client";
 
-import { type ElementType, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { formatDistanceToNow } from "date-fns";
+import {
+  type ElementType,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { differenceInDays, formatDistanceToNow } from "date-fns";
 import { nanoid } from "nanoid";
 import {
   Activity,
   Bot,
   CheckCircle2,
+  Folder,
+  FolderPlus,
   Files,
   ShieldAlert,
   ShieldCheck,
@@ -30,6 +40,19 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type DocumentStatus = "Queued" | "Indexed" | "Flagged";
 
@@ -73,40 +96,82 @@ type QuickPrompt = {
   prompt: string;
 };
 
+type AlertItem = {
+  id: string;
+  label: string;
+  detail?: string;
+};
+
+type MetricTone = "default" | "positive" | "alert";
+
+type WorkspaceFolder = {
+  id: string;
+  name: string;
+  description?: string;
+  createdAt: string;
+  documents: ComplianceDocument[];
+};
+
+
 const REFERENCE_NOW = new Date("2024-10-01T12:00:00.000Z");
 const TIME_FORMATTER = new Intl.DateTimeFormat("en-US", {
   hour: "numeric",
   minute: "2-digit",
 });
 
-const INITIAL_DOCUMENTS: ComplianceDocument[] = [
+type ActiveView = "chat" | "files" | "insights" | "agents";
+
+const VIEW_OPTIONS: Array<{ id: ActiveView; label: string; icon: ElementType }> = [
+  { id: "chat", label: "Chat", icon: Bot },
+  { id: "files", label: "Files", icon: Files },
+  { id: "insights", label: "Insights", icon: ShieldAlert },
+  { id: "agents", label: "Agents", icon: Users },
+];
+
+const INITIAL_FOLDERS: WorkspaceFolder[] = [
   {
-    id: "doc-1",
-    name: "Employee Data Handling Policy.pdf",
-    size: 1_606_000,
-    status: "Indexed",
-    uploadedAt: "2024-10-01T10:30:00.000Z",
-    focus: "GDPR",
-    summary:
-      "Annotated for retention and subprocessors controls; linked to Article 30 obligations.",
+    id: "folder-pci",
+    name: "PCI DSS Evidence",
+    description: "Network segmentation tests, card processing SOPs, quarterly attestations.",
+    createdAt: "2024-09-28T09:00:00.000Z",
+    documents: [
+      {
+        id: "doc-2",
+        name: "Payment Card SOP.docx",
+        size: 2_402_321,
+        status: "Flagged",
+        uploadedAt: "2024-10-01T09:15:00.000Z",
+        focus: "PCI DSS",
+        summary: "Requires evidence for quarterly segmentation tests and dual-control approvals.",
+      },
+    ],
   },
   {
-    id: "doc-2",
-    name: "Payment Card SOP.docx",
-    size: 2_402_321,
-    status: "Flagged",
-    uploadedAt: "2024-10-01T09:15:00.000Z",
-    focus: "PCI DSS",
-    summary: "Requires evidence for quarterly segmentation tests and dual-control approvals.",
-  },
-  {
-    id: "doc-3",
-    name: "Incident Response Playbook.md",
-    size: 782_144,
-    status: "Queued",
-    uploadedAt: "2024-10-01T08:00:00.000Z",
-    focus: "SOC 2",
-    summary: "Awaiting enrichment by swarm incident-response agent for R2 policies.",
+    id: "folder-privacy",
+    name: "Privacy Program",
+    description: "GDPR DPIAs, retention schedules, incident response procedures.",
+    createdAt: "2024-08-12T08:30:00.000Z",
+    documents: [
+      {
+        id: "doc-1",
+        name: "Employee Data Handling Policy.pdf",
+        size: 1_606_000,
+        status: "Indexed",
+        uploadedAt: "2024-10-01T10:30:00.000Z",
+        focus: "GDPR",
+        summary:
+          "Annotated for retention and subprocessors controls; linked to Article 30 obligations.",
+      },
+      {
+        id: "doc-3",
+        name: "Incident Response Playbook.md",
+        size: 782_144,
+        status: "Queued",
+        uploadedAt: "2024-10-01T08:00:00.000Z",
+        focus: "SOC 2",
+        summary: "Awaiting enrichment by swarm incident-response agent for R2 policies.",
+      },
+    ],
   },
 ];
 
@@ -208,19 +273,55 @@ const QUICK_PROMPTS: QuickPrompt[] = [
   },
 ];
 
-type ActiveView = "chat" | "files" | "insights" | "agents";
-
-const VIEW_OPTIONS: Array<{ id: ActiveView; label: string; icon: ElementType }> = [
-  { id: "chat", label: "Chat", icon: Bot },
-  { id: "files", label: "Files", icon: Files },
-  { id: "insights", label: "Insights", icon: ShieldAlert },
-  { id: "agents", label: "Agents", icon: Users },
-];
-
+const QUICK_PROMPT_TOOLTIPS: Record<string, string> = {
+  "Map GDPR gaps": "Have the swarm scan recent uploads for GDPR control gaps and action items.",
+  "Prep audit brief": "Generate a concise summary your auditor can review before the meeting.",
+  "Assign swarm agents": "Dispatch specialized agents to gather evidence and notify control owners.",
+};
 
 export function ChatDashboard() {
-  const [documents, setDocuments] = useState<ComplianceDocument[]>(INITIAL_DOCUMENTS);
+  const [folders, setFolders] = useState<WorkspaceFolder[]>(INITIAL_FOLDERS);
+  const [selectedFolderIds, setSelectedFolderIds] = useState<string[]>(() =>
+    INITIAL_FOLDERS[0] ? [INITIAL_FOLDERS[0].id] : []
+  );
+  const [activeFolderId, setActiveFolderId] = useState<string>(INITIAL_FOLDERS[0]?.id ?? "");
   const [activeView, setActiveView] = useState<ActiveView>("chat");
+
+  const activeFolder = useMemo(
+    () => folders.find((folder) => folder.id === activeFolderId) ?? folders[0] ?? null,
+    [folders, activeFolderId]
+  );
+
+  useEffect(() => {
+    if (!activeFolder && folders.length) {
+      setActiveFolderId(folders[0].id);
+    }
+  }, [activeFolder, folders]);
+
+  useEffect(() => {
+    if (activeFolder && !selectedFolderIds.includes(activeFolder.id)) {
+      setSelectedFolderIds((prev) => [...prev, activeFolder.id]);
+    }
+  }, [activeFolder, selectedFolderIds]);
+
+  useEffect(() => {
+    if (!selectedFolderIds.length && activeFolder) {
+      setSelectedFolderIds([activeFolder.id]);
+    }
+  }, [selectedFolderIds, activeFolder]);
+
+  const selectedFolders = useMemo(
+    () => folders.filter((folder) => selectedFolderIds.includes(folder.id)),
+    [folders, selectedFolderIds]
+  );
+
+  const documents = useMemo(() => {
+    if (selectedFolders.length) {
+      return selectedFolders.flatMap((folder) => folder.documents);
+    }
+    return activeFolder ? activeFolder.documents : [];
+  }, [selectedFolders, activeFolder]);
+
   const metrics = useMemo(() => {
     const queued = documents.filter((doc) => doc.status === "Queued").length;
     const flagged = documents.filter((doc) => doc.status === "Flagged").length;
@@ -235,126 +336,301 @@ export function ChatDashboard() {
     };
   }, [documents]);
 
-  const handleFilesAdded = useCallback((files: FileList | File[]) => {
+  const coveragePercent = useMemo(() => {
+    if (!metrics.total) {
+      return 0;
+    }
+    return Math.min(100, Math.round((metrics.indexed / metrics.total) * 100));
+  }, [metrics.indexed, metrics.total]);
+
+  const freshnessMeta = useMemo(() => {
+    if (!metrics.latestUpload) {
+      return null;
+    }
+    return getFreshnessDescriptor(metrics.latestUpload);
+  }, [metrics.latestUpload]);
+
+  const selectedDocumentIds = useMemo(
+    () => new Set(documents.map((doc) => doc.id)),
+    [documents]
+  );
+
+  const folderContextLabel = useMemo(() => {
+    if (!selectedFolders.length) {
+      return "No folders selected";
+    }
+
+    if (selectedFolders.length === folders.length && folders.length > 1) {
+      return "All folders";
+    }
+
+    if (selectedFolders.length <= 2) {
+      return selectedFolders.map((folder) => folder.name).join(", ");
+    }
+
+    return `${selectedFolders[0].name}, ${selectedFolders[1].name} +${selectedFolders.length - 2}`;
+  }, [selectedFolders, folders.length]);
+
+  const criticalAlerts = useMemo(() => {
+    const flaggedDocs = selectedFolders
+      .flatMap((folder) => folder.documents)
+      .filter((doc) => doc.status === "Flagged")
+      .map((doc) => ({
+        id: doc.id,
+        label: doc.name,
+        detail: doc.focus ?? "Unassigned focus",
+      }));
+
+    const highSeverityFindings = INITIAL_FINDINGS.filter(
+      (finding) =>
+        finding.severity === "High" &&
+        (finding.impactedDocumentIds?.some((id) => selectedDocumentIds.has(id)) ?? false)
+    ).map((finding) => ({
+      id: finding.id,
+      label: finding.title,
+      detail: finding.standard,
+    }));
+
+    return [...flaggedDocs, ...highSeverityFindings].slice(0, 4);
+  }, [selectedFolders, selectedDocumentIds]);
+
+  const handleToggleFolderSelection = useCallback((folderId: string) => {
+    setSelectedFolderIds((prev) => {
+      const exists = prev.includes(folderId);
+      let next = exists ? prev.filter((id) => id !== folderId) : [...prev, folderId];
+
+      if (!next.length) {
+        next = [folderId];
+      }
+
+      return next;
+    });
+  }, []);
+
+  const handleSelectFolder = useCallback((folderId: string) => {
+    setActiveFolderId(folderId);
+    setSelectedFolderIds((prev) => (prev.includes(folderId) ? prev : [...prev, folderId]));
+  }, []);
+
+  const handleCreateFolder = useCallback(() => {
+    if (typeof window === "undefined") return;
+
+    const name = window.prompt("Folder name");
+    if (!name) return;
+
+    const cleaned = name.trim();
+    if (!cleaned) return;
+
+    const newFolder: WorkspaceFolder = {
+      id: nanoid(),
+      name: cleaned,
+      createdAt: new Date().toISOString(),
+      documents: [],
+    };
+
+    setFolders((prev) => [...prev, newFolder]);
+    setActiveFolderId(newFolder.id);
+    setSelectedFolderIds((prev) => [...prev, newFolder.id]);
+  }, []);
+
+  const handleFilesAdded = useCallback((folderId: string, files: FileList | File[]) => {
     const parsedFiles = Array.from(files);
     if (!parsedFiles.length) return;
 
-    setDocuments((prev) => [
-      ...parsedFiles.map((file) => ({
-        id: nanoid(),
-        name: file.name,
-        size: file.size,
-        status: "Queued" as const,
-        uploadedAt: new Date().toISOString(),
-        focus: inferFocusArea(file.name),
-        summary: "Queued for swarm enrichment.",
-      })),
-      ...prev,
-    ]);
+    setFolders((prev) =>
+      prev.map((folder) => {
+        if (folder.id !== folderId) {
+          return folder;
+        }
+
+        const newDocuments = parsedFiles.map((file) => ({
+          id: nanoid(),
+          name: file.name,
+          size: file.size,
+          status: "Queued" as const,
+          uploadedAt: new Date().toISOString(),
+          focus: inferFocusArea(file.name),
+          summary: "Queued for swarm enrichment.",
+        }));
+
+        return {
+          ...folder,
+          documents: [...newDocuments, ...folder.documents],
+        };
+      })
+    );
   }, []);
 
-  const handleRemoveDocument = useCallback((documentId: string) => {
-    setDocuments((prev) => prev.filter((doc) => doc.id !== documentId));
+  const handleRemoveDocument = useCallback((folderId: string, documentId: string) => {
+    setFolders((prev) =>
+      prev.map((folder) => {
+        if (folder.id !== folderId) {
+          return folder;
+        }
+
+        return {
+          ...folder,
+          documents: folder.documents.filter((doc) => doc.id !== documentId),
+        };
+      })
+    );
   }, []);
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/30 px-4 py-10">
-      <Card className="w-full max-w-4xl border-border/70 bg-background/95 shadow-xl backdrop-blur">
-        <CardHeader className="gap-5">
-          <div className="space-y-2">
-            <div className="flex items-center gap-2 text-primary">
-              <Sparkles className="h-5 w-5" />
-              <span className="text-xs font-semibold tracking-[0.25em] uppercase">
-                Swarm Compliance Studio
-              </span>
+    <div className="flex min-h-screen items-center justify-center bg-muted/15 px-4 py-12">
+      <Card className="w-full max-w-6xl border-border/60 bg-background/95 shadow-xl backdrop-blur sm:rounded-3xl lg:h-[88vh]">
+        <div className="flex h-full flex-col gap-6 lg:flex-row lg:gap-0">
+          <div className="order-2 flex flex-1 min-h-[70vh] flex-col overflow-hidden border-border/60 lg:order-1 lg:border-r">
+            <header className="flex flex-col gap-4 px-6 pt-6 pb-3">
+              <div className="flex items-center gap-2 text-primary">
+                <Sparkles className="h-5 w-5" />
+                <span className="text-xs font-semibold tracking-[0.25em] uppercase">
+                  Swarm Compliance Studio
+                </span>
+              </div>
+              <h1 className="text-2xl font-semibold sm:text-3xl">
+                Orchestrate compliance conversations and evidence flows
+              </h1>
+              <p className="text-sm text-muted-foreground sm:text-base">
+                Chat with the swarm copilot, import artifacts, and monitor audit readiness in a single, calm workspace.
+              </p>
+              <div className="flex flex-wrap items-center gap-2 pt-1">
+                {VIEW_OPTIONS.map((option) => (
+                  <Button
+                    key={option.id}
+                    variant={activeView === option.id ? "default" : "ghost"}
+                    size="sm"
+                    className={cn(
+                      "gap-2 rounded-full border border-border/60 px-4 py-1.5 text-sm",
+                      activeView === option.id ? "bg-primary text-primary-foreground shadow" : "bg-background/70"
+                    )}
+                    onClick={() => setActiveView(option.id)}
+                  >
+                    <option.icon className="h-3.5 w-3.5" />
+                    {option.label}
+                  </Button>
+                ))}
+              </div>
+            </header>
+
+            <WorkspaceFolderSelector
+              folders={folders}
+              selectedFolderIds={selectedFolderIds}
+              activeFolderId={activeFolderId}
+              onSelectFolder={handleSelectFolder}
+              onToggleFolder={handleToggleFolderSelection}
+              onCreateFolder={handleCreateFolder}
+            />
+
+            <div className="flex-1 overflow-hidden px-4 pb-6 sm:px-6">
+              {criticalAlerts.length > 0 ? <AlertStrip alerts={criticalAlerts} /> : null}
+
+              {activeView === "chat" && (
+                <section className="flex h-full flex-col gap-6 overflow-hidden">
+                  <SectionHeading
+                    icon={Bot}
+                    title="Compliance copilot"
+                    description="Converse with the swarm, escalate findings, and capture decisions."
+                  />
+                  <ChatView
+                    documents={documents}
+                    metrics={metrics}
+                    quickPrompts={QUICK_PROMPTS}
+                    contextLabel={folderContextLabel}
+                  />
+                </section>
+              )}
+
+              {activeView === "files" && (
+                <section className="flex h-full flex-col gap-6 overflow-hidden">
+                  <SectionHeading
+                    icon={Upload}
+                    title="Evidence workspace"
+                    description="Bulk ingest files, track processing status, and prune stale artifacts."
+                  />
+                  <FilesView
+                    compact
+                    fullHeight
+                    folders={folders}
+                    activeFolderId={activeFolderId}
+                    selectedFolderIds={selectedFolderIds}
+                    onSelectActiveFolder={handleSelectFolder}
+                    onToggleFolderSelection={handleToggleFolderSelection}
+                    onCreateFolder={handleCreateFolder}
+                    onFilesAdded={handleFilesAdded}
+                    onRemoveDocument={handleRemoveDocument}
+                  />
+                </section>
+              )}
+
+              {activeView === "insights" && (
+                <section className="flex h-full flex-col gap-6 overflow-hidden">
+                  <SectionHeading
+                    icon={ShieldAlert}
+                    title="Compliance radar"
+                    description="Review prioritized findings and escalation signals across frameworks."
+                  />
+                  <InsightsView
+                    compact
+                    fullHeight
+                    metrics={metrics}
+                    documents={documents}
+                    findings={INITIAL_FINDINGS}
+                  />
+                </section>
+              )}
+
+              {activeView === "agents" && (
+                <section className="flex h-full flex-col gap-6 overflow-hidden">
+                  <SectionHeading
+                    icon={Users}
+                    title="Swarm agents"
+                    description="Understand how specialized agents are progressing and balancing workloads."
+                  />
+                  <AgentsView compact fullHeight agents={AGENT_STATUSES} />
+                </section>
+              )}
             </div>
-            <CardTitle className="text-3xl font-semibold sm:text-4xl">
-              Everything you need in one responsive window
-            </CardTitle>
-            <CardDescription className="max-w-2xl text-sm sm:text-base">
-              Chat with the compliance copilot, ingest evidence in bulk, and review
-              critical findings without hopping between screens.
-            </CardDescription>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 text-xs sm:text-sm">
-            <Badge variant="outline" className="gap-1 text-xs">
-              <ShieldCheck className="h-3.5 w-3.5 text-green-500" />
-              {metrics.indexed} verified
-            </Badge>
-            <MetricPill label="Queued" value={metrics.queued} icon={Activity} />
-            <MetricPill label="Flagged" value={metrics.flagged} icon={ShieldAlert} />
-            <MetricPill label="Total" value={metrics.total} icon={Files} />
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {VIEW_OPTIONS.map((option) => (
-              <Button
-                key={option.id}
-                variant={activeView === option.id ? "default" : "ghost"}
-                size="sm"
-                className={cn(
-                  "gap-2 rounded-full px-4 py-1.5 text-sm",
-                  activeView === option.id ? "shadow" : "border border-border/60"
-                )}
-                onClick={() => setActiveView(option.id)}
-              >
-                <option.icon className="h-3.5 w-3.5" />
-                {option.label}
-              </Button>
-            ))}
-          </div>
-
-        </CardHeader>
-
-        <CardContent className="space-y-6">
-          {activeView === "chat" && (
-            <section className="space-y-4">
-              <SectionHeading
-                icon={Bot}
-                title="Compliance copilot"
-                description="Conversational interface orchestrating swarm agents across your compliance objectives."
-              />
-              <ChatView documents={documents} metrics={metrics} quickPrompts={QUICK_PROMPTS} />
-            </section>
-          )}
-
-          {activeView === "files" && (
-            <section className="space-y-4">
-              <SectionHeading
-                icon={Upload}
-                title="Evidence space"
-                description="Bulk-manage files, track ingest status, and stage artifacts for analysis."
-              />
-              <FilesView
-                documents={documents}
-                onFilesAdded={handleFilesAdded}
-                onRemoveDocument={handleRemoveDocument}
-              />
-            </section>
-          )}
-
-          {activeView === "insights" && (
-            <section className="space-y-4">
-              <SectionHeading
-                icon={ShieldAlert}
-                title="Compliance radar"
-                description="Monitor critical findings and control coverage across frameworks in real time."
-              />
-              <InsightsView metrics={metrics} documents={documents} findings={INITIAL_FINDINGS} />
-            </section>
-          )}
-
-          {activeView === "agents" && (
-            <section className="space-y-4">
-              <SectionHeading
-                icon={Users}
-                title="Swarm agents"
-                description="Understand how micro-agents are progressing and balancing workloads."
-              />
-              <AgentsView agents={AGENT_STATUSES} />
-            </section>
-          )}
-        </CardContent>
+          <aside className="order-1 flex flex-col gap-4 border-border/60 px-6 pt-6 pb-8 lg:order-2 lg:w-[320px] lg:border-l lg:pb-6">
+            <div className="space-y-2 lg:space-y-3">
+              <h2 className="text-sm font-semibold text-muted-foreground">Key health metrics</h2>
+              <div className="flex flex-wrap gap-3">
+                <MetricTile
+                  icon={ShieldCheck}
+                  label="Verified"
+                  value={metrics.indexed}
+                  progress={coveragePercent}
+                  secondaryLabel={`Coverage ${coveragePercent}%`}
+                  tone="positive"
+                  className="min-w-[140px] flex-1"
+                />
+                <MetricTile
+                  icon={ShieldAlert}
+                  label="Flagged"
+                  value={metrics.flagged}
+                  tone="alert"
+                  className="min-w-[140px] flex-1"
+                />
+                <MetricTile
+                  icon={Activity}
+                  label="In queue"
+                  value={metrics.queued}
+                  className="min-w-[140px] flex-1"
+                />
+                <MetricTile
+                  icon={Files}
+                  label="Total scope"
+                  value={metrics.total}
+                  secondaryLabel={freshnessMeta?.label}
+                  tone={freshnessMeta?.tone ?? "default"}
+                  className="min-w-[140px] flex-1"
+                />
+              </div>
+            </div>
+          </aside>
+        </div>
       </Card>
     </div>
   );
@@ -372,9 +648,10 @@ type ChatViewProps = {
   documents: ComplianceDocument[];
   metrics: Metrics;
   quickPrompts: QuickPrompt[];
+  contextLabel: string;
 };
 
-function ChatView({ documents, metrics, quickPrompts }: ChatViewProps) {
+function ChatView({ documents, metrics, quickPrompts, contextLabel }: ChatViewProps) {
   const [messages, setMessages] = useState<ChatMessage[]>(INITIAL_MESSAGES);
   const [input, setInput] = useState("");
   const [isThinking, setIsThinking] = useState(false);
@@ -460,67 +737,82 @@ function ChatView({ documents, metrics, quickPrompts }: ChatViewProps) {
   }, []);
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
-        <span className="rounded-full bg-muted px-3 py-1">
-          {documents.length} files in context
-        </span>
-        <span className="rounded-full bg-muted px-3 py-1">
-          {metrics.flagged} urgent flags
-        </span>
-        {metrics.latestUpload && (
-          <span className="rounded-full bg-muted px-3 py-1">
-            Last upload {relativeTime(metrics.latestUpload)}
-          </span>
-        )}
+    <div className="flex h-full flex-col gap-4">
+      <div className="flex flex-wrap gap-2">
+        <StatusChip icon={Files}>{documents.length} files in context</StatusChip>
+        <StatusChip icon={ShieldAlert}>{metrics.flagged} urgent flags</StatusChip>
+        {metrics.latestUpload ? (
+          <StatusChip icon={Upload}>Updated {relativeTime(metrics.latestUpload)}</StatusChip>
+        ) : null}
+        <StatusChip icon={Folder}>{contextLabel}</StatusChip>
       </div>
 
-      <div className="rounded-2xl border border-border/60 bg-muted/20 p-4">
-        <ScrollArea className="h-[280px] pr-3">
-          <div className="space-y-4">
-            {messages.map((message) => (
-              <MessageBubble key={message.id} message={message} />
-            ))}
-            {isThinking && <AssistantTypingIndicator />}
-            <div ref={messagesEndRef} />
-          </div>
-        </ScrollArea>
-      </div>
-
-      <div className="space-y-3">
-        <div className="flex flex-wrap gap-2">
-          {quickPrompts.map((prompt) => (
-            <Button
-              key={prompt.id}
-              variant="secondary"
-              size="sm"
-              className="gap-2"
-              onClick={() => handlePromptClick(prompt)}
-            >
-              <Sparkles className="h-3.5 w-3.5 text-primary" />
-              {prompt.label}
-            </Button>
-          ))}
+      <div className="flex flex-1 min-h-[60vh] flex-col gap-4 overflow-hidden">
+        <div className="flex flex-1 overflow-hidden rounded-2xl border border-border/60 bg-muted/20">
+          <ScrollArea className="flex-1 pr-3">
+            <div className="flex min-h-full flex-col gap-4 p-4">
+              {messages.map((message) => (
+                <MessageBubble key={message.id} message={message} />
+              ))}
+              {isThinking && <AssistantTypingIndicator />}
+              <div ref={messagesEndRef} />
+            </div>
+          </ScrollArea>
         </div>
 
-        <Textarea
-          value={input}
-          onChange={(event) => setInput(event.target.value)}
-          onKeyDown={(event) => {
-            if (event.key === "Enter" && !event.shiftKey) {
-              event.preventDefault();
-              handleSend();
-            }
-          }}
-          placeholder="Ask the swarm to assess a standard, prepare an auditor brief, or link evidence..."
-          className="min-h-[100px] resize-none"
-        />
+        <div className="space-y-3">
+          <TooltipProvider>
+            <div className="flex flex-wrap gap-2">
+              {quickPrompts.map((prompt) => {
+                const tooltip = QUICK_PROMPT_TOOLTIPS[prompt.label];
+                const button = (
+                  <Button
+                    key={prompt.id}
+                    variant="secondary"
+                    size="sm"
+                    className="gap-2"
+                    onClick={() => handlePromptClick(prompt)}
+                  >
+                    <Sparkles className="h-3.5 w-3.5 text-primary" />
+                    {prompt.label}
+                  </Button>
+                );
 
-        <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
-          <span>Shift + Enter for new line</span>
-          <Button size="sm" className="gap-2" onClick={handleSend} disabled={!input.trim()}>
-            Send
-          </Button>
+                if (!tooltip) {
+                  return button;
+                }
+
+                return (
+                  <Tooltip key={prompt.id} delayDuration={150}>
+                    <TooltipTrigger asChild>{button}</TooltipTrigger>
+                    <TooltipContent side="top" className="max-w-xs text-sm">
+                      {tooltip}
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              })}
+            </div>
+          </TooltipProvider>
+
+          <Textarea
+            value={input}
+            onChange={(event) => setInput(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter" && !event.shiftKey) {
+                event.preventDefault();
+                handleSend();
+              }
+            }}
+            placeholder="Ask the swarm to assess a standard, prepare an auditor brief, or link evidence..."
+            className="min-h-[96px] resize-none rounded-2xl border border-border/60 bg-background/70 px-4 py-3 text-sm shadow-sm"
+          />
+
+          <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-muted-foreground">
+            <span>Shift + Enter for new line</span>
+            <Button size="sm" className="gap-2" onClick={handleSend} disabled={!input.trim()}>
+              Send
+            </Button>
+          </div>
         </div>
       </div>
     </div>
@@ -528,37 +820,126 @@ function ChatView({ documents, metrics, quickPrompts }: ChatViewProps) {
 }
 
 type FilesViewProps = {
-  documents: ComplianceDocument[];
-  onFilesAdded: (files: FileList | File[]) => void;
-  onRemoveDocument: (documentId: string) => void;
+  folders: WorkspaceFolder[];
+  activeFolderId: string;
+  selectedFolderIds: string[];
+  onSelectActiveFolder: (folderId: string) => void;
+  onToggleFolderSelection: (folderId: string) => void;
+  onCreateFolder: () => void;
+  onFilesAdded: (folderId: string, files: FileList | File[]) => void;
+  onRemoveDocument: (folderId: string, documentId: string) => void;
+  compact?: boolean;
+  fullHeight?: boolean;
 };
 
-function FilesView({ documents, onFilesAdded, onRemoveDocument }: FilesViewProps) {
+function FilesView({
+  folders,
+  activeFolderId,
+  selectedFolderIds,
+  onSelectActiveFolder,
+  onToggleFolderSelection,
+  onCreateFolder,
+  onFilesAdded,
+  onRemoveDocument,
+  compact = false,
+  fullHeight = false,
+}: FilesViewProps) {
+  const activeFolder = folders.find((folder) => folder.id === activeFolderId) ?? folders[0] ?? null;
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  useEffect(() => {
+    if (!activeFolder && folders.length) {
+      onSelectActiveFolder(folders[0].id);
+    }
+  }, [activeFolder, folders, onSelectActiveFolder]);
+
   const handleFileInputChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (!event.target.files?.length) return;
-      onFilesAdded(event.target.files);
+      if (!event.target.files?.length || !activeFolder) return;
+      onFilesAdded(activeFolder.id, event.target.files);
       event.target.value = "";
     },
-    [onFilesAdded]
+    [activeFolder, onFilesAdded]
   );
 
   const handleDrop = useCallback(
     (event: React.DragEvent<HTMLDivElement>) => {
       event.preventDefault();
       setIsDragging(false);
+      if (!activeFolder) return;
       if (event.dataTransfer.files?.length) {
-        onFilesAdded(event.dataTransfer.files);
+        onFilesAdded(activeFolder.id, event.dataTransfer.files);
       }
     },
-    [onFilesAdded]
+    [onFilesAdded, activeFolder]
   );
 
+  if (!activeFolder) {
+    return (
+      <div className="flex h-full flex-col items-center justify-center gap-4 rounded-2xl border border-border/60 bg-background/80 p-6 text-center text-sm text-muted-foreground">
+        <p>No folders yet. Create one to start organizing evidence uploads.</p>
+        <Button variant="outline" size="sm" onClick={onCreateFolder} className="gap-2">
+          <FolderPlus className="h-4 w-4" />
+          New folder
+        </Button>
+      </div>
+    );
+  }
+
+  const flaggedCount = activeFolder.documents.filter((doc) => doc.status === "Flagged").length;
+  const isInContext = selectedFolderIds.includes(activeFolder.id);
+
   return (
-    <div className="space-y-5">
+    <div
+      className={cn(
+        "space-y-5",
+        compact && "space-y-4",
+        fullHeight && "flex h-full flex-col gap-4"
+      )}
+    >
+      <div className="flex flex-col gap-2 rounded-2xl border border-border/60 bg-background/80 px-4 py-3">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <Select value={activeFolder.id} onValueChange={onSelectActiveFolder}>
+              <SelectTrigger className="w-[220px]">
+                <SelectValue placeholder="Select folder" />
+              </SelectTrigger>
+              <SelectContent>
+                {folders.map((folder) => (
+                  <SelectItem key={folder.id} value={folder.id}>
+                    {folder.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Button
+              size="sm"
+              variant={isInContext ? "default" : "outline"}
+              className="gap-2"
+              onClick={() => onToggleFolderSelection(activeFolder.id)}
+            >
+              {isInContext ? "In AI context" : "Add to context"}
+            </Button>
+          </div>
+          <Button variant="outline" size="sm" className="gap-2" onClick={onCreateFolder}>
+            <FolderPlus className="h-4 w-4" />
+            New folder
+          </Button>
+        </div>
+        <div className="flex flex-wrap gap-2 text-xs text-muted-foreground">
+          <span>{activeFolder.documents.length} files</span>
+          <span>Created {relativeTime(activeFolder.createdAt)}</span>
+          <span className={cn(flaggedCount ? "text-destructive" : "text-muted-foreground/80")}
+          >
+            {flaggedCount} flagged
+          </span>
+        </div>
+        {activeFolder.description ? (
+          <p className="text-xs text-muted-foreground/80">{activeFolder.description}</p>
+        ) : null}
+      </div>
+
       <div
         onDragOver={(event) => {
           event.preventDefault();
@@ -569,17 +950,19 @@ function FilesView({ documents, onFilesAdded, onRemoveDocument }: FilesViewProps
         onDrop={handleDrop}
         onClick={() => fileInputRef.current?.click()}
         className={cn(
-          "flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed px-6 py-10 text-center transition",
+          "flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed text-center transition",
+          compact ? "px-4 py-6" : "px-6 py-10",
+          fullHeight && "shrink-0",
           isDragging
             ? "border-primary bg-primary/10"
-            : "border-border/80 bg-muted/30 hover:border-primary/60 hover:bg-primary/5"
+            : "border-border/70 bg-background/75 hover:border-primary/60 hover:bg-primary/5"
         )}
       >
         <Upload className="h-8 w-8 text-primary" />
         <div className="space-y-1">
           <p className="text-sm font-medium">Drag & drop evidence, policies, or reports</p>
           <p className="text-xs text-muted-foreground">
-            Accepts PDF, DOCX, CSV, Markdown, and ZIP bundles up to 250 MB
+            Files will be added to <span className="font-semibold">{activeFolder.name}</span>
           </p>
         </div>
         <Button
@@ -596,21 +979,41 @@ function FilesView({ documents, onFilesAdded, onRemoveDocument }: FilesViewProps
         <input ref={fileInputRef} type="file" multiple className="hidden" onChange={handleFileInputChange} />
       </div>
 
-      <div className="rounded-2xl border border-border/60 bg-muted/20">
-        <div className="flex items-center justify-between px-5 py-3 text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+      <div
+        className={cn(
+          "rounded-2xl border border-border/60 bg-muted/20",
+          fullHeight && "flex flex-1 flex-col"
+        )}
+      >
+        <div
+          className={cn(
+            "flex items-center justify-between text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground",
+            compact ? "px-4 py-2" : "px-5 py-3"
+          )}
+        >
           <span>Recent uploads</span>
-          <span>{documents.length} total</span>
+          <span>{activeFolder.documents.length} total</span>
         </div>
         <Separator />
-        <ScrollArea className="h-[220px] px-5 py-4">
-          <div className="space-y-3">
-            {documents.map((document) => (
+        <ScrollArea
+          className={cn(
+            compact ? "px-3 py-3" : "px-5 py-4",
+            fullHeight ? "flex-1" : "h-[220px]"
+          )}
+        >
+          <div className={cn("space-y-3", compact && "space-y-2.5")}>
+            {activeFolder.documents.map((document) => (
               <DocumentRow
                 key={document.id}
                 document={document}
-                onRemove={() => onRemoveDocument(document.id)}
+                onRemove={() => onRemoveDocument(activeFolder.id, document.id)}
               />
             ))}
+            {!activeFolder.documents.length ? (
+              <p className="text-xs text-muted-foreground/80">
+                No uploads yet. Drop files above to populate this workspace.
+              </p>
+            ) : null}
           </div>
         </ScrollArea>
       </div>
@@ -622,14 +1025,22 @@ type InsightsViewProps = {
   metrics: Metrics;
   documents: ComplianceDocument[];
   findings: ComplianceFinding[];
+  compact?: boolean;
+  fullHeight?: boolean;
 };
 
-function InsightsView({ metrics, documents, findings }: InsightsViewProps) {
+function InsightsView({ metrics, documents, findings, compact = false, fullHeight = false }: InsightsViewProps) {
   const flaggedDocs = documents.filter((doc) => doc.status === "Flagged");
 
   return (
-    <div className="space-y-5">
-      <div className="grid gap-3 sm:grid-cols-2">
+    <div
+      className={cn(
+        "space-y-5",
+        compact && "space-y-4",
+        fullHeight && "flex h-full flex-col gap-4"
+      )}
+    >
+      <div className={cn("grid gap-3 sm:grid-cols-2", compact && "gap-2.5")}>
         <InsightStat
           title="Documents indexed"
           value={metrics.indexed}
@@ -660,46 +1071,65 @@ function InsightsView({ metrics, documents, findings }: InsightsViewProps) {
         />
       </div>
 
-      <div className="rounded-2xl border border-border/60 bg-muted/20 p-5">
+      <div
+        className={cn(
+          "rounded-2xl border border-border/60 bg-muted/20",
+          compact ? "p-4" : "p-5",
+          fullHeight && "flex flex-1 flex-col"
+        )}
+      >
         <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.25em] text-muted-foreground">
           <span>Priority findings</span>
           <span>{findings.length}</span>
         </div>
-        <div className="mt-4 space-y-3 text-sm">
-          {findings.map((finding) => (
-            <div key={finding.id} className="rounded-xl border border-border/40 bg-background/80 p-4 shadow-sm">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <ShieldAlert className="h-4 w-4 text-destructive" />
-                  <span className="font-medium leading-tight">{finding.title}</span>
+        <ScrollArea className={cn(fullHeight ? "mt-3 flex-1" : "mt-3", "px-1")}>
+          <div className={cn("space-y-3 text-sm", compact && "space-y-2.5")}>
+            {findings.map((finding) => (
+              <div key={finding.id} className="rounded-xl border border-border/40 bg-background/80 p-4 shadow-sm">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <ShieldAlert className="h-4 w-4 text-destructive" />
+                    <span className="font-medium leading-tight">{finding.title}</span>
+                  </div>
+                  <Badge variant={badgeVariantBySeverity(finding.severity)}>
+                    {finding.severity} risk
+                  </Badge>
                 </div>
-                <Badge variant={badgeVariantBySeverity(finding.severity)}>
-                  {finding.severity} risk
-                </Badge>
+                <p className="mt-2 text-xs text-muted-foreground/90">{finding.summary}</p>
+                <div
+                  className={cn(
+                    "mt-3 flex flex-wrap gap-x-4 gap-y-2 text-[11px] uppercase tracking-[0.25em] text-muted-foreground/80",
+                    compact && "mt-2.5 gap-x-3"
+                  )}
+                >
+                  <span>{finding.standard}</span>
+                  <span>{finding.due}</span>
+                  {finding.impactedDocumentIds?.length ? (
+                    <span>
+                      Sources: {finding.impactedDocumentIds
+                        .map((id) => documents.find((doc) => doc.id === id)?.focus ?? "Evidence")
+                        .join(", ")}
+                    </span>
+                  ) : null}
+                </div>
               </div>
-              <p className="mt-2 text-xs text-muted-foreground/90">{finding.summary}</p>
-              <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 text-[11px] uppercase tracking-[0.25em] text-muted-foreground/80">
-                <span>{finding.standard}</span>
-                <span>{finding.due}</span>
-                {finding.impactedDocumentIds?.length ? (
-                  <span>
-                    Sources: {finding.impactedDocumentIds
-                      .map((id) => documents.find((doc) => doc.id === id)?.focus ?? "Evidence")
-                      .join(", ")}
-                  </span>
-                ) : null}
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        </ScrollArea>
       </div>
 
-      <div className="rounded-2xl border border-border/60 bg-muted/20 p-5 text-sm">
+      <div
+        className={cn(
+          "rounded-2xl border border-border/60 bg-muted/20 text-sm",
+          compact ? "p-4" : "p-5"
+        )}
+      >
         <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.25em] text-muted-foreground">
           <span>Immediate escalations</span>
           <span>{flaggedDocs.length}</span>
         </div>
-        <div className="mt-3 space-y-2">
+        <div className={cn("mt-3 space-y-2", compact && "mt-2.5 space-y-2")}
+        >
           {flaggedDocs.length ? (
             flaggedDocs.map((doc) => (
               <div key={doc.id} className="flex items-center gap-2 text-xs text-muted-foreground/90">
@@ -720,16 +1150,30 @@ function InsightsView({ metrics, documents, findings }: InsightsViewProps) {
 
 type AgentsViewProps = {
   agents: AgentStatus[];
+  compact?: boolean;
+  fullHeight?: boolean;
 };
 
-function AgentsView({ agents }: AgentsViewProps) {
+function AgentsView({ agents, compact = false, fullHeight = false }: AgentsViewProps) {
   const averageProgress = Math.round(
     agents.reduce((acc, agent) => acc + agent.progress, 0) / agents.length
   );
 
   return (
-    <div className="space-y-5">
-      <div className="rounded-2xl border border-border/60 bg-muted/20 p-5">
+    <div
+      className={cn(
+        "space-y-5",
+        compact && "space-y-4",
+        fullHeight && "flex h-full flex-col gap-4"
+      )}
+    >
+      <div
+        className={cn(
+          "rounded-2xl border border-border/60 bg-muted/20",
+          compact ? "p-4" : "p-5",
+          fullHeight && "shrink-0"
+        )}
+      >
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h3 className="text-lg font-semibold">Swarm agent load</h3>
@@ -742,30 +1186,46 @@ function AgentsView({ agents }: AgentsViewProps) {
             {agents.length} active
           </Badge>
         </div>
-        <div className="mt-4 flex items-center gap-3">
+        <div className={cn("mt-4 flex items-center gap-3", compact && "mt-3")}>
           <Progress value={averageProgress} className="h-2 flex-1" />
           <span className="text-xs text-muted-foreground">{averageProgress}%</span>
         </div>
       </div>
 
-      <div className="grid gap-3 md:grid-cols-2">
-        {agents.map((agent) => (
-          <div
-            key={agent.id}
-            className="rounded-2xl border border-border/60 bg-background/90 p-5 shadow-sm"
+      <div
+        className={cn(
+          "rounded-2xl border border-border/60 bg-muted/20",
+          fullHeight ? "flex-1 overflow-hidden" : ""
+        )}
+      >
+        <ScrollArea className={cn("px-4 py-4", fullHeight ? "h-full" : "max-h-[260px]")}>
+          <div className={cn("grid gap-3 md:grid-cols-2 px-1", compact && "gap-2.5")}
           >
-            <div className="flex items-center justify-between gap-2">
-              <div>
-                <p className="text-sm font-semibold leading-tight">{agent.name}</p>
-                <p className="text-xs text-muted-foreground">{agent.focus}</p>
+            {agents.map((agent) => (
+              <div
+                key={agent.id}
+                className={cn(
+                  "rounded-2xl border border-border/60 bg-background/90 p-5 shadow-sm",
+                  compact && "p-4"
+                )}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-semibold leading-tight">{agent.name}</p>
+                    <p className="text-xs text-muted-foreground">{agent.focus}</p>
+                  </div>
+                  <Badge variant="secondary" className="text-[11px]">
+                    {agent.progress}%
+                  </Badge>
+                </div>
+                <Progress
+                  value={agent.progress}
+                  className={cn("h-1.5", compact ? "mt-2" : "mt-3")}
+                />
               </div>
-              <Badge variant="secondary" className="text-[11px]">
-                {agent.progress}%
-              </Badge>
-            </div>
-            <Progress value={agent.progress} className="mt-3 h-1.5" />
+            ))}
           </div>
-        ))}
+        </ScrollArea>
       </div>
     </div>
   );
@@ -876,6 +1336,129 @@ function DocumentRow({
   );
 }
 
+type WorkspaceFolderSelectorProps = {
+  folders: WorkspaceFolder[];
+  selectedFolderIds: string[];
+  activeFolderId: string;
+  onSelectFolder: (folderId: string) => void;
+  onToggleFolder: (folderId: string) => void;
+  onCreateFolder: () => void;
+};
+
+function WorkspaceFolderSelector({
+  folders,
+  selectedFolderIds,
+  activeFolderId,
+  onSelectFolder,
+  onToggleFolder,
+  onCreateFolder,
+}: WorkspaceFolderSelectorProps) {
+  if (!folders.length) {
+    return (
+      <div className="border-border/60 bg-background/60 px-6 pb-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-semibold text-muted-foreground">Workspace folders</h2>
+          <Button variant="outline" size="sm" className="gap-2" onClick={onCreateFolder}>
+            <FolderPlus className="h-4 w-4" />
+            New folder
+          </Button>
+        </div>
+        <p className="mt-3 text-xs text-muted-foreground">
+          Organize evidence into folders to control what the swarm uses for context.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="border-border/60 bg-background/60 px-6 pb-4">
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-sm font-semibold text-muted-foreground">Workspace folders</h2>
+        <Button variant="outline" size="sm" className="gap-2" onClick={onCreateFolder}>
+          <FolderPlus className="h-4 w-4" />
+          New folder
+        </Button>
+      </div>
+      <div className="mt-3 flex gap-3 overflow-x-auto pb-2">
+        {folders.map((folder) => {
+          const isActive = folder.id === activeFolderId;
+          const isSelected = selectedFolderIds.includes(folder.id);
+          const flaggedCount = folder.documents.filter((doc) => doc.status === "Flagged").length;
+          const docCount = folder.documents.length;
+
+          return (
+            <div
+              key={folder.id}
+              className={cn(
+                "min-w-[220px] flex-1 cursor-pointer rounded-2xl border bg-background/90 p-4 shadow-sm transition",
+                isActive ? "border-primary shadow-md" : "border-border/70 hover:border-primary/60"
+              )}
+              onClick={() => onSelectFolder(folder.id)}
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div>
+                  <p className="text-sm font-semibold leading-tight">{folder.name}</p>
+                  <p className="text-xs text-muted-foreground/80">
+                    {relativeTime(folder.createdAt)} · {docCount} files
+                  </p>
+                </div>
+                {isActive ? (
+                  <Badge variant="outline" className="text-[11px] text-primary">
+                    Active
+                  </Badge>
+                ) : null}
+              </div>
+              {folder.description ? (
+                <p className="mt-2 text-xs text-muted-foreground/80">
+                  {folder.description}
+                </p>
+              ) : null}
+              <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                <span className="inline-flex items-center gap-1">
+                  <Files className="h-3.5 w-3.5" /> {docCount}
+                </span>
+                <span
+                  className={cn(
+                    "inline-flex items-center gap-1",
+                    flaggedCount ? "text-destructive" : "text-muted-foreground"
+                  )}
+                >
+                  <ShieldAlert className="h-3.5 w-3.5" /> {flaggedCount} flagged
+                </span>
+              </div>
+              <div className="mt-4 flex gap-2">
+                <Button
+                  size="sm"
+                  variant={isSelected ? "default" : "outline"}
+                  className="gap-2"
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    onToggleFolder(folder.id);
+                  }}
+                >
+                  {isSelected ? "In context" : "Add to context"}
+                </Button>
+                {!isActive ? (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onSelectFolder(folder.id);
+                    }}
+                  >
+                    Set active
+                  </Button>
+                ) : null}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function InsightStat({
   title,
   value,
@@ -896,7 +1479,7 @@ function InsightStat({
   } as const;
 
   return (
-    <div className="rounded-2xl border border-border/60 bg-background/90 p-5 shadow-sm">
+    <div className="rounded-2xl border border-border/60 bg-background/90 p-4 shadow-sm">
       <div className="flex items-center gap-3">
         <span className={cn("flex h-9 w-9 items-center justify-center rounded-full", toneClasses[tone])}>
           <Icon className="h-4 w-4" />
@@ -911,21 +1494,116 @@ function InsightStat({
   );
 }
 
-function MetricPill({
+function MetricTile({
+  icon: Icon,
   label,
   value,
-  icon: Icon,
+  secondaryLabel,
+  tone = "default",
+  progress,
+  className,
 }: {
-  label: string;
-  value: number;
   icon: ElementType;
+  label: string;
+  value: string | number;
+  secondaryLabel?: string;
+  tone?: MetricTone;
+  progress?: number;
+  className?: string;
 }) {
+  const toneClasses: Record<MetricTone, string> = {
+    default: "border-border/70",
+    positive: "border-emerald-200/70",
+    alert: "border-destructive/60",
+  } as const;
+
+  const displayValue = typeof value === "number" ? value.toLocaleString() : value;
+
   return (
-    <span className="inline-flex items-center gap-2 rounded-full border border-border/70 bg-background px-3 py-1 text-xs font-medium">
+    <div
+      className={cn(
+        "relative overflow-hidden rounded-2xl border bg-background/90 p-4 shadow-sm",
+        toneClasses[tone],
+        className
+      )}
+    >
+      <div className="flex items-center gap-3">
+        <span
+          className={cn(
+            "flex h-9 w-9 items-center justify-center rounded-xl bg-muted",
+            tone === "positive" && "bg-emerald-100 text-emerald-800",
+            tone === "alert" && "bg-destructive/10 text-destructive"
+          )}
+        >
+          <Icon className="h-4 w-4" />
+        </span>
+        <div className="space-y-1">
+          <p className="text-sm font-medium text-muted-foreground">{label}</p>
+          <p className="text-xl font-semibold leading-none">{displayValue}</p>
+          {secondaryLabel ? (
+            <p className="text-xs text-muted-foreground/80">{secondaryLabel}</p>
+          ) : null}
+        </div>
+      </div>
+      {typeof progress === "number" ? (
+        <div className="mt-4">
+          <Progress value={progress} className="h-1.5" />
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function StatusChip({ icon: Icon, children }: { icon: ElementType; children: ReactNode }) {
+  return (
+    <span className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/70 px-3 py-1 text-xs font-medium text-muted-foreground">
       <Icon className="h-3.5 w-3.5" />
-      {label}: {value}
+      {children}
     </span>
   );
+}
+
+function AlertStrip({ alerts }: { alerts: AlertItem[] }) {
+  return (
+    <div className="mb-6 flex flex-wrap items-center gap-3 rounded-2xl border border-destructive/40 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+      <ShieldAlert className="h-4 w-4" />
+      <span className="font-medium">Attention needed</span>
+      <div className="flex flex-wrap gap-2 text-xs">
+        {alerts.map((alert) => (
+          <span
+            key={alert.id}
+            className="rounded-full border border-destructive/40 bg-background/90 px-3 py-1 text-destructive"
+          >
+            {alert.label}
+            {alert.detail ? <span className="text-muted-foreground"> · {alert.detail}</span> : null}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function getFreshnessDescriptor(timestamp: string): { label: string; tone: MetricTone } {
+  try {
+    const parsed = new Date(timestamp);
+    if (Number.isNaN(parsed.getTime())) {
+      return { label: "Unknown freshness", tone: "default" };
+    }
+
+    const days = Math.abs(differenceInDays(REFERENCE_NOW, parsed));
+
+    if (days <= 30) {
+      return { label: "Fresh (≤30d)", tone: "positive" };
+    }
+
+    if (days <= 90) {
+      return { label: "Aging (≤90d)", tone: "default" };
+    }
+
+    return { label: `Stale (${days}d)`, tone: "alert" };
+  } catch (error) {
+    return { label: "Unknown freshness", tone: "default" };
+  }
 }
 
 function inferFocusArea(fileName: string) {
@@ -951,9 +1629,11 @@ function formatFileSize(bytes: number) {
 
 function relativeTime(timestamp: string) {
   try {
+    const baseDate = typeof window === "undefined" ? REFERENCE_NOW : undefined;
+
     return formatDistanceToNow(new Date(timestamp), {
       addSuffix: true,
-      baseDate: REFERENCE_NOW,
+      baseDate,
     });
   } catch (error) {
     return "just now";
