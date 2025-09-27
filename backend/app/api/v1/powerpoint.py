@@ -19,7 +19,7 @@ tessdata_path = os.path.join(os.path.dirname(__file__), "..", "..", "services", 
 os.environ["TESSDATA_PREFIX"] = tessdata_path
 
 # Initialize parser (tesseract should be in PATH, so we don't need to specify the executable path)
-powerpoint_parser = PowerPointParser("")
+powerpoint_parser = PowerPointParser(tessdata_path)
 
 # Request/Response Models
 class PowerPointParseRequest(BaseModel):
