@@ -73,7 +73,11 @@ type QuickPrompt = {
   prompt: string;
 };
 
-const now = Date.now();
+const REFERENCE_NOW = new Date("2024-10-01T12:00:00.000Z");
+const TIME_FORMATTER = new Intl.DateTimeFormat("en-US", {
+  hour: "numeric",
+  minute: "2-digit",
+});
 
 const INITIAL_DOCUMENTS: ComplianceDocument[] = [
   {
@@ -81,7 +85,7 @@ const INITIAL_DOCUMENTS: ComplianceDocument[] = [
     name: "Employee Data Handling Policy.pdf",
     size: 1_606_000,
     status: "Indexed",
-    uploadedAt: new Date(now - 45 * 60 * 1000).toISOString(),
+    uploadedAt: "2024-10-01T10:30:00.000Z",
     focus: "GDPR",
     summary:
       "Annotated for retention and subprocessors controls; linked to Article 30 obligations.",
@@ -91,7 +95,7 @@ const INITIAL_DOCUMENTS: ComplianceDocument[] = [
     name: "Payment Card SOP.docx",
     size: 2_402_321,
     status: "Flagged",
-    uploadedAt: new Date(now - 90 * 60 * 1000).toISOString(),
+    uploadedAt: "2024-10-01T09:15:00.000Z",
     focus: "PCI DSS",
     summary: "Requires evidence for quarterly segmentation tests and dual-control approvals.",
   },
@@ -100,7 +104,7 @@ const INITIAL_DOCUMENTS: ComplianceDocument[] = [
     name: "Incident Response Playbook.md",
     size: 782_144,
     status: "Queued",
-    uploadedAt: new Date(now - 3 * 60 * 60 * 1000).toISOString(),
+    uploadedAt: "2024-10-01T08:00:00.000Z",
     focus: "SOC 2",
     summary: "Awaiting enrichment by swarm incident-response agent for R2 policies.",
   },
@@ -112,20 +116,20 @@ const INITIAL_MESSAGES: ChatMessage[] = [
     role: "assistant",
     content:
       "Welcome to the Swarm Compliance Studio. Drop policy or evidence files and I'll coordinate agents around your compliance objectives.",
-    timestamp: new Date(now - 7 * 60 * 1000).toISOString(),
+    timestamp: "2024-10-01T11:53:00.000Z",
   },
   {
     id: "msg-2",
     role: "user",
     content: "Give me a quick read on our PCI DSS evidence coverage for Q4.",
-    timestamp: new Date(now - 5 * 60 * 1000).toISOString(),
+    timestamp: "2024-10-01T11:55:00.000Z",
   },
   {
     id: "msg-3",
     role: "assistant",
     content:
       "We're tracking 3 PCI DSS controls needing fresh evidence. Import recent segmentation reports and I can generate remediation tasks.",
-    timestamp: new Date(now - 4 * 60 * 1000).toISOString(),
+    timestamp: "2024-10-01T11:56:00.000Z",
   },
 ];
 
@@ -947,7 +951,10 @@ function formatFileSize(bytes: number) {
 
 function relativeTime(timestamp: string) {
   try {
-    return formatDistanceToNow(new Date(timestamp), { addSuffix: true });
+    return formatDistanceToNow(new Date(timestamp), {
+      addSuffix: true,
+      baseDate: REFERENCE_NOW,
+    });
   } catch (error) {
     return "just now";
   }
@@ -956,10 +963,7 @@ function relativeTime(timestamp: string) {
 function formatMessageTime(timestamp: string) {
   const date = new Date(timestamp);
   if (Number.isNaN(date.getTime())) return "";
-  return date.toLocaleTimeString([], {
-    hour: "numeric",
-    minute: "2-digit",
-  });
+  return TIME_FORMATTER.format(date);
 }
 
 function badgeVariant(status: DocumentStatus) {

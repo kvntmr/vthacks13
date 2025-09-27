@@ -70,7 +70,10 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="min-h-screen bg-muted/20 font-sans antialiased">
+      <body
+        className="min-h-screen bg-muted/20 font-sans antialiased"
+        suppressHydrationWarning
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
