@@ -919,7 +919,7 @@ function FilesView({
       <div className="flex flex-col gap-2 rounded-2xl border border-border/60 bg-background/80 px-4 py-3">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-2">
-            <Select value={activeFolder.id} onValueChange={onSelectActiveFolder}>
+            <Select value={activeFolder.id} onValueChange={onSelectFolder}>
               <SelectTrigger className="w-[220px]">
                 <SelectValue placeholder="Select folder" />
               </SelectTrigger>
@@ -1400,10 +1400,17 @@ function WorkspaceFolderSelector({
           const docCount = folder.documents.length;
 
           return (
-            <button
+            <div
               key={folder.id}
-              type="button"
+              role="button"
+              tabIndex={0}
               onClick={() => onSelectFolder(folder.id)}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  onSelectFolder(folder.id);
+                }
+              }}
               className={cn(
                 "flex w-full items-center justify-between rounded-lg border px-3 py-2 text-left text-sm transition",
                 isActive ? "border-primary bg-primary/10 text-primary" : "border-border/60 hover:border-primary/40"
@@ -1444,7 +1451,7 @@ function WorkspaceFolderSelector({
               >
                 {isSelected ? "In" : "Add"}
               </Button>
-            </button>
+            </div>
           );
         })}
       </div>
