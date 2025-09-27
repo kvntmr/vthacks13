@@ -1085,9 +1085,6 @@ export function ChatDashboard() {
             {renderContent()}
           </div>
 
-          <aside className="w-full shrink-0 space-y-4 rounded-3xl border border-border/60 bg-background/95 px-6 py-6 shadow-sm lg:w-80">
-            <UploadQueuePanel tasks={uploadQueue} />
-          </aside>
         </div>
       </div>
     </div>
@@ -1977,73 +1974,7 @@ type SheetsWorkspaceViewProps = {
 };
 
 function SheetsWorkspaceView({ exports, onNavigate }: SheetsWorkspaceViewProps) {
-  return (
-    <div className="flex h-full flex-col gap-6 rounded-3xl border border-border/60 bg-background/95 px-6 py-6 shadow-sm">
-      <div className="space-y-3">
-        <Badge className="w-fit text-[11px] uppercase tracking-wide" variant="outline">
-          Sheets sync
-        </Badge>
-        <div>
-          <h1 className="font-semibold text-2xl text-foreground">
-            Workbook integrations
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            Keep memo KPIs aligned with the deal scorecard and sensitivity trackers.
-          </p>
-        </div>
-        <p className="text-muted-foreground/80 text-xs">
-          Exports run automatically after the screening memo is published.
-        </p>
-      </div>
-
-      <div className="rounded-3xl border border-border/60 bg-background/95 p-5 shadow-sm">
-        <h2 className="font-semibold text-foreground text-sm">Connected exports</h2>
-        <div className="mt-4 space-y-3">
-          {exports.map((item) => {
-            const statusLabel =
-              item.status === "synced"
-                ? "Synced"
-                : item.status === "pending"
-                ? "Pending"
-                : "Error";
-            const statusVariant =
-              item.status === "synced"
-                ? "default"
-                : item.status === "pending"
-                ? "secondary"
-                : "destructive";
-
-            return (
-              <div
-                className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/60 bg-background/95 px-4 py-4 text-sm shadow-sm"
-                key={item.id}
-              >
-                <div>
-                  <p className="font-semibold text-foreground">{item.name}</p>
-                  <p className="text-muted-foreground text-xs">Last synced {item.lastSynced}</p>
-                </div>
-                <div className="flex items-center gap-3 text-muted-foreground text-xs">
-                  <Badge className="text-[11px] uppercase tracking-wide" variant={statusVariant}>
-                    {statusLabel}
-                  </Badge>
-                  <span>Owner {item.owner}</span>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      <div className="flex flex-wrap gap-3">
-        <Button onClick={() => onNavigate("history-reports")}>
-          Attach memo summary
-        </Button>
-        <Button onClick={() => onNavigate("history-chats")} variant="outline">
-          Review deal chat
-        </Button>
-      </div>
-    </div>
-  );
+  return;
 }
 
 type ComingSoonViewProps = {

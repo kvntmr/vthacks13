@@ -27,7 +27,7 @@ COPY . .
 RUN if [ ! -f .env.local ]; then \
     cp .env.example .env.local && \
     sed -i 's/\*\*\*\*/dummy_value/g' .env.local; \
-    fi
+    fi \   
 
 # Set environment variables for build
 ENV NEXT_TELEMETRY_DISABLED=1
