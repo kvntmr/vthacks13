@@ -16,7 +16,7 @@ import {
   Sparkles,
   Upload,
 } from "lucide-react";
-import { type ElementType, Fragment, useMemo, useState } from "react";
+import { type ElementType, Fragment, useMemo, useRef, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -80,21 +80,6 @@ type FolderIndexEntry = {
   ancestors: BreadcrumbItem[];
 };
 
-type LibraryFileRecord = {
-  file: RealEstateFile;
-  folderId: string;
-  folderTrail: BreadcrumbItem[];
-};
-
-type UploadQueueItem = {
-  id: string;
-  name: string;
-  progress: number;
-  statusLabel: string;
-  isComplete: boolean;
-  folderName: string;
-  folderId: string;
-};
 
 function buildFolderIndex(
   root: RealEstateFolder
@@ -116,23 +101,6 @@ function buildFolderIndex(
   return index;
 }
 
-function flattenLibraryFiles(
-  folder: RealEstateFolder,
-  trail: BreadcrumbItem[] = []
-): LibraryFileRecord[] {
-  const currentTrail = [...trail, { id: folder.id, label: folder.name }];
-  const currentFiles = folder.files.map((file) => ({
-    file,
-    folderId: folder.id,
-    folderTrail: currentTrail,
-  }));
-
-  const childFiles = folder.children?.flatMap((child) =>
-    flattenLibraryFiles(child, currentTrail)
-  );
-
-  return [...currentFiles, ...(childFiles ?? [])];
-}
 
 function collectFolderStats(folder: RealEstateFolder): FolderStats {
   let total = 0;
@@ -176,47 +144,6 @@ function collectFolderStats(folder: RealEstateFolder): FolderStats {
     queued,
     lastUpdated: latest?.toISOString(),
   };
-}
-
-function buildUploadQueueItems(
-  records: LibraryFileRecord[],
-  folderIndex: Record<string, FolderIndexEntry>
-): UploadQueueItem[] {
-  return records
-    .filter((record) => record.file.status !== "indexed")
-    .map((record) => {
-      const rawProgress = record.file.progress ?? 0;
-      const progress = record.file.status === "queued" ? 0 : rawProgress;
-      const isComplete = progress >= 100;
-      const folderName = folderIndex[record.folderId]?.folder.name ?? "Library";
-
-      let statusLabel = "Queued";
-      if (record.file.status === "indexing") {
-        statusLabel = isComplete ? "Complete" : `Indexing ${progress}%`;
-      }
-      if (record.file.status === "indexed") {
-        statusLabel = "Complete";
-      }
-
-      return {
-        id: record.file.id,
-        name: record.file.name,
-        progress: isComplete ? 100 : progress,
-        statusLabel,
-        isComplete,
-        folderName,
-        folderId: record.folderId,
-      } satisfies UploadQueueItem;
-    })
-    .sort((a, b) => {
-      if (a.isComplete && !b.isComplete) {
-        return 1;
-      }
-      if (!a.isComplete && b.isComplete) {
-        return -1;
-      }
-      return b.progress - a.progress;
-    });
 }
 
 const NAV_ITEMS: NavItem[] = [
@@ -409,11 +336,6 @@ const FILE_LIBRARY_ROOT: RealEstateFolder = {
 };
 
 const FOLDER_INDEX = buildFolderIndex(FILE_LIBRARY_ROOT);
-const ALL_LIBRARY_FILES = flattenLibraryFiles(FILE_LIBRARY_ROOT);
-const INITIAL_UPLOAD_QUEUE = buildUploadQueueItems(
-  ALL_LIBRARY_FILES,
-  FOLDER_INDEX
-);
 
 type PipelineMetric = {
   id: string;
@@ -578,8 +500,9 @@ const HISTORY_TIMELINE: ActivityItem[] = [
     actionLabel: "Open Sheets",
     actionNavId: "sheets",
   },
-];
+]
 
+//hardcoded conversation messages for the chat view
 const CONVERSATION_MESSAGES: ConversationMessage[] = [
   {
     id: "msg-analyst-1",
@@ -819,20 +742,6 @@ export function ChatDashboard() {
     ? []
     : (activeFolderEntry.folder.children ?? []);
 
-  const uploadQueue = useMemo(() => {
-    if (activeFolderId === FILE_LIBRARY_ROOT.id) {
-      return INITIAL_UPLOAD_QUEUE;
-    }
-
-    return INITIAL_UPLOAD_QUEUE.filter((item) => {
-      if (item.folderId === activeFolderId) {
-        return true;
-      }
-
-      const ancestors = FOLDER_INDEX[item.folderId]?.ancestors ?? [];
-      return ancestors.some((crumb) => crumb.id === activeFolderId);
-    });
-  }, [activeFolderId]);
 
   const activeFolder = activeFolderEntry.folder;
   const isSearching = searchQuery.trim().length > 0;
@@ -1973,9 +1882,6 @@ type SheetsWorkspaceViewProps = {
   onNavigate: (viewId: string) => void;
 };
 
-function SheetsWorkspaceView({ exports, onNavigate }: SheetsWorkspaceViewProps) {
-  return;
-}
 
 type ComingSoonViewProps = {
   label: string;
@@ -1996,59 +1902,8 @@ function ComingSoonView({ label }: ComingSoonViewProps) {
 // Upload queue panel
 // ---------------------------------------------------------------------------
 
-type UploadQueuePanelProps = {
-  tasks: UploadQueueItem[];
-};
 
-function UploadQueuePanel({ tasks }: UploadQueuePanelProps) {
-  const hasItems = tasks.length > 0;
 
-  return (
-    <div className="space-y-4">
-      <div className="space-y-1">
-        <h2 className="font-semibold text-muted-foreground text-sm">
-          Uploading
-        </h2>
-        <p className="text-muted-foreground/80 text-xs">
-          Monitor ingestion progress for deal books and financial models.
-        </p>
-      </div>
-      {hasItems ? (
-        <ScrollArea className="h-[320px] pr-2">
-          <div className="space-y-3">
-            {tasks.map((task) => (
-              <div
-                className="space-y-2 rounded-2xl border border-border/60 bg-background/95 p-4 text-sm shadow-sm"
-                key={task.id}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="text-foreground">{task.name}</span>
-                  <span className="text-muted-foreground text-xs">
-                    {task.statusLabel}
-                  </span>
-                </div>
-                <p className="text-muted-foreground/80 text-xs">
-                  {task.folderName}
-                </p>
-                <Progress
-                  className={cn(
-                    "mt-2 h-1.5",
-                    task.isComplete ? "bg-emerald-100" : "bg-muted"
-                  )}
-                  value={task.progress}
-                />
-              </div>
-            ))}
-          </div>
-        </ScrollArea>
-      ) : (
-        <div className="rounded-2xl border border-border/60 bg-muted/20 px-4 py-6 text-center text-muted-foreground text-sm">
-          All documents are indexed.
-        </div>
-      )}
-    </div>
-  );
-}
 
 // ---------------------------------------------------------------------------
 // Sidebar summary placeholder (when expanded)
