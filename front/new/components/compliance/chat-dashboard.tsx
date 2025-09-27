@@ -16,7 +16,6 @@ import {
   Sparkles,
   Upload,
 } from "lucide-react";
-import Link from "next/link";
 import { type ElementType, Fragment, useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -221,19 +220,19 @@ function buildUploadQueueItems(
 }
 
 const NAV_ITEMS: NavItem[] = [
-  { id: "home", label: "Home", icon: Home },
+  { id: "home", label: "Overview", icon: Home },
   {
     id: "history",
-    label: "History",
+    label: "Deliverables",
     icon: ClipboardList,
     children: [
-      { id: "history-chats", label: "Chats" },
-      { id: "history-reports", label: "Reports" },
-      { id: "history-settings", label: "Report Settings" },
+      { id: "history-chats", label: "Deal chat" },
+      { id: "history-reports", label: "Screening memo" },
+      { id: "history-settings", label: "Memo controls" },
     ],
   },
-  { id: "file-library", label: "File Library", icon: FileStack },
-  { id: "sheets", label: "Sheets", icon: Building2 },
+  { id: "file-library", label: "Deal files", icon: FileStack },
+  { id: "sheets", label: "Sheets sync", icon: Building2 },
 ];
 
 const NAV_LABEL_LOOKUP = NAV_ITEMS.reduce<Record<string, string>>(
@@ -416,49 +415,366 @@ const INITIAL_UPLOAD_QUEUE = buildUploadQueueItems(
   FOLDER_INDEX
 );
 
-type LegacyAction = {
+type PipelineMetric = {
+  id: string;
   label: string;
-  href: string;
-  variant?: "default" | "outline";
+  value: string;
+  delta: string;
 };
 
-type LegacySectionContent = {
-  heading: string;
+type DealSummary = {
+  id: string;
+  name: string;
+  market: string;
+  occupancy: string;
+  status: string;
+  nextAction: string;
+  folderId: string;
+};
+
+type ActivityItem = {
+  id: string;
+  title: string;
+  timestamp: string;
+  summary: string;
+  actionLabel?: string;
+  actionNavId?: string;
+  actionFolderId?: string;
+};
+
+type ConversationMessage = {
+  id: string;
+  author: string;
+  role: "analyst" | "stag";
+  timestamp: string;
+  content: string;
+};
+
+type MemoSection = {
+  id: string;
+  title: string;
+  bullets: string[];
+};
+
+type SheetsExport = {
+  id: string;
+  name: string;
+  lastSynced: string;
+  status: "synced" | "pending" | "error";
+  owner: string;
+};
+
+type ReportPreference = {
+  id: string;
+  label: string;
   description: string;
-  actions?: LegacyAction[];
+  enabled: boolean;
 };
 
-const LEGACY_SECTION_CONTENT: Record<string, LegacySectionContent> = {
-  home: {
-    heading: "Home",
-    description: "Workspace overview and deal metrics are in progress.",
+const HOME_METRICS: PipelineMetric[] = [
+  {
+    id: "deals",
+    label: "Active deals",
+    value: "8",
+    delta: "+2 vs last week",
   },
-  history: {
-    heading: "History",
+  {
+    id: "documents",
+    label: "Documents ingested",
+    value: "146",
+    delta: "+18 this week",
+  },
+  {
+    id: "tasks",
+    label: "Open tasks",
+    value: "5",
+    delta: "3 due today",
+  },
+];
+
+const HOME_DEALS: DealSummary[] = [
+  {
+    id: "deal-horizon",
+    name: "Horizon Logistics Park",
+    market: "Dallas, TX",
+    occupancy: "81%",
+    status: "Screening memo in review",
+    nextAction: "Collect updated rent roll",
+    folderId: "folder-horizon-logistics",
+  },
+  {
+    id: "deal-suncrest",
+    name: "Suncrest Retail",
+    market: "Phoenix, AZ",
+    occupancy: "92%",
+    status: "Tenant diligence underway",
+    nextAction: "Confirm CAM reconciliation",
+    folderId: "folder-suncrest-retail",
+  },
+  {
+    id: "deal-seaside",
+    name: "Seaside Multifamily",
+    market: "San Diego, CA",
+    occupancy: "93%",
+    status: "Underwriting updates",
+    nextAction: "Refresh ARGUS sensitivities",
+    folderId: "folder-seaside-multifamily",
+  },
+];
+
+const HOME_ACTIVITY: ActivityItem[] = [
+  {
+    id: "activity-memo",
+    title: "Screening memo draft ready",
+    timestamp: "10 minutes ago",
+    summary:
+      "Stag drafted the Horizon Logistics screening memo with rent roll highlights and risk flags.",
+    actionLabel: "Review memo",
+    actionNavId: "history-reports",
+  },
+  {
+    id: "activity-argus",
+    title: "ARGUS export synced",
+    timestamp: "1 hour ago",
+    summary:
+      "Latest ARGUS sensitivity scenarios pushed to Sheets for Seaside Multifamily.",
+    actionLabel: "Open Sheets",
+    actionNavId: "sheets",
+  },
+  {
+    id: "activity-files",
+    title: "New diligence docs indexed",
+    timestamp: "Yesterday",
+    summary:
+      "CAM reconciliation and traffic study processed for Suncrest Retail.",
+    actionLabel: "View files",
+    actionNavId: "file-library",
+    actionFolderId: "folder-suncrest-retail",
+  },
+];
+
+const HISTORY_TIMELINE: ActivityItem[] = [
+  {
+    id: "timeline-memo",
+    title: "Screening memo delivered",
+    timestamp: "Today · 10:12 AM",
+    summary: "Shared to deal team and staged for IC review.",
+    actionLabel: "Open memo",
+    actionNavId: "history-reports",
+  },
+  {
+    id: "timeline-chat",
+    title: "Conversation: rent roll QA",
+    timestamp: "Yesterday · 4:36 PM",
+    summary: "Analyst confirmed missing suite details for Horizon Logistics.",
+    actionLabel: "View chat",
+    actionNavId: "history-chats",
+  },
+  {
+    id: "timeline-sheet",
+    title: "Sheets export refreshed",
+    timestamp: "Yesterday · 9:05 AM",
+    summary: "Updated waterfall assumptions synced to 'Deal Scorecard'.",
+    actionLabel: "Open Sheets",
+    actionNavId: "sheets",
+  },
+];
+
+const CONVERSATION_MESSAGES: ConversationMessage[] = [
+  {
+    id: "msg-analyst-1",
+    author: "Avery Chen",
+    role: "analyst",
+    timestamp: "Today · 9:18 AM",
+    content:
+      "Flagging the 2025 rollover: Redwood's renewal isn't firm yet. Can you thread the risk callout into the memo summary?",
+  },
+  {
+    id: "msg-stag-1",
+    author: "Stag",
+    role: "stag",
+    timestamp: "Today · 9:19 AM",
+    content:
+      "Added a risk paragraph with the rollover schedule and linked the rent roll excerpt. I also refreshed the supporting comps.",
+  },
+  {
+    id: "msg-analyst-2",
+    author: "Avery Chen",
+    role: "analyst",
+    timestamp: "Today · 9:24 AM",
+    content:
+      "Great—push the updated IRR sensitivity to the Sheets sync and keep the memo tagged as IC ready once the export lands.",
+  },
+  {
+    id: "msg-stag-2",
+    author: "Stag",
+    role: "stag",
+    timestamp: "Today · 9:25 AM",
+    content:
+      "Sheets sync is running now. Levered IRR at 13.2% is published on the 'Memo Summary' tab and memo status flipped to IC ready.",
+  },
+  {
+    id: "msg-analyst-3",
+    author: "Avery Chen",
+    role: "analyst",
+    timestamp: "Today · 9:27 AM",
+    content:
+      "Let's also grab the updated utility audit before IC. Can you set a reminder inside memo controls?",
+  },
+  {
+    id: "msg-stag-3",
+    author: "Stag",
+    role: "stag",
+    timestamp: "Today · 9:28 AM",
+    content:
+      "Reminder scheduled for Thursday · 2:00 PM and pinned under memo controls with a link back to the diligence folder.",
+  },
+];
+
+const MEMO_SECTIONS: MemoSection[] = [
+  {
+    id: "section-thesis",
+    title: "Investment thesis",
+    bullets: [
+      "Horizon Logistics Park pricing at $128M, going-in cap 7.1% with upside via Building B re-lease.",
+      "Dallas infill submarket vacancy at 4.8% with 2.1M SF trailing absorption supporting rent growth.",
+      "Tenant mix anchored by FedEx and OmniCable with Redwood rollover negotiated via LOI in progress.",
+    ],
+  },
+  {
+    id: "section-financials",
+    title: "Financial focus",
+    bullets: [
+      "Base case levered IRR 13.2%; downside 10.4% assuming 50 bps exit cap expansion.",
+      "ARGUS v4 export reflects CAM reimbursement clean-up and refreshed utility assumptions.",
+      "Waterfall scenarios synced to Sheets capture upside/downside KPIs for IC review.",
+    ],
+  },
+  {
+    id: "section-risks",
+    title: "Risks & mitigations",
+    bullets: [
+      "Renewal concentration: 33% of NOI from Redwood Logistics; mitigation via LOI with rate step-downs.",
+      "Deferred capital: $1.4M HVAC replacements staged in year one with contingency reserve.",
+      "Speculative backfill risk offset by signed LOIs covering 60% of near-term rollover.",
+    ],
+  },
+];
+
+const CONVERSATION_ACTIONS: ActivityItem[] = [
+  {
+    id: "action-export",
+    title: "Publish memo summary to Sheets",
+    timestamp: "",
+    summary:
+      "Sync the IC-ready narrative and KPI snapshot to the shared workbook for leadership.",
+    actionLabel: "Sync now",
+    actionNavId: "sheets",
+  },
+  {
+    id: "action-folder",
+    title: "Open diligence source folder",
+    timestamp: "",
+    summary: "Review rent roll uploads, stacking plan renders, and refreshed comps.",
+    actionLabel: "View files",
+    actionNavId: "file-library",
+    actionFolderId: "folder-horizon-logistics",
+  },
+  {
+    id: "action-controls",
+    title: "Review memo controls",
+    timestamp: "",
+    summary:
+      "Confirm reminders, risk toggles, and distribution list before the IC session.",
+    actionLabel: "Open memo controls",
+    actionNavId: "history-settings",
+  },
+];
+
+const REPORT_SECTIONS: MemoSection[] = [
+  {
+    id: "memo-overview",
+    title: "Executive highlights",
+    bullets: [
+      "IC-ready memo validated against the September rent roll and refreshed ARGUS export.",
+      "Building B rollover scenario locked with $22 NNN re-lease and 6-month TI package.",
+      "Capital program budgets $1.4M HVAC scope and keeps year-two cash-on-cash at 8.2%.",
+    ],
+  },
+  {
+    id: "memo-operations",
+    title: "Operations snapshot",
+    bullets: [
+      "Occupancy recovers to 92% within nine months supported by signed LOIs.",
+      "Expense growth normalized at 3% with CAM recapture uplift embedded in NOI forecast.",
+      "Pending ProLogis utility audit tracked via memo controls and referenced in assumptions.",
+    ],
+  },
+  {
+    id: "memo-tasks",
+    title: "Next steps",
+    bullets: [
+      "Finalize IC deck export and circulate by Thursday 2 PM.",
+      "Collect updated utility audit and attach before distribution.",
+      "Confirm Redwood renewal terms ahead of investment committee review.",
+    ],
+  },
+];
+
+const SHEETS_EXPORTS: SheetsExport[] = [
+  {
+    id: "sheet-memo",
+    name: "Memo Summary (IC)",
+    lastSynced: "Today · 9:25 AM",
+    status: "synced",
+    owner: "Stag",
+  },
+  {
+    id: "sheet-scorecard",
+    name: "Deal Scorecard",
+    lastSynced: "Today · 9:10 AM",
+    status: "synced",
+    owner: "Avery Chen",
+  },
+  {
+    id: "sheet-sensitivity",
+    name: "Sensitivity Tracker",
+    lastSynced: "Today · 9:24 AM",
+    status: "pending",
+    owner: "Priya Patel",
+  },
+];
+
+const REPORT_SETTINGS: ReportPreference[] = [
+  {
+    id: "pref-ic",
+    label: "Tag memo as IC ready on publish",
     description:
-      "Switch between legacy chats and reports while the new timeline ships.",
+      "Automatically flip status and alert the deal team once exports complete.",
+    enabled: true,
   },
-  "history-chats": {
-    heading: "Chat History",
+  {
+    id: "pref-rent-roll",
+    label: "Attach rent roll variance appendix",
     description:
-      "Access the existing chat workspace until the refreshed history view is ready.",
-    actions: [{ label: "Open Legacy Chat", href: "/chat" }],
+      "Bundle CAM variance and rent roll summary tabs with the generated memo PDF.",
+    enabled: true,
   },
-  "history-reports": {
-    heading: "Report History",
+  {
+    id: "pref-waterfall",
+    label: "Sync waterfall sensitivities",
     description:
-      "Report archives are still available in the legacy experience.",
+      "Push IRR, equity multiple, and downside scenarios to the Sheets sync on publish.",
+    enabled: true,
   },
-  "history-settings": {
-    heading: "Report Settings",
-    description: "Customize report templates in the legacy workspace for now.",
-  },
-  sheets: {
-    heading: "Sheets",
+  {
+    id: "pref-reminders",
+    label: "Schedule diligence reminders",
     description:
-      "Exports to Google Sheets will return after the layout refresh.",
+      "Track utility audits and tenant deliverables alongside memo controls.",
+    enabled: false,
   },
-};
+];
 
 // ---------------------------------------------------------------------------
 // Main component
@@ -590,55 +906,89 @@ export function ChatDashboard() {
     );
   };
 
-  const renderContent = () => {
-    if (activeNavId === "file-library") {
-      return (
-        <FileLibraryView
-          activeFolder={activeFolder}
-          breadcrumbs={breadcrumbs}
-          files={filteredFiles}
-          folderStats={folderStats}
-          folders={childFolders}
-          isSearching={isSearching}
-          onBreadcrumbSelect={handleOpenFolder}
-          onFolderOpen={handleOpenFolder}
-          onSearchChange={setSearchQuery}
-          onViewModeChange={setViewMode}
-          searchQuery={searchQuery}
-          viewMode={viewMode}
-        />
-      );
+  const navigateTo = (viewId: string) => {
+    setActiveNavId(viewId);
+    if (viewId === "file-library") {
+      handleOpenFolder(FILE_LIBRARY_ROOT.id);
     }
+  };
 
-    const section = LEGACY_SECTION_CONTENT[activeNavId];
-    const navLabel = NAV_LABEL_LOOKUP[activeNavId];
-    const heading = section?.heading ?? navLabel ?? "Workspace";
-    const description =
-      section?.description ??
-      "This section is coming soon for the real estate workspace.";
-    const actions = section?.actions ?? [];
+  const openFolderInLibrary = (folderId: string) => {
+    setActiveNavId("file-library");
+    handleOpenFolder(folderId);
+  };
 
-    return (
-      <div className="flex h-full flex-col items-center justify-center gap-6 rounded-3xl border border-border/60 bg-background/95 p-12 text-center text-muted-foreground shadow-sm">
-        <div className="space-y-2">
-          <h2 className="font-semibold text-foreground text-xl">{heading}</h2>
-          <p className="text-sm">{description}</p>
-        </div>
-        {actions.length > 0 ? (
-          <div className="flex flex-wrap justify-center gap-3">
-            {actions.map((action) => (
-              <Button
-                asChild
-                key={`${activeNavId}-${action.label}`}
-                variant={action.variant ?? "default"}
-              >
-                <Link href={action.href}>{action.label}</Link>
-              </Button>
-            ))}
-          </div>
-        ) : null}
-      </div>
-    );
+  const renderContent = () => {
+    switch (activeNavId) {
+      case "file-library":
+        return (
+          <FileLibraryView
+            activeFolder={activeFolder}
+            breadcrumbs={breadcrumbs}
+            files={filteredFiles}
+            folderStats={folderStats}
+            folders={childFolders}
+            isSearching={isSearching}
+            onBreadcrumbSelect={handleOpenFolder}
+            onFolderOpen={handleOpenFolder}
+            onSearchChange={setSearchQuery}
+            onViewModeChange={setViewMode}
+            searchQuery={searchQuery}
+            viewMode={viewMode}
+          />
+        );
+      case "home":
+        return (
+          <HomeOverviewView
+            activity={HOME_ACTIVITY}
+            deals={HOME_DEALS}
+            metrics={HOME_METRICS}
+            onNavigate={navigateTo}
+            onOpenFolder={openFolderInLibrary}
+          />
+        );
+      case "history":
+        return (
+          <HistoryOverviewView
+            onNavigate={navigateTo}
+            onOpenFolder={openFolderInLibrary}
+            timeline={HISTORY_TIMELINE}
+          />
+        );
+      case "history-chats":
+        return (
+          <ConversationWorkspaceView
+            actions={CONVERSATION_ACTIONS}
+            memoSections={MEMO_SECTIONS}
+            messages={CONVERSATION_MESSAGES}
+            onNavigate={navigateTo}
+            onOpenFolder={openFolderInLibrary}
+          />
+        );
+      case "history-reports":
+        return (
+          <ReportWorkspaceView
+            onNavigate={navigateTo}
+            onOpenFolder={openFolderInLibrary}
+            sections={REPORT_SECTIONS}
+          />
+        );
+      case "history-settings":
+        return <ReportSettingsView preferences={REPORT_SETTINGS} />;
+      case "sheets":
+        return (
+          <SheetsWorkspaceView
+            exports={SHEETS_EXPORTS}
+            onNavigate={navigateTo}
+          />
+        );
+      default:
+        return (
+          <ComingSoonView
+            label={NAV_LABEL_LOOKUP[activeNavId] ?? "Workspace"}
+          />
+        );
+    }
   };
 
   return (
@@ -1075,6 +1425,640 @@ function getFolderMeta(stats: FolderStats) {
     summary.push(`Updated ${relativeTime(stats.lastUpdated)}`);
   }
   return summary;
+}
+
+// ---------------------------------------------------------------------------
+// Real estate workspace views (Phase 3)
+// ---------------------------------------------------------------------------
+
+type HomeOverviewViewProps = {
+  metrics: PipelineMetric[];
+  deals: DealSummary[];
+  activity: ActivityItem[];
+  onNavigate: (viewId: string) => void;
+  onOpenFolder: (folderId: string) => void;
+};
+
+function HomeOverviewView({
+  metrics,
+  deals,
+  activity,
+  onNavigate,
+  onOpenFolder,
+}: HomeOverviewViewProps) {
+  return (
+    <div className="flex h-full flex-col gap-6 rounded-3xl border border-border/60 bg-background/95 px-6 py-6 shadow-sm">
+      <div className="flex flex-col gap-2">
+        <h1 className="font-semibold text-2xl text-foreground">
+          Workspace overview
+        </h1>
+        <p className="text-muted-foreground text-sm">
+          Track active deals, monitor ingestion progress, and jump into the
+          latest deliverables.
+        </p>
+      </div>
+
+      <div className="grid gap-4 md:grid-cols-3">
+        {metrics.map((metric) => (
+          <div
+            className="rounded-3xl border border-border/60 bg-background/95 p-5 shadow-sm"
+            key={metric.id}
+          >
+            <p className="text-muted-foreground text-xs uppercase tracking-wide">
+              {metric.label}
+            </p>
+            <p className="mt-2 font-semibold text-2xl text-foreground">
+              {metric.value}
+            </p>
+            <p className="text-muted-foreground/80 text-xs">{metric.delta}</p>
+          </div>
+        ))}
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <div className="flex flex-col gap-3 rounded-3xl border border-border/60 bg-background/95 p-5 shadow-sm">
+          <div className="flex items-center justify-between">
+            <h2 className="font-semibold text-foreground text-sm">
+              Active diligence
+            </h2>
+            <Button
+              onClick={() => onNavigate("file-library")}
+              size="sm"
+              variant="outline"
+            >
+              Go to File Library
+            </Button>
+          </div>
+          <div className="space-y-3">
+            {deals.map((deal) => (
+              <div
+                className="rounded-2xl border border-border/60 bg-background/95 p-4 text-sm shadow-sm"
+                key={deal.id}
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <p className="font-semibold text-foreground">{deal.name}</p>
+                    <p className="text-muted-foreground text-xs">{deal.market}</p>
+                  </div>
+                  <Badge className="text-[11px] uppercase" variant="outline">
+                    {deal.status}
+                  </Badge>
+                </div>
+                <div className="mt-3 flex flex-wrap items-center gap-3 text-muted-foreground text-xs">
+                  <span>Occupancy {deal.occupancy}</span>
+                  <span className="hidden sm:inline">•</span>
+                  <span>Next: {deal.nextAction}</span>
+                </div>
+                <div className="mt-3">
+                  <Button
+                    className="px-0 text-primary text-sm"
+                    onClick={() => onOpenFolder(deal.folderId)}
+                    size="sm"
+                    variant="ghost"
+                  >
+                    Open folder
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-3 rounded-3xl border border-border/60 bg-background/95 p-5 shadow-sm">
+          <h2 className="font-semibold text-foreground text-sm">
+            Recent activity
+          </h2>
+          <div className="space-y-3">
+            {activity.map((item) => {
+              const handleAction = () => {
+                if (
+                  item.actionNavId === "file-library" &&
+                  item.actionFolderId
+                ) {
+                  onOpenFolder(item.actionFolderId);
+                  return;
+                }
+                if (item.actionNavId) {
+                  onNavigate(item.actionNavId);
+                }
+              };
+
+              return (
+                <div
+                  className="rounded-2xl border border-border/60 bg-background/95 p-4 text-sm shadow-sm"
+                  key={item.id}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="font-semibold text-foreground">{item.title}</p>
+                    <span className="text-muted-foreground text-xs">
+                      {item.timestamp}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-muted-foreground/90 text-xs">
+                    {item.summary}
+                  </p>
+                  {item.actionLabel ? (
+                    <Button
+                      className="mt-3 px-0 text-primary"
+                      onClick={handleAction}
+                      size="sm"
+                      variant="ghost"
+                    >
+                      {item.actionLabel}
+                    </Button>
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+type HistoryOverviewViewProps = {
+  timeline: ActivityItem[];
+  onNavigate: (viewId: string) => void;
+  onOpenFolder: (folderId: string) => void;
+};
+
+function HistoryOverviewView({
+  timeline,
+  onNavigate,
+  onOpenFolder,
+}: HistoryOverviewViewProps) {
+  return (
+    <div className="flex h-full flex-col gap-6 rounded-3xl border border-border/60 bg-background/95 px-6 py-6 shadow-sm">
+      <div className="flex flex-col gap-2">
+        <h1 className="font-semibold text-2xl text-foreground">
+          Recent outputs
+        </h1>
+        <p className="text-muted-foreground text-sm">
+          Quick links to the latest memos, chats, and sheet exports created in
+          this workspace.
+        </p>
+      </div>
+
+      <div className="space-y-4">
+        {timeline.map((item) => {
+          const handleAction = () => {
+            if (
+              item.actionNavId === "file-library" &&
+              item.actionFolderId
+            ) {
+              onOpenFolder(item.actionFolderId);
+              return;
+            }
+            if (item.actionNavId) {
+              onNavigate(item.actionNavId);
+            }
+          };
+
+          return (
+            <div
+              className="rounded-3xl border border-border/60 bg-background/95 p-5 shadow-sm"
+              key={item.id}
+            >
+              <div className="flex items-center justify-between gap-2">
+                <div>
+                  <p className="font-semibold text-foreground">{item.title}</p>
+                  <p className="text-muted-foreground text-xs">
+                    {item.timestamp}
+                  </p>
+                </div>
+                {item.actionLabel ? (
+                  <Button onClick={handleAction} size="sm" variant="outline">
+                    {item.actionLabel}
+                  </Button>
+                ) : null}
+              </div>
+              <p className="mt-3 text-muted-foreground/90 text-sm">
+                {item.summary}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+type ConversationWorkspaceViewProps = {
+  messages: ConversationMessage[];
+  memoSections: MemoSection[];
+  actions: ActivityItem[];
+  onNavigate: (viewId: string) => void;
+  onOpenFolder: (folderId: string) => void;
+};
+
+function ConversationWorkspaceView({
+  messages,
+  memoSections,
+  actions,
+  onNavigate,
+  onOpenFolder,
+}: ConversationWorkspaceViewProps) {
+  const conversationMeta = [
+    {
+      id: "status",
+      label: "Memo status",
+      value: "IC ready · synced 2 min ago",
+    },
+    {
+      id: "milestone",
+      label: "Next milestone",
+      value: "IC deck due Thu · 2 PM",
+    },
+    {
+      id: "owner",
+      label: "Deal owner",
+      value: "Avery Chen",
+    },
+  ];
+
+  return (
+    <div className="grid h-full gap-6 rounded-3xl border border-border/60 bg-background/95 px-6 py-6 shadow-sm lg:grid-cols-[2fr_1fr]">
+      <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-5 rounded-3xl border border-border/60 bg-background/95 p-5 shadow-sm">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div className="space-y-2">
+              <Badge className="w-fit text-[11px] uppercase tracking-wide" variant="outline">
+                Deal chat
+              </Badge>
+              <div>
+                <h1 className="font-semibold text-2xl text-foreground">
+                  Horizon Logistics Park
+                </h1>
+                <p className="text-muted-foreground text-sm">
+                  Live thread powering the screening memo and Sheets exports.
+                </p>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-center gap-2">
+              <Button
+                onClick={() => onOpenFolder("folder-horizon-logistics")}
+                variant="outline"
+              >
+                Open deal files
+              </Button>
+              <Button
+                onClick={() => onNavigate("history-reports")}
+                variant="outline"
+              >
+                View memo
+              </Button>
+            </div>
+          </div>
+
+          <div className="grid gap-3 text-xs text-muted-foreground sm:grid-cols-3">
+            {conversationMeta.map((item) => (
+              <div
+                className="rounded-2xl border border-border/60 bg-muted/20 px-4 py-3"
+                key={item.id}
+              >
+                <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground/70">
+                  {item.label}
+                </p>
+                <p className="mt-1 text-sm text-foreground">{item.value}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="rounded-3xl border border-border/60 bg-background/95 p-5 shadow-sm">
+          <h2 className="font-semibold text-foreground text-sm">Message thread</h2>
+          <ScrollArea className="mt-4 h-[320px] pr-2">
+            <div className="space-y-3">
+              {messages.map((message) => {
+                const isStag = message.role === "stag";
+
+                const handleBadgeVariant = isStag ? "default" : "outline";
+                const roleLabel = isStag ? "Stag" : "Analyst";
+
+                return (
+                  <div
+                    className={cn(
+                      "rounded-2xl border border-border/60 bg-background/95 p-4 text-sm shadow-sm",
+                      isStag && "border-primary/40 bg-primary/5"
+                    )}
+                    key={message.id}
+                  >
+                    <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+                      <span className="font-semibold text-foreground">{message.author}</span>
+                      <Badge className="text-[10px] uppercase tracking-wide" variant={handleBadgeVariant}>
+                        {roleLabel}
+                      </Badge>
+                      <span className="text-muted-foreground/80">{message.timestamp}</span>
+                    </div>
+                    <p className="mt-2 text-muted-foreground/90">{message.content}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </ScrollArea>
+        </div>
+      </div>
+
+      <div className="flex flex-col gap-5">
+        <div className="space-y-3 rounded-3xl border border-border/60 bg-background/95 p-5 shadow-sm">
+          <h2 className="font-semibold text-foreground text-sm">Memo highlights</h2>
+          <div className="space-y-3">
+            {memoSections.map((section) => (
+              <div
+                className="rounded-2xl border border-border/60 bg-background/95 p-4 text-sm shadow-sm"
+                key={section.id}
+              >
+                <p className="font-semibold text-foreground">{section.title}</p>
+                <ul className="mt-2 list-disc space-y-1 pl-5 text-muted-foreground/90 text-xs">
+                  {section.bullets.map((bullet) => (
+                    <li key={bullet}>{bullet}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="space-y-3 rounded-3xl border border-border/60 bg-background/95 p-5 shadow-sm">
+          <h3 className="font-semibold text-foreground text-sm">Workflow actions</h3>
+          <div className="space-y-3 text-sm">
+            {actions.map((item) => {
+              const handleAction = () => {
+                if (
+                  item.actionNavId === "file-library" &&
+                  item.actionFolderId
+                ) {
+                  onOpenFolder(item.actionFolderId);
+                  return;
+                }
+                if (item.actionNavId) {
+                  onNavigate(item.actionNavId);
+                }
+              };
+
+              return (
+                <div
+                  className="rounded-2xl border border-border/60 bg-background/95 p-4 shadow-sm"
+                  key={item.id}
+                >
+                  <p className="font-semibold text-foreground">{item.title}</p>
+                  <p className="mt-1 text-muted-foreground/90 text-xs">{item.summary}</p>
+                  {item.actionLabel ? (
+                    <Button
+                      className="mt-3 px-0 text-primary"
+                      onClick={handleAction}
+                      size="sm"
+                      variant="ghost"
+                    >
+                      {item.actionLabel}
+                    </Button>
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+type ReportWorkspaceViewProps = {
+  sections: MemoSection[];
+  onNavigate: (viewId: string) => void;
+  onOpenFolder: (folderId: string) => void;
+};
+
+function ReportWorkspaceView({
+  sections,
+  onNavigate,
+  onOpenFolder,
+}: ReportWorkspaceViewProps) {
+  const memoMeta = [
+    {
+      id: "status",
+      label: "Status",
+      value: "IC ready",
+    },
+    {
+      id: "updated",
+      label: "Last updated",
+      value: "Today · 9:25 AM",
+    },
+    {
+      id: "prepared",
+      label: "Prepared by",
+      value: "Stag × Avery Chen",
+    },
+  ];
+
+  return (
+    <div className="flex h-full flex-col gap-6 rounded-3xl border border-border/60 bg-background/95 px-6 py-6 shadow-sm">
+      <div className="flex flex-col gap-5 rounded-3xl border border-border/60 bg-background/95 p-5 shadow-sm">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="space-y-2">
+            <Badge className="w-fit text-[11px] uppercase tracking-wide" variant="outline">
+              Screening memo
+            </Badge>
+            <div>
+              <h1 className="font-semibold text-2xl text-foreground">
+                Horizon Logistics Park
+              </h1>
+              <p className="text-muted-foreground text-sm">
+                Real estate diligence memo generated by Stag with analyst commentary.
+              </p>
+            </div>
+          </div>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button onClick={() => onNavigate("history-settings")} variant="outline">
+              Memo controls
+            </Button>
+            <Button onClick={() => onOpenFolder("folder-horizon-logistics")} variant="outline">
+              Deal files
+            </Button>
+          </div>
+        </div>
+
+        <div className="grid gap-3 text-xs text-muted-foreground sm:grid-cols-3">
+          {memoMeta.map((item) => (
+            <div
+              className="rounded-2xl border border-border/60 bg-muted/20 px-4 py-3"
+              key={item.id}
+            >
+              <p className="text-[11px] uppercase tracking-[0.18em] text-muted-foreground/70">
+                {item.label}
+              </p>
+              <p className="mt-1 text-sm text-foreground">{item.value}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        {sections.map((section) => (
+          <div
+            className="rounded-3xl border border-border/60 bg-background/95 p-5 shadow-sm"
+            key={section.id}
+          >
+            <h2 className="font-semibold text-foreground text-sm">{section.title}</h2>
+            <ul className="mt-3 list-disc space-y-2 pl-5 text-muted-foreground/90 text-sm">
+              {section.bullets.map((bullet) => (
+                <li key={bullet}>{bullet}</li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
+
+      <div className="flex flex-wrap gap-3">
+        <Button onClick={() => onNavigate("sheets")}>
+          Sync to Sheets
+        </Button>
+        <Button onClick={() => onNavigate("history-chats")} variant="outline">
+          View deal chat
+        </Button>
+        <Button onClick={() => onOpenFolder("folder-horizon-logistics")} variant="outline">
+          Export source files
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+type ReportSettingsViewProps = {
+  preferences: ReportPreference[];
+};
+
+function ReportSettingsView({ preferences }: ReportSettingsViewProps) {
+  return (
+    <div className="flex h-full flex-col gap-6 rounded-3xl border border-border/60 bg-background/95 px-6 py-6 shadow-sm">
+      <div className="space-y-3">
+        <Badge className="w-fit text-[11px] uppercase tracking-wide" variant="outline">
+          Memo controls
+        </Badge>
+        <div>
+          <h1 className="font-semibold text-2xl text-foreground">Publishing defaults</h1>
+          <p className="text-muted-foreground text-sm">
+            Configure the sections, reminders, and sync targets that ship with
+            every screening memo export.
+          </p>
+        </div>
+        <p className="text-muted-foreground/80 text-xs">
+          Changes apply to Horizon Logistics and any linked deliverables.
+        </p>
+      </div>
+
+      <div className="space-y-3">
+        {preferences.map((pref) => (
+          <div
+            className="flex items-center justify-between rounded-3xl border border-border/60 bg-background/95 p-5 text-sm shadow-sm"
+            key={pref.id}
+          >
+            <div>
+              <p className="font-semibold text-foreground">{pref.label}</p>
+              <p className="mt-1 text-muted-foreground/90 text-xs">{pref.description}</p>
+            </div>
+            <Badge
+              className="text-[11px] uppercase tracking-wide"
+              variant={pref.enabled ? "default" : "outline"}
+            >
+              {pref.enabled ? "On" : "Off"}
+            </Badge>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+type SheetsWorkspaceViewProps = {
+  exports: SheetsExport[];
+  onNavigate: (viewId: string) => void;
+};
+
+function SheetsWorkspaceView({ exports, onNavigate }: SheetsWorkspaceViewProps) {
+  return (
+    <div className="flex h-full flex-col gap-6 rounded-3xl border border-border/60 bg-background/95 px-6 py-6 shadow-sm">
+      <div className="space-y-3">
+        <Badge className="w-fit text-[11px] uppercase tracking-wide" variant="outline">
+          Sheets sync
+        </Badge>
+        <div>
+          <h1 className="font-semibold text-2xl text-foreground">
+            Workbook integrations
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            Keep memo KPIs aligned with the deal scorecard and sensitivity trackers.
+          </p>
+        </div>
+        <p className="text-muted-foreground/80 text-xs">
+          Exports run automatically after the screening memo is published.
+        </p>
+      </div>
+
+      <div className="rounded-3xl border border-border/60 bg-background/95 p-5 shadow-sm">
+        <h2 className="font-semibold text-foreground text-sm">Connected exports</h2>
+        <div className="mt-4 space-y-3">
+          {exports.map((item) => {
+            const statusLabel =
+              item.status === "synced"
+                ? "Synced"
+                : item.status === "pending"
+                ? "Pending"
+                : "Error";
+            const statusVariant =
+              item.status === "synced"
+                ? "default"
+                : item.status === "pending"
+                ? "secondary"
+                : "destructive";
+
+            return (
+              <div
+                className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/60 bg-background/95 px-4 py-4 text-sm shadow-sm"
+                key={item.id}
+              >
+                <div>
+                  <p className="font-semibold text-foreground">{item.name}</p>
+                  <p className="text-muted-foreground text-xs">Last synced {item.lastSynced}</p>
+                </div>
+                <div className="flex items-center gap-3 text-muted-foreground text-xs">
+                  <Badge className="text-[11px] uppercase tracking-wide" variant={statusVariant}>
+                    {statusLabel}
+                  </Badge>
+                  <span>Owner {item.owner}</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="flex flex-wrap gap-3">
+        <Button onClick={() => onNavigate("history-reports")}>
+          Attach memo summary
+        </Button>
+        <Button onClick={() => onNavigate("history-chats")} variant="outline">
+          Review deal chat
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+type ComingSoonViewProps = {
+  label: string;
+};
+
+function ComingSoonView({ label }: ComingSoonViewProps) {
+  return (
+    <div className="flex h-full flex-col items-center justify-center gap-6 rounded-3xl border border-border/60 bg-background/95 p-12 text-center text-muted-foreground shadow-sm">
+      <div className="space-y-2">
+        <h2 className="font-semibold text-foreground text-xl">{label}</h2>
+        <p className="text-sm">This section is coming soon for the real estate workspace.</p>
+      </div>
+    </div>
+  );
 }
 
 // ---------------------------------------------------------------------------
