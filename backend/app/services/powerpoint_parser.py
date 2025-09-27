@@ -24,12 +24,12 @@ import numpy as np
 class PowerPointParser:
     """Parser for PowerPoint files with text extraction and OCR fallback"""
     
-    def __init__(self, tesseract_path: Optional[str] = None):
+    def __init__(self, tesseract_path: str = ""):
         """
         Initialize the PowerPoint parser
         
         Args:
-            tesseract_path: Path to tesseract executable (if not in PATH)
+            tesseract_path: Path to tesseract executable (if not in PATH, leave empty to use system PATH)
         """
         if tesseract_path:
             pytesseract.pytesseract.tesseract_cmd = tesseract_path
