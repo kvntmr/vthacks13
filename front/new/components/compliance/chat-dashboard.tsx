@@ -33,7 +33,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import SpreadsheetEditor from "@/components/spreadsheet";
-import React, { useRef } from "react";
+import React from "react";
 import { Spreadsheet, Worksheet, jspreadsheet } from "@jspreadsheet-ce/react";
 import "jsuites/dist/jsuites.css";
 import "jspreadsheet-ce/dist/jspreadsheet.css";
