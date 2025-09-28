@@ -173,7 +173,7 @@ const spreadsheetStyles = `
 // Generate initial data with a reasonable starting size
 const generateInitialData = () => {
   const rows = 50;
-  const cols = 50;
+  const cols = 20;
   const data = [];
   
   // Create data rows
@@ -212,7 +212,7 @@ export default function SpreadsheetEditor() {
   const handleDataChange = useCallback((newData: any) => {
     // Ensure minimum grid size for usability
     const minRows = 50;
-    const minCols = 50;
+    const minCols = 20;
     
     // Ensure we have at least the minimum number of rows
     while (newData.length < minRows) {
@@ -264,7 +264,7 @@ export default function SpreadsheetEditor() {
         // Find the maximum number of columns in the CSV data
         const maxCols = Math.max(...csvData.map(row => row.length));
         const numRows = Math.max(csvData.length, 50);
-        const numCols = Math.max(maxCols, 50); // Minimum 10 columns
+        const numCols = Math.max(maxCols, 20); // Minimum 20 columns
 
         // Create a dynamic grid based on CSV data size
         const newData = [];
