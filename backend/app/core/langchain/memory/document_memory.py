@@ -10,12 +10,17 @@ from typing import Dict, Any, List, Optional
 from dataclasses import dataclass, asdict
 from enum import Enum
 
-from langchain_chroma import Chroma
+import os
+from dotenv import load_dotenv
+
+try:
+    from langchain_chroma import Chroma  # type: ignore
+except ImportError:
+    Chroma = None  # Fallback when library is unavailable (e.g., offline install)
+
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-import os
-from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -57,17 +62,27 @@ class DocumentMemory:
         """
         self.persist_directory = persist_directory
         
-        # Initialize embeddings
-        self.embeddings = GoogleGenerativeAIEmbeddings(
-            model="models/text-embedding-004",
-            google_api_key=os.getenv("GEMINI_API_KEY")
-        )
-        
-        # Initialize vector store
-        self.vectorstore = Chroma(
-            persist_directory=persist_directory,
-            embedding_function=self.embeddings
-        )
+        self.embeddings = None
+        self.vectorstore = None
+
+        if Chroma is not None and os.getenv("GEMINI_API_KEY"):
+            try:
+                self.embeddings = GoogleGenerativeAIEmbeddings(
+                    model="models/text-embedding-004",
+                    google_api_key=os.getenv("GEMINI_API_KEY")
+                )
+
+                self.vectorstore = Chroma(
+                    persist_directory=persist_directory,
+                    embedding_function=self.embeddings
+                )
+            except Exception as error:
+                # If embeddings/vector store cannot be initialised (e.g. missing key), fall back to in-memory search
+                print("[DocumentMemory] Falling back to in-memory search:", error)
+                self.vectorstore = None
+                self.embeddings = None
+        else:
+            print("[DocumentMemory] langchain_chroma not available or GEMINI_API_KEY missing. Using in-memory search only.")
         
         # Initialize text splitter
         self.text_splitter = RecursiveCharacterTextSplitter(
@@ -76,66 +91,77 @@ class DocumentMemory:
             length_function=len,
         )
         
-        # In-memory storage for document metadata
+        # In-memory storage for document metadata (used for both vector and in-memory modes)
         self.document_metadata: Dict[str, DocumentMetadata] = {}
-        
-        # Rebuild metadata from ChromaDB on initialization
-        self._rebuild_metadata_from_chromadb()
-    
+        self.chunk_store: Dict[str, List[str]] = {}
+
+        # Rebuild metadata from persistent store when available
+        if self.vectorstore:
+            self._rebuild_metadata_from_chromadb()
+
     def _rebuild_metadata_from_chromadb(self):
-        """
-        Rebuild in-memory metadata from ChromaDB on initialization
-        This ensures consistency after server restarts
-        """
+        """Rebuild in-memory metadata from ChromaDB on initialization."""
+        if not self.vectorstore:
+            return
+
         try:
-            collection = self.vectorstore._collection
+            collection = getattr(self.vectorstore, "_collection", None)
             if not collection:
                 return
-            
-            # Get all documents from ChromaDB
+
             all_docs = collection.get()
-            if not all_docs or 'metadatas' not in all_docs:
+            if not all_docs or "metadatas" not in all_docs:
                 return
-            
-            # Extract unique document IDs and rebuild metadata
-            unique_doc_ids = set()
-            for metadata in all_docs['metadatas']:
-                if metadata and 'document_id' in metadata:
-                    unique_doc_ids.add(metadata['document_id'])
-            
-            # Rebuild metadata for each unique document
+
+            unique_doc_ids = {
+                metadata["document_id"]
+                for metadata in all_docs["metadatas"]
+                if metadata and "document_id" in metadata
+            }
+
             for document_id in unique_doc_ids:
-                # Get first chunk to extract metadata
                 filter_dict = {"document_id": document_id}
                 results = self.vectorstore.similarity_search(
-                    "document",  # Generic query
-                    k=1,  # Just get one chunk for metadata
-                    filter=filter_dict
+                    "document",
+                    k=1,
+                    filter=filter_dict,
                 )
-                
-                if results:
-                    chunk_metadata = results[0].metadata
-                    
-                    # Recreate DocumentMetadata object
-                    doc_metadata = DocumentMetadata(
-                        document_id=document_id,
-                        filename=chunk_metadata.get("filename", "Unknown"),
-                        document_type=DocumentType(chunk_metadata.get("document_type", "txt")),
-                        upload_timestamp=datetime.fromisoformat(
-                            chunk_metadata.get("upload_timestamp", datetime.now().isoformat())
-                        ),
-                        file_size=chunk_metadata.get("file_size", 0),
-                        source=chunk_metadata.get("source", "unknown"),
-                        tags=json.loads(chunk_metadata.get("tags", "[]")) if isinstance(chunk_metadata.get("tags"), str) else chunk_metadata.get("tags", [])
+
+                if not results:
+                    continue
+
+                chunk_metadata = results[0].metadata
+                upload_ts = chunk_metadata.get("upload_timestamp")
+                try:
+                    upload_dt = (
+                        datetime.fromisoformat(upload_ts)
+                        if upload_ts
+                        else datetime.now()
                     )
-                    
-                    # Store in in-memory metadata
-                    self.document_metadata[document_id] = doc_metadata
-                    
-        except Exception as e:
-            # Log error but don't fail initialization
-            print(f"Warning: Failed to rebuild metadata from ChromaDB: {e}")
-    
+                except ValueError:
+                    upload_dt = datetime.now()
+
+                tags_value = chunk_metadata.get("tags", [])
+                if isinstance(tags_value, str):
+                    try:
+                        tags_value = json.loads(tags_value)
+                    except json.JSONDecodeError:
+                        tags_value = []
+
+                doc_metadata = DocumentMetadata(
+                    document_id=document_id,
+                    filename=chunk_metadata.get("filename", "Unknown"),
+                    document_type=DocumentType(chunk_metadata.get("document_type", "txt")),
+                    upload_timestamp=upload_dt,
+                    file_size=chunk_metadata.get("file_size", 0),
+                    source=chunk_metadata.get("source", "unknown"),
+                    tags=tags_value if isinstance(tags_value, list) else [],
+                )
+
+                self.document_metadata[document_id] = doc_metadata
+
+        except Exception as error:
+            print(f"Warning: Failed to rebuild metadata from ChromaDB: {error}")
     async def store_document(
         self,
         content: str,
@@ -201,9 +227,12 @@ class DocumentMemory:
             )
             documents.append(doc)
         
-        # Add to vector store
-        self.vectorstore.add_documents(documents)
-        
+        # Add to vector store or fallback store
+        if self.vectorstore:
+            self.vectorstore.add_documents(documents)
+        else:
+            self.chunk_store[document_id] = [doc.page_content for doc in documents]
+
         return document_id
     
     async def search_documents(
@@ -233,12 +262,40 @@ class DocumentMemory:
             filter_dict["has_property_data"] = False
         
         # Search vector store
-        results = self.vectorstore.similarity_search_with_score(
-            query, 
-            k=limit,
-            filter=filter_dict if filter_dict else None
-        )
-        
+        results = []
+        if self.vectorstore:
+            results = self.vectorstore.similarity_search_with_score(
+                query,
+                k=limit,
+                filter=filter_dict if filter_dict else None
+            )
+        else:
+            query_lower = query.lower()
+            for document_id, chunks in self.chunk_store.items():
+                metadata = self.document_metadata.get(document_id)
+                if not metadata:
+                    continue
+                if document_type and metadata.document_type != document_type:
+                    continue
+
+                for idx, chunk in enumerate(chunks):
+                    if query_lower in chunk.lower():
+                        results.append((
+                            Document(
+                                page_content=chunk,
+                                metadata={
+                                    "document_id": document_id,
+                                    "chunk_index": idx,
+                                    "total_chunks": len(chunks),
+                                },
+                            ),
+                            0.0,  # similarity score placeholder
+                        ))
+                        if len(results) >= limit:
+                            break
+                if len(results) >= limit:
+                    break
+
         # Format results
         formatted_results = []
         for doc, score in results:
@@ -705,4 +762,3 @@ class DocumentMemory:
             "documents_with_property_data": with_property_data,
             "documents_without_property_data": total_documents - with_property_data
         }
-

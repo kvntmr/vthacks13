@@ -1,0 +1,13 @@
+.venv
+node_modules
+front/new/node_modules
+front/new/.next
+front/new/out
+front/new/dist
+**/__pycache__
+**/*.pyc
+uploads
+*.log
+.idea
+.vscode
+.DS_Store

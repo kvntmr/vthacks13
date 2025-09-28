@@ -28,7 +28,7 @@ import {
   ChevronUp,
   Plus,
 } from "lucide-react";
-import { type ElementType, Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { type ElementType, Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -206,180 +206,10 @@ function collectFolderStats(folder: RealEstateFolder): FolderStats {
 const FILE_LIBRARY_ROOT: RealEstateFolder = {
   id: "library-root",
   name: "All Files",
-  description:
-    "Shared diligence documents, underwriting files, and reporting artifacts for active deals.",
-  files: [
-    {
-      id: "file-market-overview",
-      name: "Market Overview Q4.pdf",
-      type: "pdf",
-      size: "2.1 MB",
-      status: "indexed",
-      updatedAt: "2024-09-27T15:30:00Z",
-    },
-    {
-      id: "file-lease-comps",
-      name: "Lease Comps Summary.xlsx",
-      type: "xlsx",
-      size: "1.2 MB",
-      status: "indexed",
-      updatedAt: "2024-09-28T10:15:00Z",
-    },
-    {
-      id: "file-investment-memo",
-      name: "Pipeline Investment Memo.doc",
-      type: "doc",
-      size: "864 KB",
-      status: "queued",
-      updatedAt: "2024-09-28T09:45:00Z",
-    },
-    {
-      id: "file-financial-data",
-      name: "Financial Data Q3.csv",
-      type: "csv",
-      size: "245 KB",
-      status: "indexed",
-      updatedAt: "2024-09-28T14:20:00Z",
-    },
-    {
-      id: "file-tenant-list",
-      name: "Tenant List.csv",
-      type: "csv",
-      size: "156 KB",
-      status: "indexed",
-      updatedAt: "2024-09-28T11:30:00Z",
-    },
-  ],
-  children: [
-    {
-      id: "folder-horizon-logistics",
-      name: "Horizon Logistics Park",
-      description:
-        "Industrial repositioning diligence for Horizon Logistics Park.",
-      files: [
-        {
-          id: "file-horizon-memo",
-          name: "Screening Memo Draft.pdf",
-          type: "pdf",
-          size: "512 KB",
-          status: "indexing",
-          progress: 72,
-          updatedAt: "2024-09-26T17:05:00Z",
-        },
-        {
-          id: "file-horizon-stacking",
-          name: "Tenant Stacking Plan.pdf",
-          type: "pdf",
-          size: "1.1 MB",
-          status: "indexing",
-          progress: 64,
-          updatedAt: "2024-09-25T12:20:00Z",
-        },
-        {
-          id: "file-horizon-utilities",
-          name: "Utilities Audit.xlsx",
-          type: "xlsx",
-          size: "944 KB",
-          status: "queued",
-          updatedAt: "2024-09-23T08:40:00Z",
-        },
-      ],
-      children: [
-        {
-          id: "folder-horizon-financials",
-          name: "Financial Models",
-          description: "ARGUS exports and underwriting versions.",
-          files: [
-            {
-              id: "file-horizon-argus",
-              name: "ARGUS Export v3.xlsx",
-              type: "xlsx",
-              size: "3.4 MB",
-              status: "indexing",
-              progress: 58,
-              updatedAt: "2024-09-27T19:12:00Z",
-            },
-            {
-              id: "file-horizon-sensitivities",
-              name: "Sensitivity Scenarios.xlsx",
-              type: "xlsx",
-              size: "2.6 MB",
-              status: "indexed",
-              updatedAt: "2024-09-24T14:10:00Z",
-            },
-          ],
-        },
-      ],
-    },
-    {
-      id: "folder-suncrest-retail",
-      name: "Suncrest Retail",
-      description: "Retail center acquisition materials and tenant diligence.",
-      files: [
-        {
-          id: "file-suncrest-anchor",
-          name: "Anchor Lease Abstract.pdf",
-          type: "pdf",
-          size: "1.5 MB",
-          status: "indexed",
-          updatedAt: "2024-09-22T09:25:00Z",
-        },
-        {
-          id: "file-suncrest-cam",
-          name: "CAM Reconciliation.xlsx",
-          type: "xlsx",
-          size: "1.9 MB",
-          status: "indexing",
-          progress: 55,
-          updatedAt: "2024-09-27T11:03:00Z",
-        },
-        {
-          id: "file-suncrest-traffic",
-          name: "Traffic Study 2024.pdf",
-          type: "pdf",
-          size: "2.0 MB",
-          status: "indexed",
-          updatedAt: "2024-09-18T16:45:00Z",
-        },
-      ],
-    },
-    {
-      id: "folder-seaside-multifamily",
-      name: "Seaside Multifamily",
-      description: "Off-market multifamily diligence and underwriting.",
-      files: [
-        {
-          id: "file-seaside-om",
-          name: "Offering Memorandum.pdf",
-          type: "pdf",
-          size: "4.8 MB",
-          status: "indexing",
-          progress: 48,
-          updatedAt: "2024-09-26T13:32:00Z",
-        },
-        {
-          id: "file-seaside-argus",
-          name: "ARGUS Model Export.xlsx",
-          type: "xlsx",
-          size: "3.1 MB",
-          status: "queued",
-          updatedAt: "2024-09-25T07:55:00Z",
-        },
-        {
-          id: "file-seaside-notes",
-          name: "Inspection Notes.doc",
-          type: "doc",
-          size: "612 KB",
-          status: "indexed",
-          updatedAt: "2024-09-24T18:05:00Z",
-        },
-      ],
-    },
-  ],
+  description: "Uploaded documents available to the workspace.",
+  files: [],
+  children: [],
 };
-
-const FOLDER_INDEX = buildFolderIndex(FILE_LIBRARY_ROOT);
-
 type PipelineMetric = {
   id: string;
   label: string;
@@ -465,7 +295,7 @@ const HOME_DEALS: DealSummary[] = [
     occupancy: "81%",
     status: "Screening memo in review",
     nextAction: "Collect updated rent roll",
-    folderId: "folder-horizon-logistics",
+    folderId: FILE_LIBRARY_ROOT.id,
   },
   {
     id: "deal-suncrest",
@@ -474,7 +304,7 @@ const HOME_DEALS: DealSummary[] = [
     occupancy: "92%",
     status: "Tenant diligence underway",
     nextAction: "Confirm CAM reconciliation",
-    folderId: "folder-suncrest-retail",
+    folderId: FILE_LIBRARY_ROOT.id,
   },
   {
     id: "deal-seaside",
@@ -483,7 +313,7 @@ const HOME_DEALS: DealSummary[] = [
     occupancy: "93%",
     status: "Underwriting updates",
     nextAction: "Refresh ARGUS sensitivities",
-    folderId: "folder-seaside-multifamily",
+    folderId: FILE_LIBRARY_ROOT.id,
   },
 ];
 
@@ -689,7 +519,7 @@ const CONVERSATION_ACTIONS: ActivityItem[] = [
     summary: "Review rent roll uploads, stacking plan renders, and refreshed comps.",
     actionLabel: "View files",
     actionNavId: "file-library",
-    actionFolderId: "folder-horizon-logistics",
+    actionFolderId: FILE_LIBRARY_ROOT.id,
   },
   {
     id: "action-controls",
@@ -1042,10 +872,35 @@ export function ChatDashboard() {
     type: string;
   } | undefined>(undefined);
 
+  const loadFileLibrary = useCallback(async () => {
+    try {
+      const response = await fetch("/api/files/list", { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error(`Failed to load file library (${response.status})`);
+      }
+      const data = await response.json();
+      if (data?.folder) {
+        setFileLibraryData(data.folder);
+      }
+    } catch (error) {
+      console.error("Failed to load uploaded files:", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadFileLibrary();
+  }, [loadFileLibrary]);
+
   // Update folder index when data changes
   useEffect(() => {
     setFolderIndex(buildFolderIndex(fileLibraryData));
   }, [fileLibraryData]);
+
+  useEffect(() => {
+    if (!folderIndex[activeFolderId] && fileLibraryData?.id) {
+      setActiveFolderId(fileLibraryData.id);
+    }
+  }, [folderIndex, activeFolderId, fileLibraryData.id]);
 
   const activeFolderEntry =
     folderIndex[activeFolderId] ?? folderIndex[fileLibraryData.id];
@@ -1104,72 +959,6 @@ export function ChatDashboard() {
         return prev;
       });
     }, 3000);
-  };
-
-  const appendFileToFolder = (
-    folder: RealEstateFolder,
-    targetId: string,
-    newFile: RealEstateFile
-  ): RealEstateFolder => {
-    if (folder.id === targetId) {
-      const existingIndex = folder.files.findIndex(file => file.id === newFile.id);
-      const updatedFiles = existingIndex >= 0
-        ? folder.files.map(file => (file.id === newFile.id ? newFile : file))
-        : [...folder.files, newFile];
-
-      return {
-        ...folder,
-        files: updatedFiles,
-      };
-    }
-
-    if (!folder.children) {
-      return folder;
-    }
-
-    return {
-      ...folder,
-      children: folder.children.map(child => appendFileToFolder(child, targetId, newFile)),
-    };
-  };
-
-  const inferFileTypeFromName = (fileName: string): RealEstateFile["type"] => {
-    const extension = fileName.split('.').pop()?.toLowerCase() ?? '';
-    if (extension === 'pdf') return 'pdf';
-    if (extension === 'csv') return 'csv';
-    if (extension === 'xlsx' || extension === 'xls') return 'xlsx';
-    return 'doc';
-  };
-
-  const formatFileSizeFromBytes = (bytes: number): string => {
-    if (bytes < 1024) {
-      return `${bytes} B`;
-    }
-    if (bytes < 1024 * 1024) {
-      return `${(bytes / 1024).toFixed(1)} KB`;
-    }
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  };
-
-  const buildRealEstateFileFromUpload = (
-    uploadedFile: { originalName: string; storedName: string; size?: number; processedJsonPath?: string },
-    sourceFile: File
-  ): RealEstateFile => {
-    const displayName = uploadedFile.originalName ?? sourceFile.name;
-    const bytes = typeof uploadedFile.size === 'number' ? uploadedFile.size : sourceFile.size;
-    const status: RealEstateFile["status"] = uploadedFile.processedJsonPath ? 'indexed' : 'queued';
-    const fileId = uploadedFile.storedName
-      ? `file-${uploadedFile.storedName}`
-      : `file-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
-
-    return {
-      id: fileId,
-      name: displayName,
-      type: inferFileTypeFromName(displayName),
-      size: formatFileSizeFromBytes(bytes),
-      status,
-      updatedAt: new Date().toISOString(),
-    };
   };
 
   const startUploads = (files: File[], options?: { addToLibrary?: boolean }) => {
@@ -1258,10 +1047,7 @@ export function ChatDashboard() {
         ),
       }));
 
-      if (upload.addToLibrary && data?.file) {
-        const newFile = buildRealEstateFileFromUpload(data.file, upload.file);
-        setFileLibraryData(prevData => appendFileToFolder(prevData, upload.targetFolderId, newFile));
-      }
+      await loadFileLibrary();
     } catch (error) {
       const isAbort = error instanceof DOMException && error.name === 'AbortError';
 
@@ -1492,7 +1278,15 @@ export function ChatDashboard() {
           />
         );
       case "chat":
-        return <ChatInterface setActiveNavId={setActiveNavId} handleOpenFolder={handleOpenFolder} onCloseLeftSidebar={() => setIsSidebarOpen(false)} />;
+        return (
+          <ChatInterface
+            setActiveNavId={setActiveNavId}
+            handleOpenFolder={handleOpenFolder}
+            fileLibraryData={fileLibraryData}
+            folderIndex={folderIndex}
+            onCloseLeftSidebar={() => setIsSidebarOpen(false)}
+          />
+        );
       case "history":
         return (
           <HistoryOverviewView
@@ -2530,7 +2324,7 @@ function ConversationWorkspaceView({
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <Button
-                onClick={() => onOpenFolder("folder-horizon-logistics")}
+                onClick={() => onOpenFolder(FILE_LIBRARY_ROOT.id)}
                 variant="outline"
               >
                 Open deal files
@@ -2708,7 +2502,7 @@ function ReportWorkspaceView({
             <Button onClick={() => onNavigate("history-settings")} variant="outline">
               Memo controls
             </Button>
-            <Button onClick={() => onOpenFolder(dealSummary?.folderId || "folder-horizon-logistics")} variant="outline">
+            <Button onClick={() => onOpenFolder(dealSummary?.folderId || FILE_LIBRARY_ROOT.id)} variant="outline">
               Deal files
             </Button>
           </div>
@@ -2752,7 +2546,7 @@ function ReportWorkspaceView({
         <Button onClick={() => onNavigate("history-chats")} variant="outline">
           View deal chat
         </Button>
-        <Button onClick={() => onOpenFolder(dealSummary?.folderId || "folder-horizon-logistics")} variant="outline">
+        <Button onClick={() => onOpenFolder(dealSummary?.folderId || FILE_LIBRARY_ROOT.id)} variant="outline">
           Export source files
         </Button>
       </div>
@@ -2860,9 +2654,17 @@ type ChatInterfaceState = {
   datasetJsonData: Record<string, { data: any; lastFetched: number; loading: boolean; error: string | null }>; // JSON data for each dataset
 };
 
-function ChatInterface({ setActiveNavId, handleOpenFolder, onCloseLeftSidebar }: { 
+function ChatInterface({
+  setActiveNavId,
+  handleOpenFolder,
+  onCloseLeftSidebar,
+  fileLibraryData,
+  folderIndex,
+}: {
   setActiveNavId: (id: string) => void;
   handleOpenFolder: (id: string) => void;
+  fileLibraryData: RealEstateFolder;
+  folderIndex: Record<string, FolderIndexEntry>;
   onCloseLeftSidebar?: () => void;
 }) {
   const [state, setState] = useState<ChatInterfaceState>({
@@ -2904,28 +2706,29 @@ function ChatInterface({ setActiveNavId, handleOpenFolder, onCloseLeftSidebar }:
 
   // Get all available folders for selection
   const availableFolders = useMemo(() => {
-    const folders = [];
-    if (FILE_LIBRARY_ROOT.children) {
-      for (const folder of FILE_LIBRARY_ROOT.children) {
-        folders.push({
-          id: folder.id,
-          name: folder.name,
-          description: folder.description,
-        });
-        // Also include subfolders
-        if (folder.children) {
-          for (const subfolder of folder.children) {
-            folders.push({
-              id: subfolder.id,
-              name: `${folder.name} > ${subfolder.name}`,
-              description: subfolder.description,
-            });
-          }
-        }
+    if (!fileLibraryData) return [] as { id: string; name: string; description?: string }[];
+
+    const folders: { id: string; name: string; description?: string }[] = [];
+
+    const visit = (folder: RealEstateFolder, ancestors: string[]) => {
+      const displayName = ancestors.length
+        ? `${ancestors.join(" > ")} > ${folder.name}`
+        : folder.name;
+      folders.push({
+        id: folder.id,
+        name: displayName,
+        description: folder.description,
+      });
+
+      if (folder.children) {
+        const nextAncestors = [...ancestors, folder.name];
+        folder.children.forEach(child => visit(child, nextAncestors));
       }
-    }
+    };
+
+    visit(fileLibraryData, []);
     return folders;
-  }, []);
+  }, [fileLibraryData]);
 
   // Expose API for backend to call
   useEffect(() => {
@@ -3550,11 +3353,9 @@ function ChatInterface({ setActiveNavId, handleOpenFolder, onCloseLeftSidebar }:
                   const dataset = availableFolders.find(f => f.id === state.showDatasetDetails);
                   if (!dataset) return null;
 
-                  const stats = collectFolderStats(
-                    FILE_LIBRARY_ROOT.children?.find(c => c.id === dataset.id) || 
-                    FILE_LIBRARY_ROOT.children?.find(c => c.children?.some(sc => sc.id === dataset.id))?.children?.find(sc => sc.id === dataset.id) ||
-                    FILE_LIBRARY_ROOT
-                  );
+                  const folderEntry = folderIndex[dataset.id] ?? folderIndex[fileLibraryData.id];
+                  const targetFolder = folderEntry?.folder ?? fileLibraryData;
+                  const stats = collectFolderStats(targetFolder);
 
                   return (
                     <>
@@ -3609,9 +3410,8 @@ function ChatInterface({ setActiveNavId, handleOpenFolder, onCloseLeftSidebar }:
                         <h5 className="font-medium text-sm">Recent Files</h5>
                         <div className="space-y-2">
                           {(() => {
-                            const folder = FILE_LIBRARY_ROOT.children?.find(c => c.id === dataset.id) || 
-                                          FILE_LIBRARY_ROOT.children?.find(c => c.children?.some(sc => sc.id === dataset.id))?.children?.find(sc => sc.id === dataset.id);
-                            
+                            const folder = folderIndex[dataset.id]?.folder ?? fileLibraryData;
+
                             if (!folder?.files?.length) {
                               return (
                                 <p className="text-sm text-muted-foreground">No files in this dataset yet.</p>
