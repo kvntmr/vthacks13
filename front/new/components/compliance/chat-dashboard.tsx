@@ -1093,6 +1093,7 @@ export function ChatDashboard() {
   };
 
   const simulateUpload = (uploadId: string) => {
+    const targetFolderId = activeFolderId;
     // Simulate random upload time between 1-5 seconds
     const totalTime = Math.random() * 4000 + 1000;
     const steps = 20;
@@ -1117,48 +1118,12 @@ export function ChatDashboard() {
         const hasError = Math.random() < 0.1;
 
         setTimeout(() => {
+          let completedFile: File | null = null;
+
           setUploadManager(prev => {
-            const completedUpload = prev.uploads.find(u => u.id === uploadId);
-            
-            // If upload completed successfully, add file to library
-            if (!hasError && completedUpload) {
-              const fileType = completedUpload.file.name.toLowerCase().endsWith('.pdf') ? 'pdf' :
-                              completedUpload.file.name.toLowerCase().endsWith('.xlsx') || completedUpload.file.name.toLowerCase().endsWith('.xls') ? 'xlsx' :
-                              'doc';
-              
-              const fileSize = completedUpload.file.size < 1024 * 1024 
-                ? `${(completedUpload.file.size / 1024).toFixed(1)} KB`
-                : `${(completedUpload.file.size / (1024 * 1024)).toFixed(1)} MB`;
-
-              const newFile: RealEstateFile = {
-                id: `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-                name: completedUpload.file.name,
-                type: fileType as "pdf" | "xlsx" | "doc",
-                size: fileSize,
-                status: "queued",
-                updatedAt: new Date().toISOString(),
-              };
-
-              // Add file to the active folder
-              setFileLibraryData(prevData => {
-                const updateFolder = (folder: RealEstateFolder): RealEstateFolder => {
-                  if (folder.id === activeFolderId) {
-                    return {
-                      ...folder,
-                      files: [...folder.files, newFile],
-                    };
-                  }
-                  if (folder.children) {
-                    return {
-                      ...folder,
-                      children: folder.children.map(updateFolder),
-                    };
-                  }
-                  return folder;
-                };
-
-                return updateFolder(prevData);
-              });
+            const uploadEntry = prev.uploads.find(u => u.id === uploadId);
+            if (!hasError && uploadEntry && uploadEntry.status === 'uploading') {
+              completedFile = uploadEntry.file;
             }
 
             return {
@@ -1175,6 +1140,47 @@ export function ChatDashboard() {
               ),
             };
           });
+
+          if (!hasError && completedFile) {
+            const fileType = completedFile.name.toLowerCase().endsWith('.pdf')
+              ? 'pdf'
+              : completedFile.name.toLowerCase().endsWith('.xlsx') || completedFile.name.toLowerCase().endsWith('.xls')
+              ? 'xlsx'
+              : 'doc';
+
+            const fileSize = completedFile.size < 1024 * 1024 
+              ? `${(completedFile.size / 1024).toFixed(1)} KB`
+              : `${(completedFile.size / (1024 * 1024)).toFixed(1)} MB`;
+
+            const newFile: RealEstateFile = {
+              id: `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+              name: completedFile.name,
+              type: fileType as "pdf" | "xlsx" | "doc",
+              size: fileSize,
+              status: "queued",
+              updatedAt: new Date().toISOString(),
+            };
+
+            setFileLibraryData(prevData => {
+              const updateFolder = (folder: RealEstateFolder): RealEstateFolder => {
+                if (folder.id === targetFolderId) {
+                  return {
+                    ...folder,
+                    files: [...folder.files, newFile],
+                  };
+                }
+                if (folder.children) {
+                  return {
+                    ...folder,
+                    children: folder.children.map(updateFolder),
+                  };
+                }
+                return folder;
+              };
+
+              return updateFolder(prevData);
+            });
+          }
 
           // Auto-dismiss after 3 seconds if all uploads are complete
           setTimeout(() => {
@@ -2729,11 +2735,18 @@ function ChatInterface({ setActiveNavId, handleOpenFolder, onCloseLeftSidebar }:
   const folderInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const setStateRef = useRef<typeof setState>();
+  const attachedFilesRef = useRef<File[]>([]);
+  const isProcessingUploadRef = useRef(false);
 
   // Update the ref whenever setState changes
   useEffect(() => {
     setStateRef.current = setState;
   }, [setState]);
+
+  // Keep the ref in sync with state
+  useEffect(() => {
+    attachedFilesRef.current = state.attachedFiles;
+  }, [state.attachedFiles]);
 
   // Get all available folders for selection
   const availableFolders = useMemo(() => {
@@ -2907,19 +2920,63 @@ function ChatInterface({ setActiveNavId, handleOpenFolder, onCloseLeftSidebar }:
   }, [state.showDatasetDetails]);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
-    setState(prev => ({
-      ...prev,
-      attachedFiles: [...prev.attachedFiles, ...files],
-    }));
+    // Prevent multiple simultaneous uploads
+    if (isProcessingUploadRef.current) return;
+    isProcessingUploadRef.current = true;
+    
+    try {
+      // Clear the input immediately to prevent duplicate events
+      event.target.value = '';
+      
+      const files = Array.from(event.target.files || []);
+      if (files.length === 0) return;
+      
+      // Filter out files that are already attached to prevent duplicates
+      const newFiles = files.filter(newFile => 
+        !attachedFilesRef.current.some(existingFile => 
+          existingFile.name === newFile.name && existingFile.size === newFile.size
+        )
+      );
+      
+      if (newFiles.length > 0) {
+        setState(prev => ({
+          ...prev,
+          attachedFiles: [...prev.attachedFiles, ...newFiles],
+        }));
+      }
+    } finally {
+      isProcessingUploadRef.current = false;
+    }
   };
 
   const handleFolderUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(event.target.files || []);
-    setState(prev => ({
-      ...prev,
-      attachedFiles: [...prev.attachedFiles, ...files],
-    }));
+    // Prevent multiple simultaneous uploads
+    if (isProcessingUploadRef.current) return;
+    isProcessingUploadRef.current = true;
+    
+    try {
+      // Clear the input immediately to prevent duplicate events
+      event.target.value = '';
+      
+      const files = Array.from(event.target.files || []);
+      if (files.length === 0) return;
+      
+      // Filter out files that are already attached to prevent duplicates
+      const newFiles = files.filter(newFile => 
+        !attachedFilesRef.current.some(existingFile => 
+          existingFile.name === newFile.name && existingFile.size === newFile.size
+        )
+      );
+      
+      if (newFiles.length > 0) {
+        setState(prev => ({
+          ...prev,
+          attachedFiles: [...prev.attachedFiles, ...newFiles],
+        }));
+      }
+    } finally {
+      isProcessingUploadRef.current = false;
+    }
   };
 
   const removeFile = (index: number) => {
@@ -3098,7 +3155,7 @@ function ChatInterface({ setActiveNavId, handleOpenFolder, onCloseLeftSidebar }:
         <div className="flex flex-wrap gap-2">
           {state.attachedFiles.map((file, index) => (
             <div
-              key={index}
+              key={`${file.name}-${file.size}-${file.lastModified}-${index}`}
               className="flex items-center gap-2 rounded-lg border border-border/60 bg-muted/30 px-3 py-2 text-sm"
             >
               <FileStack className="h-4 w-4" />
