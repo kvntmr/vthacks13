@@ -15,7 +15,8 @@ from app.core.langchain.memory.document_memory import DocumentMemory, DocumentTy
 # Initialize services
 file_router = FileRouter()
 property_agent = PropertyExtractionAgent()
-document_memory = DocumentMemory()
+from app.core.langchain.memory.shared_memory import get_document_memory
+document_memory = get_document_memory()
 
 async def validate_file_node(state: FileProcessingState) -> FileProcessingState:
     """

@@ -78,6 +78,63 @@ class DocumentMemory:
         
         # In-memory storage for document metadata
         self.document_metadata: Dict[str, DocumentMetadata] = {}
+        
+        # Rebuild metadata from ChromaDB on initialization
+        self._rebuild_metadata_from_chromadb()
+    
+    def _rebuild_metadata_from_chromadb(self):
+        """
+        Rebuild in-memory metadata from ChromaDB on initialization
+        This ensures consistency after server restarts
+        """
+        try:
+            collection = self.vectorstore._collection
+            if not collection:
+                return
+            
+            # Get all documents from ChromaDB
+            all_docs = collection.get()
+            if not all_docs or 'metadatas' not in all_docs:
+                return
+            
+            # Extract unique document IDs and rebuild metadata
+            unique_doc_ids = set()
+            for metadata in all_docs['metadatas']:
+                if metadata and 'document_id' in metadata:
+                    unique_doc_ids.add(metadata['document_id'])
+            
+            # Rebuild metadata for each unique document
+            for document_id in unique_doc_ids:
+                # Get first chunk to extract metadata
+                filter_dict = {"document_id": document_id}
+                results = self.vectorstore.similarity_search(
+                    "document",  # Generic query
+                    k=1,  # Just get one chunk for metadata
+                    filter=filter_dict
+                )
+                
+                if results:
+                    chunk_metadata = results[0].metadata
+                    
+                    # Recreate DocumentMetadata object
+                    doc_metadata = DocumentMetadata(
+                        document_id=document_id,
+                        filename=chunk_metadata.get("filename", "Unknown"),
+                        document_type=DocumentType(chunk_metadata.get("document_type", "txt")),
+                        upload_timestamp=datetime.fromisoformat(
+                            chunk_metadata.get("upload_timestamp", datetime.now().isoformat())
+                        ),
+                        file_size=chunk_metadata.get("file_size", 0),
+                        source=chunk_metadata.get("source", "unknown"),
+                        tags=json.loads(chunk_metadata.get("tags", "[]")) if isinstance(chunk_metadata.get("tags"), str) else chunk_metadata.get("tags", [])
+                    )
+                    
+                    # Store in in-memory metadata
+                    self.document_metadata[document_id] = doc_metadata
+                    
+        except Exception as e:
+            # Log error but don't fail initialization
+            print(f"Warning: Failed to rebuild metadata from ChromaDB: {e}")
     
     async def store_document(
         self,

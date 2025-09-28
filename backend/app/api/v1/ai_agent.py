@@ -11,7 +11,7 @@ import asyncio
 import json
 from datetime import datetime, timedelta
 
-from app.core.langchain.memory.document_memory import DocumentMemory
+from app.core.langchain.memory.shared_memory import get_document_memory
 from app.services.memory_screening_service import MemoryScreeningService
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
@@ -21,15 +21,15 @@ from langchain.memory import ConversationBufferWindowMemory
 
 router = APIRouter(prefix="/ai-agent", tags=["AI Agent"])
 
-# Initialize services
-document_memory = DocumentMemory()
+# Initialize services with shared instance
+document_memory = get_document_memory()
 screening_service = MemoryScreeningService()
 screening_service.document_memory = document_memory
 
 # Initialize LLM with optimized settings for faster responses
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.5-pro",
-    temperature=0.1,  # Lower temperature for faster, more focused responses
+    temperature=0.3,  # Lower temperature for faster, more focused responses
     google_api_key=os.getenv("GEMINI_API_KEY")
 )
 
@@ -654,18 +654,23 @@ Be specific, data-driven, and reference the actual content from the documents. D
         
         # Fallback to regular chat with basic memory context
         memory_context = ""
-        if request.include_memory and doc_metadata:
-            memory_context = f"\n\n**Available Documents in Memory ({len(doc_metadata)} documents):**\n"
-            for doc in doc_metadata[:5]:  # Show first 5 documents
-                filename = doc.get('filename', 'Unknown')
-                doc_type = doc.get('document_type', 'Unknown')
-                memory_context += f"- {filename} ({doc_type})\n"
-            if len(doc_metadata) > 5:
-                memory_context += f"- ... and {len(doc_metadata) - 5} more documents\n"
+        if request.include_memory:
+            if doc_metadata:
+                memory_context = f"\n\n**Available Documents in Memory ({len(doc_metadata)} documents):**\n"
+                for doc in doc_metadata[:5]:  # Show first 5 documents
+                    filename = doc.get('filename', 'Unknown')
+                    doc_type = doc.get('document_type', 'Unknown')
+                    memory_context += f"- {filename} ({doc_type})\n"
+                if len(doc_metadata) > 5:
+                    memory_context += f"- ... and {len(doc_metadata) - 5} more documents\n"
+            else:
+                memory_context = "\n\n**Available Documents in Memory: NONE - No documents are currently stored.**"
         
         # Create optimized prompt for regular chat with conversation context
         prompt = ChatPromptTemplate.from_messages([
             ("system", """You are a real estate investment AI assistant with access to user documents.
+
+IMPORTANT: Only mention documents that are explicitly listed in the memory context below. If no documents are listed, you have NO documents available and should clearly state this.
 
 Provide helpful, concise advice. For specific data questions, analyze directly rather than suggesting commands.
 Reference previous conversation context when relevant to provide better continuity.

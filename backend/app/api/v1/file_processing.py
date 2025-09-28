@@ -10,14 +10,15 @@ import os
 
 from app.core.langgraph.workflows.file_processing_workflow import FileProcessingWorkflow
 from app.core.langgraph.workflows.parallel_processing_workflow import ParallelProcessingWorkflow
-from app.core.langchain.memory.document_memory import DocumentMemory, DocumentType
+from app.core.langchain.memory.document_memory import DocumentType
+from app.core.langchain.memory.shared_memory import get_document_memory
 
 router = APIRouter(prefix="/files", tags=["file-processing"])
 
-# Initialize services
+# Initialize services with shared instance
 file_processing_workflow = FileProcessingWorkflow()
 parallel_processing_workflow = ParallelProcessingWorkflow()
-document_memory = DocumentMemory()
+document_memory = get_document_memory()
 
 # Request/Response Models
 class FileUploadResponse(BaseModel):
@@ -536,10 +537,11 @@ async def _process_files_directly(file_data: List[Dict[str, Any]]) -> Dict[str, 
     """
     import asyncio
     from app.services.file_router import FileRouter
-    from app.core.langchain.memory.document_memory import DocumentMemory, DocumentType
+    from app.core.langchain.memory.document_memory import DocumentType
+    from app.core.langchain.memory.shared_memory import get_document_memory
     
     file_router = FileRouter()
-    document_memory = DocumentMemory()
+    document_memory = get_document_memory()
     
     successful_uploads = 0
     failed_uploads = 0

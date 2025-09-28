@@ -1,26 +1,75 @@
-import { put } from "@vercel/blob";
+import { Buffer } from "buffer";
+import fs from "fs/promises";
+import path from "path";
+
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { auth } from "@/app/(auth)/auth";
 
-// Use Blob instead of File since File is not available in Node.js environment
+const MAX_UPLOAD_SIZE_BYTES = 25 * 1024 * 1024; // 25MB default limit
+const ALLOWED_MIME_TYPES = new Set([
+  "application/pdf",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  "application/msword",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  "application/vnd.ms-excel",
+  "text/csv",
+  "application/json",
+  "text/json",
+  "text/plain",
+  "image/jpeg",
+  "image/png",
+]);
+
+const ALLOWED_EXTENSIONS = new Set([
+  "pdf",
+  "doc",
+  "docx",
+  "xls",
+  "xlsx",
+  "csv",
+  "json",
+  "txt",
+  "jpg",
+  "jpeg",
+  "png",
+]);
+
 const FileSchema = z.object({
   file: z
     .instanceof(Blob)
-    .refine((file) => file.size <= 5 * 1024 * 1024, {
-      message: "File size should be less than 5MB",
-    })
-    // Update the file type based on the kind of files you want to accept
-    .refine((file) => ["image/jpeg", "image/png"].includes(file.type), {
-      message: "File type should be JPEG or PNG",
+    .refine((file) => file.size <= MAX_UPLOAD_SIZE_BYTES, {
+      message: `File size should be less than ${MAX_UPLOAD_SIZE_BYTES / (1024 * 1024)}MB`,
     }),
 });
 
+const FILE_UPLOAD_DIR =
+  process.env.FILE_UPLOAD_DIR ?? path.join(process.cwd(), "uploads");
+const FILE_SERVICE_BASE_URL =
+  process.env.FILE_SERVICE_BASE_URL ??
+  process.env.NEXT_PUBLIC_FILE_SERVICE_BASE_URL ??
+  process.env.BACKEND_API_URL ??
+  process.env.NEXT_PUBLIC_BACKEND_API_URL ??
+  "";
+const FILE_SERVICE_AUTH_VALUE =
+  process.env.FILE_SERVICE_AUTH_VALUE ??
+  process.env.FILE_SERVICE_API_KEY ??
+  process.env.FILE_SERVICE_AUTH_TOKEN ??
+  "";
+const FILE_SERVICE_AUTH_HEADER =
+  process.env.FILE_SERVICE_AUTH_HEADER ??
+  (FILE_SERVICE_AUTH_VALUE ? "Authorization" : "");
+
+async function ensureUploadDirExists() {
+  await fs.mkdir(FILE_UPLOAD_DIR, { recursive: true });
+}
+
 export async function POST(request: Request) {
   const session = await auth();
+  const isProduction = process.env.NODE_ENV === "production";
 
-  if (!session) {
+  if (!session && isProduction) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -46,16 +95,52 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: errorMessage }, { status: 400 });
     }
 
-    // Get filename from formData since Blob doesn't have name property
-    const filename = (formData.get("file") as File).name;
-    const fileBuffer = await file.arrayBuffer();
+    const originalFile = formData.get("file") as File;
+    if (!isAllowedFileType(originalFile)) {
+      return NextResponse.json({ error: "Unsupported file type" }, { status: 400 });
+    }
+
+    const filename = sanitizeFilename(originalFile.name);
+    const fileBuffer = Buffer.from(await file.arrayBuffer());
+
+    await ensureUploadDirExists();
+
+    const timestamp = Date.now();
+    const storedFilename = `${timestamp}-${filename}`;
+    const filePath = path.join(FILE_UPLOAD_DIR, storedFilename);
 
     try {
-      const data = await put(`${filename}`, fileBuffer, {
-        access: "public",
-      });
+      await fs.writeFile(filePath, fileBuffer);
 
-      return NextResponse.json(data);
+      const processingResult = await maybeProcessFile({
+        filePath: path.resolve(filePath),
+        buffer: fileBuffer,
+        filename: originalFile.name,
+        mimeType: originalFile.type || "application/octet-stream",
+      });
+      let processedJsonPath: string | undefined;
+
+      if (processingResult) {
+        const jsonFilename = `${storedFilename}.json`;
+        processedJsonPath = path.join(FILE_UPLOAD_DIR, jsonFilename);
+        await fs.writeFile(
+          processedJsonPath,
+          JSON.stringify(processingResult, null, 2),
+          "utf-8"
+        );
+      }
+
+      return NextResponse.json({
+        success: true,
+        file: {
+          originalName: originalFile.name,
+          storedName: storedFilename,
+          mimeType: originalFile.type,
+          size: originalFile.size,
+          path: filePath,
+          processedJsonPath,
+        },
+      });
     } catch (_error) {
       return NextResponse.json({ error: "Upload failed" }, { status: 500 });
     }
@@ -64,5 +149,76 @@ export async function POST(request: Request) {
       { error: "Failed to process request" },
       { status: 500 }
     );
+  }
+}
+
+function sanitizeFilename(name: string) {
+  return name.replace(/[^a-zA-Z0-9._-]/g, "_");
+}
+
+function isAllowedFileType(file: File) {
+  if (ALLOWED_MIME_TYPES.has(file.type)) {
+    return true;
+  }
+
+  const extension = path.extname(file.name).toLowerCase().replace(/^\./, "");
+  if (!extension) {
+    return false;
+  }
+
+  return ALLOWED_EXTENSIONS.has(extension);
+}
+
+async function maybeProcessFile({
+  filePath,
+  buffer,
+  filename,
+  mimeType,
+}: {
+  filePath: string;
+  buffer: Buffer;
+  filename: string;
+  mimeType: string;
+}): Promise<any | undefined> {
+  if (!FILE_SERVICE_BASE_URL) {
+    return undefined;
+  }
+
+  try {
+    const endpoint = new URL("/api/v1/files/process-upload", FILE_SERVICE_BASE_URL);
+    const headers: Record<string, string> = {
+      Accept: "application/json",
+    };
+
+    if (FILE_SERVICE_AUTH_HEADER && FILE_SERVICE_AUTH_VALUE) {
+      headers[FILE_SERVICE_AUTH_HEADER] = FILE_SERVICE_AUTH_VALUE;
+    }
+
+    const formData = new FormData();
+    formData.append("extract_property_data", "true");
+    formData.append(
+      "file",
+      new Blob([buffer], { type: mimeType || "application/octet-stream" }),
+      filename || path.basename(filePath)
+    );
+
+    const response = await fetch(endpoint.toString(), {
+      method: "POST",
+      headers,
+      body: formData,
+    });
+
+    if (!response.ok) {
+      console.warn(
+        `File processing service returned ${response.status}: ${await response.text()}`
+      );
+      return undefined;
+    }
+
+    const payload = await response.json();
+    return payload;
+  } catch (error) {
+    console.warn("Failed to process file via backend:", error);
+    return undefined;
   }
 }
