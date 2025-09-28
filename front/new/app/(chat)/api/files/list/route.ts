@@ -78,10 +78,13 @@ async function buildFolder(dirPath: string, relativePath: string): Promise<RealE
       const stats = await fs.stat(entryFullPath);
       const processedJsonExists = await fileExists(`${entryFullPath}.json`);
 
+      // Use the filename directly since we're now storing clean filenames
+      const fileName = entry.name;
+      
       files.push({
-        id: `file-${sanitizeId(relativePath ? path.join(relativePath, entry.name) : entry.name)}`,
-        name: entry.name,
-        type: determineFileType(entry.name),
+        id: `file-${sanitizeId(fileName)}`,
+        name: fileName,
+        type: determineFileType(fileName),
         size: formatFileSize(stats.size),
         status: processedJsonExists ? "indexed" : "queued",
         updatedAt: stats.mtime.toISOString(),

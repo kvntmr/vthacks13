@@ -38,6 +38,7 @@ export const {
   signOut,
 } = NextAuth({
   ...authConfig,
+  secret: "dummy-secret-for-development",
   providers: [
     Credentials({
       credentials: {},

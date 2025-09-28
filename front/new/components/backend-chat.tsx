@@ -58,7 +58,7 @@ export function BackendChat({ className }: BackendChatProps) {
     try {
       const response = await backendAPI.processUploadParallel(files);
       if (response.success) {
-        toast.success(`Successfully uploaded ${response.file_ids.length} file(s)`);
+        toast.success(`Successfully uploaded ${response.successful_files} file(s)`);
       } else {
         toast.error(response.message || 'Failed to upload files');
       }
@@ -77,16 +77,14 @@ export function BackendChat({ className }: BackendChatProps) {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
 
-    // For folder processing, we'll use the first file's directory path
-    const folderPath = files[0].webkitRelativePath.split('/')[0];
-    
     setIsProcessingFolder(true);
     try {
-      const response = await backendAPI.processFolder(folderPath);
+      // Use the parallel processing endpoint instead of processFolder
+      const response = await backendAPI.processUploadParallel(files);
       if (response.success) {
-        toast.success(`Successfully processed folder with ${response.file_ids.length} file(s)`);
+        toast.success(`Successfully processed folder with ${response.successful_files} file(s)`);
       } else {
-        toast.error(response.message || 'Failed to process folder');
+        toast.error(response.status || 'Failed to process folder');
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to process folder';

@@ -354,8 +354,11 @@ async def chat_with_agent(request: ChatRequest):
         # Check for special commands
         message_lower = request.message.lower().strip()
         
+        # Handle memory clearing requests (AI cannot do this)
+        if any(phrase in message_lower for phrase in ['clear memory', 'delete memory', 'remove memory', 'clear documents', 'delete documents', 'remove documents']):
+            response = await handle_memory_clear_request(request, conversation_id)
         # Handle @screener command
-        if "@screener" in message_lower:
+        elif "@screener" in message_lower:
             response = await handle_screener_command(request, conversation_id)
         # Handle @memory command
         elif "@memory" in message_lower:
@@ -416,7 +419,13 @@ async def handle_screener_command(request: ChatRequest, conversation_id: str) ->
             
             # Use LLM to generate a natural response based on the screening results
             prompt = ChatPromptTemplate.from_messages([
-                ("system", """You are a helpful real estate investment AI assistant with a STRONG EMPHASIS ON DATA-DRIVEN ANALYSIS. The user has run a comprehensive screening analysis on their documents. 
+                ("system", """You are a helpful real estate investment AI assistant with a STRONG EMPHASIS ON DATA-DRIVEN ANALYSIS AND COMPLETE HONESTY. The user has run a comprehensive screening analysis on their documents. 
+
+CRITICAL HONESTY REQUIREMENTS:
+- **BE COMPLETELY HONEST** about your capabilities and limitations
+- **NEVER CLAIM TO HAVE DONE SOMETHING YOU CANNOT DO** (like clearing memory, deleting files, or performing actions outside your scope)
+- **ADMIT WHEN YOU DON'T KNOW SOMETHING** rather than making assumptions
+- **BE TRANSPARENT** about what you can and cannot do
 
 Present the screening results in a natural, conversational way that:
 1. **LEADS WITH KEY DATA POINTS** - Start with the most important numbers, facts, and metrics from the analysis
@@ -426,8 +435,20 @@ Present the screening results in a natural, conversational way that:
 5. **IDENTIFIES DATA GAPS** - Clearly state what important information is missing
 6. **PROVIDES EVIDENCE-BASED INSIGHTS** - Every recommendation must be supported by the actual analysis
 7. **MAINTAINS PROFESSIONAL TONE** - Present findings as a data analyst would to an investor
+8. **BE HONEST ABOUT LIMITATIONS** - If you cannot perform an action, clearly state this
 
 CRITICAL: Every statement must be backed by specific data from the analysis. If data is missing, explicitly state "No data available" rather than making assumptions.
+
+CAPABILITIES YOU HAVE:
+- Analyze documents that are in memory
+- Search through document content
+- Provide investment advice based on available data
+- Use commands: @screener, @memory, @stats, @help
+
+CAPABILITIES YOU DO NOT HAVE:
+- Clear or delete documents from memory
+- Upload or modify files
+- Perform actions outside of analysis and advice
 
 Include the actual analysis summary and mention how many documents were analyzed."""),
                 ("human", f"The screening analysis found: {summary}\n\nNumber of documents analyzed: {total_docs}\nPerformance note: {performance_note}")
@@ -519,6 +540,37 @@ async def handle_memory_command(request: ChatRequest, conversation_id: str) -> C
             timestamp=datetime.now()
         )
 
+async def handle_memory_clear_request(request: ChatRequest, conversation_id: str) -> ChatResponse:
+    """Handle memory clearing requests - AI cannot perform this action"""
+    honest_response = """❌ **I Cannot Clear Memory**
+
+I understand you want to clear or delete documents from memory, but I **cannot perform this action**. I am an AI assistant that can only:
+
+✅ **What I CAN do:**
+- Analyze documents in memory
+- Search through document content  
+- Provide investment advice based on available data
+- Use commands: @screener, @memory, @stats, @help
+
+❌ **What I CANNOT do:**
+- Clear or delete documents from memory
+- Upload or modify files
+- Perform actions outside of analysis and advice
+
+**To clear memory, you would need to:**
+1. Use the API endpoint: `DELETE /api/v1/memory/clear-all`
+2. Or use the file management interface in the frontend
+3. Or contact your system administrator
+
+I'm being completely honest about my limitations - I cannot perform file management operations."""
+    
+    return ChatResponse(
+        response=honest_response,
+        function_used="memory_clear_request",
+        conversation_id=conversation_id,
+        timestamp=datetime.now()
+    )
+
 async def handle_help_command(request: ChatRequest, conversation_id: str) -> ChatResponse:
     """Handle @help command - show available commands"""
     help_text = """🤖 **AI AGENT COMMANDS**
@@ -538,11 +590,25 @@ async def handle_help_command(request: ChatRequest, conversation_id: str) -> Cha
 **Regular Chat:**
 You can also just ask questions normally, and I'll help you with real estate investment advice based on the documents in your memory!
 
+**Important - My Capabilities:**
+✅ **What I CAN do:**
+- Analyze documents in memory
+- Search through document content
+- Provide investment advice based on available data
+- Use the commands listed above
+
+❌ **What I CANNOT do:**
+- Clear or delete documents from memory
+- Upload or modify files
+- Perform actions outside of analysis and advice
+
 **Getting Started:**
 1. Upload documents using the file upload endpoint
 2. Use `@screener` to analyze them
 3. Use `@memory` to search for specific information
-4. Ask me questions about your investments!"""
+4. Ask me questions about your investments!
+
+**Note:** I will always be completely honest about my capabilities and limitations."""
     
     return ChatResponse(
         response=help_text,
@@ -627,7 +693,13 @@ async def handle_regular_chat(request: ChatRequest, conversation_id: str) -> Cha
                 
                 # Create prompt for direct analysis with conversation context
                 prompt = ChatPromptTemplate.from_messages([
-                    ("system", """You are a helpful real estate investment AI assistant with a STRONG EMPHASIS ON DATA-DRIVEN ANALYSIS. You have direct access to the user's documents and can analyze them directly.
+                    ("system", """You are a helpful real estate investment AI assistant with a STRONG EMPHASIS ON DATA-DRIVEN ANALYSIS AND COMPLETE HONESTY. You have direct access to the user's documents and can analyze them directly.
+
+CRITICAL HONESTY REQUIREMENTS:
+- **BE COMPLETELY HONEST** about your capabilities and limitations
+- **NEVER CLAIM TO HAVE DONE SOMETHING YOU CANNOT DO** (like clearing memory, deleting files, or performing actions outside your scope)
+- **ADMIT WHEN YOU DON'T KNOW SOMETHING** rather than making assumptions
+- **BE TRANSPARENT** about what you can and cannot do
 
 Your role is to:
 1. **ANALYZE DOCUMENTS WITH EVIDENCE-BASED REASONING** - Every conclusion must be backed by specific data, numbers, or facts from the documents
@@ -645,8 +717,27 @@ CRITICAL REQUIREMENTS:
 - **Use specific numbers** - Include exact figures, percentages, dates, and measurements
 - **Reference actual content** - Quote or reference specific parts of the documents
 - **Be evidence-based** - No speculation or assumptions without data support
+- **Be honest about limitations** - If you cannot perform an action, clearly state this
+
+CAPABILITIES YOU HAVE:
+- Analyze documents that are in memory
+- Search through document content
+- Provide investment advice based on available data
+- Use commands: @screener, @memory, @stats, @help
+
+CAPABILITIES YOU DO NOT HAVE:
+- Clear or delete documents from memory
+- Upload or modify files
+- Perform actions outside of analysis and advice
 
 Be specific, data-driven, and reference the actual content from the documents. Don't just suggest using commands - provide the analysis directly.
+
+IMPORTANT REASONING GUIDELINES:
+- **USE YOUR EXISTING KNOWLEDGE** - Draw from data you already have access to in memory
+- **PROVIDE ROUGH OUTLINES** - Give general guidance and frameworks based on available information
+- **ANALYZE FIRST, SUGGEST COMMANDS SECOND** - Try to answer questions directly before suggesting @screener or @memory
+- **REASON THROUGH PROBLEMS** - Use logical reasoning and available data to provide insights
+- **BE PROACTIVE** - If you have relevant information, share it rather than just pointing to commands
 
 {conversation_context}
 
@@ -693,12 +784,35 @@ Be specific, data-driven, and reference the actual content from the documents. D
         prompt = ChatPromptTemplate.from_messages([
             ("system", """You are a real estate investment AI assistant with access to user documents.
 
-IMPORTANT: Only mention documents that are explicitly listed in the memory context below. If no documents are listed, you have NO documents available and should clearly state this.
+CRITICAL HONESTY REQUIREMENTS:
+- **BE COMPLETELY HONEST** about your capabilities and limitations
+- **NEVER CLAIM TO HAVE DONE SOMETHING YOU CANNOT DO** (like clearing memory, deleting files, or performing actions outside your scope)
+- **ONLY MENTION DOCUMENTS** that are explicitly listed in the memory context below
+- **IF NO DOCUMENTS ARE LISTED**, you have NO documents available and must clearly state this
+- **ADMIT WHEN YOU DON'T KNOW SOMETHING** rather than making assumptions
+- **BE TRANSPARENT** about what you can and cannot do
+
+CAPABILITIES YOU HAVE:
+- Analyze documents that are in memory
+- Search through document content
+- Provide investment advice based on available data
+- Use commands: @screener, @memory, @stats, @help
+
+CAPABILITIES YOU DO NOT HAVE:
+- Clear or delete documents from memory
+- Upload or modify files
+- Perform actions outside of analysis and advice
+- Access documents not explicitly listed in memory context
 
 Provide helpful, concise advice. For specific data questions, analyze directly rather than suggesting commands.
 Reference previous conversation context when relevant to provide better continuity.
 
-Commands: @screener, @memory, @stats, @help
+IMPORTANT REASONING GUIDELINES:
+- **USE YOUR EXISTING KNOWLEDGE** - Draw from data you already have access to in memory
+- **PROVIDE ROUGH OUTLINES** - Give general guidance and frameworks based on available information
+- **ANALYZE FIRST, SUGGEST COMMANDS SECOND** - Try to answer questions directly before suggesting @screener or @memory
+- **REASON THROUGH PROBLEMS** - Use logical reasoning and available data to provide insights
+- **BE PROACTIVE** - If you have relevant information, share it rather than just pointing to commands
 
 {conversation_context}
 

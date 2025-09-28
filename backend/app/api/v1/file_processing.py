@@ -58,6 +58,9 @@ class ParallelFileUploadResponse(BaseModel):
 class DeleteDocumentsRequest(BaseModel):
     document_ids: List[str] = Field(..., description="List of document IDs to delete")
 
+class DeleteDocumentsByFilenameRequest(BaseModel):
+    filenames: List[str] = Field(..., description="List of filenames to delete")
+
 class DeleteDocumentsResponse(BaseModel):
     success: bool
     deleted_count: int
@@ -130,10 +133,14 @@ async def process_upload(
         # Read file content
         file_content = await file.read()
         
+        # Extract just the filename without the folder path
+        import os
+        clean_filename = os.path.basename(file.filename) if file.filename else "unknown_file"
+        
         # Process the file using the workflow
         result = await file_processing_workflow.process_file(
             file_content=file_content,
-            filename=file.filename
+            filename=clean_filename
         )
         
         # Invalidate AI agent cache since new document was added
@@ -180,8 +187,11 @@ async def process_upload_parallel(
         file_data = []
         for file in files:
             file_content = await file.read()
+            # Extract just the filename without the folder path
+            import os
+            clean_filename = os.path.basename(file.filename) if file.filename else "unknown_file"
             file_data.append({
-                "filename": file.filename,
+                "filename": clean_filename,
                 "content": file_content,
                 "size": len(file_content)
             })
@@ -396,6 +406,65 @@ async def delete_selected_documents(request: DeleteDocumentsRequest):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to delete selected documents: {str(e)}")
+
+@router.post("/memory/documents/delete-by-filename")
+async def delete_documents_by_filename(request: DeleteDocumentsByFilenameRequest):
+    """Delete documents by their filenames"""
+    try:
+        if not request.filenames:
+            raise HTTPException(status_code=400, detail="No filenames provided")
+        
+        if len(request.filenames) > 100:  # Reasonable limit
+            raise HTTPException(status_code=400, detail="Too many filenames. Maximum 100 filenames per request.")
+        
+        # Get all documents to find matching filenames
+        all_docs = await document_memory.get_all_documents()
+        
+        # Find document IDs for the given filenames
+        document_ids = []
+        for doc in all_docs:
+            stored_filename = doc.get("filename", "")
+            # Check both exact match and filename-only match (for backward compatibility)
+            if stored_filename in request.filenames:
+                document_ids.append(doc["document_id"])
+            else:
+                # Check if the stored filename ends with any of the requested filenames
+                # This handles cases where stored filename includes folder path
+                import os
+                stored_basename = os.path.basename(stored_filename)
+                if stored_basename in request.filenames:
+                    document_ids.append(doc["document_id"])
+        
+        if not document_ids:
+            return DeleteDocumentsResponse(
+                success=True,
+                deleted_count=0,
+                deleted_documents=[],
+                failed_documents=[],
+                message="No documents found with the provided filenames"
+            )
+        
+        # Delete the documents by their IDs
+        result = await document_memory.delete_documents_by_ids(document_ids)
+        
+        # Invalidate AI agent cache since documents were removed
+        try:
+            from app.api.v1.ai_agent import invalidate_document_cache
+            invalidate_document_cache()
+        except ImportError:
+            pass  # AI agent module not available
+        
+        return DeleteDocumentsResponse(
+            success=result["success"],
+            deleted_count=result["deleted_count"],
+            deleted_documents=result["deleted_documents"],
+            failed_documents=result["failed_documents"],
+            message=result["message"]
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to delete documents by filename: {str(e)}")
 
 @router.delete("/memory/clear-all")
 async def clear_all_documents():

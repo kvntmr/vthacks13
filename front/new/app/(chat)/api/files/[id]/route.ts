@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import path from "path";
 import { promises as fs } from "fs";
+import { auth } from "@/app/(auth)/auth";
+import { backendAPI } from "@/lib/api/backend";
 
 type Params = { params: { id: string } } | { params: Promise<{ id: string }> };
 
@@ -19,11 +21,17 @@ export async function GET(
       );
     }
 
-    const storedName = fileId.replace(/^file-/, "");
+    const filename = fileId.replace(/^file-/, "");
     const uploadDir = process.env.FILE_UPLOAD_DIR ?? path.join(process.cwd(), "uploads");
 
-    const jsonPath = path.join(uploadDir, `${storedName}.json`);
-    const filePath = path.join(uploadDir, storedName);
+    // Use the filename directly since we're now storing clean filenames
+    const filePath = path.join(uploadDir, filename);
+    const jsonPath = path.join(uploadDir, `${filename}.json`);
+    
+    // Check if the file exists
+    if (!(await fileExists(filePath))) {
+      return NextResponse.json({ error: "File not found" }, { status: 404 });
+    }
 
     let payload: any = null;
 
@@ -124,4 +132,75 @@ function parseCsvLine(line: string) {
 
   result.push(current);
   return result;
+}
+
+export async function DELETE(
+  request: NextRequest,
+  context: Params
+) {
+  try {
+    const session = await auth();
+    const isProduction = process.env.NODE_ENV === "production";
+
+    if (!session && isProduction) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const rawParams = await Promise.resolve(context.params);
+    const fileId = rawParams?.id;
+
+    if (!fileId) {
+      return NextResponse.json(
+        { error: "File ID is required" },
+        { status: 400 }
+      );
+    }
+
+    const filename = fileId.replace(/^file-/, "");
+    const uploadDir = process.env.FILE_UPLOAD_DIR ?? path.join(process.cwd(), "uploads");
+
+    // Use the filename directly since we're now storing clean filenames
+    const filePath = path.join(uploadDir, filename);
+    const jsonPath = path.join(uploadDir, `${filename}.json`);
+    
+    // Check if the file exists
+    if (!(await fileExists(filePath))) {
+      return NextResponse.json({ error: "File not found" }, { status: 404 });
+    }
+
+    // Delete files from uploads directory
+    const filesToDelete = [filePath, jsonPath];
+    const deletedFiles: string[] = [];
+
+    for (const fileToDelete of filesToDelete) {
+      if (await fileExists(fileToDelete)) {
+        try {
+          await fs.unlink(fileToDelete);
+          deletedFiles.push(fileToDelete);
+        } catch (error) {
+          console.error(`Failed to delete file ${fileToDelete}:`, error);
+        }
+      }
+    }
+
+    // Delete from AI memory using backend API
+    try {
+      await backendAPI.deleteDocumentsByFilenames([filename]);
+    } catch (error) {
+      console.error("Failed to delete from AI memory:", error);
+      // Continue even if AI memory deletion fails
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: `File ${fileId} deleted successfully`,
+      deletedFiles,
+    });
+  } catch (error) {
+    console.error("Error deleting file:", error);
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
 }

@@ -27,6 +27,8 @@ import {
   ChevronDown,
   ChevronUp,
   Plus,
+  RefreshCw,
+  Trash2,
 } from "lucide-react";
 import { type ElementType, Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -995,7 +997,40 @@ export function ChatDashboard() {
     });
   };
 
+  const startFolderUpload = (files: File[], _folderName: string, options?: { addToLibrary?: boolean }) => {
+    if (files.length === 0) return;
+
+    const addToLibrary = options?.addToLibrary ?? true;
+    const timestamp = Date.now();
+
+    // Create individual upload items for each file (no folder grouping)
+    // Each file is treated as an individual upload with only its filename
+    const newUploads: UploadItem[] = files.map((file, index) => ({
+      id: `upload-${timestamp}-${index}-${Math.random().toString(36).slice(2, 9)}`,
+      file,
+      progress: 0,
+      status: 'uploading' as const,
+      targetFolderId: activeFolderId,
+      addToLibrary,
+    }));
+
+    setUploadManager(prev => ({
+      ...prev,
+      uploads: [...prev.uploads, ...newUploads],
+      isVisible: true,
+      isMinimized: false,
+    }));
+
+    // Upload each file individually
+    newUploads.forEach(upload => {
+      const controller = new AbortController();
+      uploadControllersRef.current[upload.id] = controller;
+      uploadFileToServer(upload, controller);
+    });
+  };
+
   async function uploadFileToServer(upload: UploadItem, controller: AbortController) {
+    // Start upload - 10%
     setUploadManager(prev => ({
       ...prev,
       uploads: prev.uploads.map(u =>
@@ -1009,6 +1044,16 @@ export function ChatDashboard() {
     formData.append('file', upload.file);
 
     try {
+      // File upload to server - 30%
+      setUploadManager(prev => ({
+        ...prev,
+        uploads: prev.uploads.map(u =>
+          u.id === upload.id
+            ? { ...u, progress: 30 }
+            : u
+        ),
+      }));
+
       const response = await fetch('/api/files/upload', {
         method: 'POST',
         body: formData,
@@ -1028,6 +1073,16 @@ export function ChatDashboard() {
         return;
       }
 
+      // File saved to disk - 50%
+      setUploadManager(prev => ({
+        ...prev,
+        uploads: prev.uploads.map(u =>
+          u.id === upload.id
+            ? { ...u, progress: 50 }
+            : u
+        ),
+      }));
+
       const data = await response.json();
 
       if (!data?.success) {
@@ -1043,6 +1098,70 @@ export function ChatDashboard() {
         return;
       }
 
+      // Backend processing started - 70%
+      setUploadManager(prev => ({
+        ...prev,
+        uploads: prev.uploads.map(u =>
+          u.id === upload.id
+            ? { ...u, progress: 70 }
+            : u
+        ),
+      }));
+
+      // Simulate processing time based on file size and type with realistic increments
+      const fileSizeMB = upload.file.size / (1024 * 1024);
+      const fileName = upload.file.name.toLowerCase();
+      
+      // Base processing time based on file size (minimum 1 second, maximum 8 seconds)
+      let baseProcessingTime = Math.max(fileSizeMB * 1000, 1000);
+      
+      // Adjust based on file type complexity
+      if (fileName.endsWith('.pdf')) {
+        baseProcessingTime *= 1.8; // PDFs take much longer to process
+      } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+        baseProcessingTime *= 1.4; // Excel files take longer
+      } else if (fileName.endsWith('.csv')) {
+        baseProcessingTime *= 0.7; // CSV files are faster
+      } else if (fileName.endsWith('.txt')) {
+        baseProcessingTime *= 0.5; // Text files are fastest
+      } else if (fileName.endsWith('.docx') || fileName.endsWith('.doc')) {
+        baseProcessingTime *= 1.2; // Word docs take moderate time
+      }
+      
+      const processingTime = Math.min(baseProcessingTime, 8000); // Max 8 seconds
+      
+      // Create more realistic progress increments with varying delays
+      const progressSteps = [
+        { progress: 75, delay: 200 },
+        { progress: 78, delay: 300 },
+        { progress: 81, delay: 400 },
+        { progress: 84, delay: 500 },
+        { progress: 87, delay: 600 },
+        { progress: 90, delay: 700 },
+        { progress: 93, delay: 800 },
+        { progress: 96, delay: 900 },
+        { progress: 98, delay: 1000 },
+        { progress: 99, delay: 500 }
+      ];
+      
+      // Calculate total time for progress steps
+      const totalStepTime = progressSteps.reduce((sum, step) => sum + step.delay, 0);
+      const timeMultiplier = processingTime / totalStepTime;
+      
+      for (const step of progressSteps) {
+        const delay = Math.max(step.delay * timeMultiplier, 100); // Minimum 100ms delay
+        await new Promise(resolve => setTimeout(resolve, delay));
+        setUploadManager(prev => ({
+          ...prev,
+          uploads: prev.uploads.map(u =>
+            u.id === upload.id
+              ? { ...u, progress: step.progress }
+              : u
+          ),
+        }));
+      }
+
+      // Processing complete - 100%
       setUploadManager(prev => ({
         ...prev,
         uploads: prev.uploads.map(u =>
@@ -1078,6 +1197,7 @@ export function ChatDashboard() {
       scheduleUploadManagerCleanup();
     }
   }
+
 
   async function extractErrorMessage(response: Response): Promise<string> {
     try {
@@ -1263,6 +1383,7 @@ export function ChatDashboard() {
             isSearching={isSearching}
             onBreadcrumbSelect={handleOpenFolder}
             onFileUpload={startUploads}
+            onFolderUpload={startFolderUpload}
             onFolderOpen={handleOpenFolder}
             onSearchChange={setSearchQuery}
             onUpdateFileLibraryData={setFileLibraryData}
@@ -1290,6 +1411,7 @@ export function ChatDashboard() {
             fileLibraryData={fileLibraryData}
             folderIndex={folderIndex}
             onCloseLeftSidebar={() => setIsSidebarOpen(false)}
+            onFolderUpload={startFolderUpload}
           />
         );
       case "history":
@@ -1499,6 +1621,7 @@ type FileLibraryViewProps = {
   isSearching: boolean;
   onBreadcrumbSelect: (id: string) => void;
   onFileUpload: (files: File[], options?: { addToLibrary?: boolean }) => void;
+  onFolderUpload: (files: File[], _folderName: string, options?: { addToLibrary?: boolean }) => void;
   onFolderOpen: (id: string) => void;
   onSearchChange: (value: string) => void;
   onViewModeChange: (mode: "grid" | "list") => void;
@@ -1519,6 +1642,7 @@ function FileLibraryView({
   isSearching,
   onBreadcrumbSelect,
   onFileUpload,
+  onFolderUpload,
   onFolderOpen,
   onSearchChange,
   onUpdateFileLibraryData,
@@ -1529,6 +1653,190 @@ function FileLibraryView({
 }: FileLibraryViewProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const folderInputRef = useRef<HTMLInputElement>(null);
+
+  // Selection state
+  const [selectedFiles, setSelectedFiles] = useState<Set<string>>(new Set());
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [failedDeletions, setFailedDeletions] = useState<Set<string>>(new Set());
+
+  // Selection handlers
+  const handleFileSelect = (fileId: string, selected: boolean) => {
+    setSelectedFiles(prev => {
+      const newSet = new Set(prev);
+      if (selected) {
+        newSet.add(fileId);
+      } else {
+        newSet.delete(fileId);
+      }
+      return newSet;
+    });
+    
+    // Clear from failed deletions if file is being selected (user might retry)
+    if (selected) {
+      setFailedDeletions(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(fileId);
+        return newSet;
+      });
+    }
+  };
+
+  const handleSelectAll = () => {
+    if (selectedFiles.size === files.length) {
+      setSelectedFiles(new Set());
+    } else {
+      setSelectedFiles(new Set(files.map(f => f.id)));
+    }
+  };
+
+  const handleDeleteSelected = async () => {
+    if (selectedFiles.size === 0) return;
+    
+    console.log('Starting delete operation for files:', Array.from(selectedFiles));
+    setIsDeleting(true);
+    const deletedFiles: string[] = [];
+    const failedFiles: string[] = [];
+    
+    try {
+      // Get the selected files to extract their names
+      const selectedFileObjects = files.filter(f => selectedFiles.has(f.id));
+      const filenames = selectedFileObjects.map(f => f.name);
+      console.log('Selected file objects:', selectedFileObjects);
+      console.log('Filenames to delete:', filenames);
+      
+      // Delete from uploads directory with individual error handling
+      const deletePromises = Array.from(selectedFiles).map(async (fileId) => {
+        console.log(`Attempting to delete file: ${fileId}`);
+        try {
+          const response = await fetch(`/api/files/${fileId}`, {
+            method: 'DELETE',
+          });
+          console.log(`Delete response for ${fileId}:`, response.status, response.statusText);
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || `Failed to delete file ${fileId}`);
+          }
+          deletedFiles.push(fileId);
+          console.log(`Successfully deleted file: ${fileId}`);
+          return { success: true, fileId };
+        } catch (error) {
+          failedFiles.push(fileId);
+          setFailedDeletions(prev => new Set(prev).add(fileId));
+          console.error(`Failed to delete file ${fileId}:`, error);
+          return { success: false, fileId, error: error instanceof Error ? error.message : 'Unknown error' };
+        }
+      });
+
+      const results = await Promise.all(deletePromises);
+      console.log('Delete results:', results);
+      
+      // Delete from AI memory using filenames (only for successfully deleted files)
+      if (deletedFiles.length > 0) {
+        try {
+          const { backendAPI } = await import('@/lib/api/backend');
+          const successfulFilenames = selectedFileObjects
+            .filter(f => deletedFiles.includes(f.id))
+            .map(f => f.name);
+          
+          await backendAPI.deleteDocumentsByFilenames(successfulFilenames);
+        } catch (error) {
+          console.error('Failed to delete from AI memory:', error);
+          // Show warning but don't fail the entire operation
+        }
+      }
+      
+      // Update the file library data to remove successfully deleted files
+      if (deletedFiles.length > 0) {
+        onUpdateFileLibraryData(prev => ({
+          ...prev,
+          files: prev.files.filter(f => !deletedFiles.includes(f.id)),
+        }));
+        
+        // Clear successfully deleted files from failed deletions
+        setFailedDeletions(prev => {
+          const newSet = new Set(prev);
+          deletedFiles.forEach(id => newSet.delete(id));
+          return newSet;
+        });
+      }
+      
+      // Clear selection
+      setSelectedFiles(new Set());
+      
+      // Show user feedback
+      if (failedFiles.length === 0) {
+        // All files deleted successfully
+        console.log(`Successfully deleted ${deletedFiles.length} file(s)`);
+        // You can add toast.success here if you have a toast system
+      } else if (deletedFiles.length === 0) {
+        // All files failed to delete
+        console.error(`Failed to delete all ${failedFiles.length} file(s)`);
+        // You can add toast.error here if you have a toast system
+      } else {
+        // Partial success
+        console.warn(`Deleted ${deletedFiles.length} file(s), failed to delete ${failedFiles.length} file(s)`);
+        // You can add toast.warning here if you have a toast system
+      }
+      
+    } catch (error) {
+      console.error('Error in delete operation:', error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const handleRetryFailedDeletions = async () => {
+    if (failedDeletions.size === 0) return;
+    
+    setIsDeleting(true);
+    const retryFiles = Array.from(failedDeletions);
+    const newFailedFiles: string[] = [];
+    const newDeletedFiles: string[] = [];
+    
+    try {
+      const retryPromises = retryFiles.map(async (fileId) => {
+        try {
+          const response = await fetch(`/api/files/${fileId}`, {
+            method: 'DELETE',
+          });
+          if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.error || `Failed to delete file ${fileId}`);
+          }
+          newDeletedFiles.push(fileId);
+          return { success: true, fileId };
+        } catch (error) {
+          newFailedFiles.push(fileId);
+          console.error(`Retry failed for file ${fileId}:`, error);
+          return { success: false, fileId, error: error instanceof Error ? error.message : 'Unknown error' };
+        }
+      });
+
+      await Promise.all(retryPromises);
+      
+      // Update failed deletions set
+      setFailedDeletions(prev => {
+        const newSet = new Set(prev);
+        newDeletedFiles.forEach(id => newSet.delete(id));
+        return newSet;
+      });
+      
+      // Update file library if any files were successfully deleted
+      if (newDeletedFiles.length > 0) {
+        onUpdateFileLibraryData(prev => ({
+          ...prev,
+          files: prev.files.filter(f => !newDeletedFiles.includes(f.id)),
+        }));
+      }
+      
+      console.log(`Retry: Deleted ${newDeletedFiles.length} file(s), ${newFailedFiles.length} still failed`);
+      
+    } catch (error) {
+      console.error('Error in retry operation:', error);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
@@ -1545,109 +1853,9 @@ function FileLibraryView({
     const files = Array.from(event.target.files || []);
     if (files.length === 0) return;
 
-    // Start uploads using the upload manager for visual feedback
-    onFileUpload(files, { addToLibrary: false });
-
-    // Also create the folder structure immediately
-    const firstFile = files[0] as any;
-    const folderPath = firstFile.webkitRelativePath;
-    const rootFolderName = folderPath.split('/')[0];
-
-    // Create a new folder structure
-    const createFolderStructure = (files: File[]): RealEstateFolder => {
-      const folderMap: Record<string, RealEstateFolder> = {};
-      
-      // Create root folder
-      const rootFolder: RealEstateFolder = {
-        id: `folder-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        name: rootFolderName,
-        description: `Uploaded folder containing ${files.length} files`,
-        files: [],
-        children: [],
-      };
-      
-      folderMap[''] = rootFolder;
-      
-      // Process each file
-      files.forEach((file) => {
-        const fileWithPath = file as any;
-        const relativePath = fileWithPath.webkitRelativePath;
-        const pathParts = relativePath.split('/').slice(1); // Remove root folder name
-        const fileName = pathParts.pop() || '';
-        const folderPath = pathParts.join('/');
-        
-        // Ensure parent folders exist
-        let currentPath = '';
-        let currentFolder = rootFolder;
-        
-        for (const part of pathParts) {
-          currentPath += (currentPath ? '/' : '') + part;
-          
-          if (!folderMap[currentPath]) {
-            const newFolder: RealEstateFolder = {
-              id: `folder-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${currentPath.replace(/\//g, '-')}`,
-              name: part,
-              files: [],
-              children: [],
-            };
-            folderMap[currentPath] = newFolder;
-            
-            // Add to parent
-            if (!currentFolder.children) currentFolder.children = [];
-            currentFolder.children.push(newFolder);
-          }
-          
-          currentFolder = folderMap[currentPath];
-        }
-        
-        // Add file to the appropriate folder
-        const normalizedName = file.name.toLowerCase();
-        const fileType = normalizedName.endsWith('.pdf') ? 'pdf' :
-                        normalizedName.endsWith('.csv') ? 'csv' :
-                        normalizedName.endsWith('.xlsx') || normalizedName.endsWith('.xls') ? 'xlsx' :
-                        'doc';
-        
-        const fileSize = file.size < 1024 * 1024 
-          ? `${(file.size / 1024).toFixed(1)} KB`
-          : `${(file.size / (1024 * 1024)).toFixed(1)} MB`;
-
-        const newFile: RealEstateFile = {
-          id: `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-          name: file.name,
-          type: fileType as "pdf" | "xlsx" | "doc",
-          size: fileSize,
-          status: "queued",
-          updatedAt: new Date().toISOString(),
-        };
-        
-        currentFolder.files.push(newFile);
-      });
-      
-      return rootFolder;
-    };
-
-    const newFolder = createFolderStructure(files);
-
-    // Add the new folder to the current active folder
-    onUpdateFileLibraryData(prevData => {
-      const updateFolder = (folder: RealEstateFolder): RealEstateFolder => {
-        if (folder.id === activeFolderId) {
-          return {
-            ...folder,
-            children: [...(folder.children || []), newFolder],
-          };
-        }
-        if (folder.children) {
-          return {
-            ...folder,
-            children: folder.children.map(updateFolder),
-          };
-        }
-        return folder;
-      };
-
-      return updateFolder(prevData);
-    });
+    // Start folder upload - each file will be uploaded individually
+    // No folder name needed since we're treating each file individually
+    onFolderUpload(files, '', { addToLibrary: true });
 
     // Clear the input
     event.target.value = '';
@@ -1710,6 +1918,49 @@ function FileLibraryView({
           <span className="text-muted-foreground text-xs">{resultLabel}</span>
         </div>
         <div className="flex items-center gap-3 xl:gap-2">
+          {files.length > 0 && (
+            <div className="flex items-center gap-2">
+              <Checkbox
+                checked={selectedFiles.size === files.length && files.length > 0}
+                onCheckedChange={handleSelectAll}
+              />
+              <span className="text-muted-foreground text-xs">
+                {selectedFiles.size > 0 ? `${selectedFiles.size} selected` : 'Select all'}
+              </span>
+            </div>
+          )}
+          {selectedFiles.size > 0 && (
+            <Button
+              className="gap-2"
+              disabled={isDeleting}
+              onClick={handleDeleteSelected}
+              size="sm"
+              variant="destructive"
+            >
+              {isDeleting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="h-4 w-4" />
+              )}
+              Delete ({selectedFiles.size})
+            </Button>
+          )}
+          {failedDeletions.size > 0 && (
+            <Button
+              className="gap-2"
+              disabled={isDeleting}
+              onClick={handleRetryFailedDeletions}
+              size="sm"
+              variant="outline"
+            >
+              {isDeleting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4" />
+              )}
+              Retry ({failedDeletions.size})
+            </Button>
+          )}
           <Button
             className="h-9 w-9"
             onClick={() => onViewModeChange("grid")}
@@ -1725,9 +1976,6 @@ function FileLibraryView({
             variant={isGrid ? "outline" : "default"}
           >
             <List className="h-4 w-4" />
-          </Button>
-          <Button className="h-9 w-9" size="icon" variant="outline">
-            <RotateCcw className="h-4 w-4" />
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -1767,7 +2015,13 @@ function FileLibraryView({
                   />
                 ))}
                 {files.map((file) => (
-                  <FileCard file={file} key={file.id} onOpenInSpreadsheet={onOpenInSpreadsheet} />
+                  <FileCard 
+                    file={file} 
+                    key={file.id} 
+                    onOpenInSpreadsheet={onOpenInSpreadsheet}
+                    isSelected={selectedFiles.has(file.id)}
+                    onSelect={handleFileSelect}
+                  />
                 ))}
               </div>
             ) : (
@@ -1781,7 +2035,13 @@ function FileLibraryView({
                   />
                 ))}
                 {files.map((file) => (
-                  <FileRow file={file} key={file.id} onOpenInSpreadsheet={onOpenInSpreadsheet} />
+                  <FileRow 
+                    file={file} 
+                    key={file.id} 
+                    onOpenInSpreadsheet={onOpenInSpreadsheet}
+                    isSelected={selectedFiles.has(file.id)}
+                    onSelect={handleFileSelect}
+                  />
                 ))}
               </div>
             )
@@ -2666,12 +2926,14 @@ function ChatInterface({
   onCloseLeftSidebar,
   fileLibraryData,
   folderIndex,
+  onFolderUpload,
 }: {
   setActiveNavId: (id: string) => void;
   handleOpenFolder: (id: string) => void;
   fileLibraryData: RealEstateFolder;
   folderIndex: Record<string, FolderIndexEntry>;
   onCloseLeftSidebar?: () => void;
+  onFolderUpload: (files: File[], _folderName: string, options?: { addToLibrary?: boolean }) => void;
 }) {
   // Separate state for non-serializable data
   const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
@@ -2793,6 +3055,7 @@ function ChatInterface({
         }
         return false; // Failed - component not mounted
       };
+
 
       // Expose function to get current selected datasets
       (window as any).StagAPI.getSelectedDatasets = () => {
@@ -2975,9 +3238,9 @@ function ChatInterface({
           console.log('File upload response:', response);
           
           if (response.success) {
-            toast.success(`Successfully uploaded ${response.file_ids.length} file(s)`);
+            toast.success(`Successfully uploaded ${response.successful_files} file(s)`);
           } else {
-            toast.error(response.message || 'Failed to upload files');
+            toast.error(response.status || 'Failed to upload files');
           }
         } catch (error) {
           console.error('Error uploading files:', error);
@@ -3015,23 +3278,8 @@ function ChatInterface({
           attachedFiles: [...prev.attachedFiles, ...newFiles],
         }));
 
-        // Upload folder to backend
-        try {
-          const folderPath = newFiles[0].webkitRelativePath?.split('/')[0] || 'uploaded-folder';
-          console.log('Processing folder to backend:', folderPath);
-          const response = await backendAPI.processFolder(folderPath);
-          console.log('Folder processing response:', response);
-          
-          if (response.success) {
-            toast.success(`Successfully processed folder with ${response.file_ids.length} file(s)`);
-          } else {
-            toast.error(response.message || 'Failed to process folder');
-          }
-        } catch (error) {
-          console.error('Error processing folder:', error);
-          const errorMessage = error instanceof Error ? error.message : 'Failed to process folder';
-          toast.error(`Folder processing failed: ${errorMessage}`);
-        }
+        // Start folder upload with progress - no folder name needed
+        onFolderUpload(newFiles, '', { addToLibrary: true });
       }
     } finally {
       isProcessingUploadRef.current = false;
@@ -3744,9 +3992,11 @@ function SidebarSummary() {
 type FileCardProps = {
   file: RealEstateFile;
   onOpenInSpreadsheet?: (file: RealEstateFile) => void;
+  isSelected?: boolean;
+  onSelect?: (fileId: string, selected: boolean) => void;
 };
 
-function FileCard({ file, onOpenInSpreadsheet }: FileCardProps) {
+function FileCard({ file, onOpenInSpreadsheet, isSelected = false, onSelect }: FileCardProps) {
   const handleOpenInSpreadsheet = () => {
     if (onOpenInSpreadsheet) {
       onOpenInSpreadsheet(file);
@@ -3756,19 +4006,23 @@ function FileCard({ file, onOpenInSpreadsheet }: FileCardProps) {
   const canOpenInSpreadsheet = file.type === 'csv' || file.type === 'xlsx';
 
   return (
-    <div className="flex flex-col gap-3 rounded-3xl border border-border/60 bg-background/95 p-5 shadow-sm">
+    <div className={`flex flex-col gap-3 rounded-3xl border p-5 shadow-sm ${
+      isSelected ? 'border-primary bg-primary/5' : 'border-border/60 bg-background/95'
+    }`}>
       <div className="flex items-start justify-between gap-3">
-        <div>
+        <div className="flex-1">
           <div className="flex items-center gap-2 text-muted-foreground">
+            <Checkbox
+              checked={isSelected}
+              onCheckedChange={(checked) => onSelect?.(file.id, !!checked)}
+            />
             <FileTypeBadge type={file.type} />
           </div>
-          <p className="mt-2 line-clamp-2 font-semibold text-foreground text-sm">
+          <p className="mt-2 line-clamp-2 font-semibold text-foreground text-sm" title={file.name}>
             {file.name}
           </p>
         </div>
-        <Button className="text-muted-foreground" size="icon" variant="ghost">
-          ...
-        </Button>
+        {/* No action buttons - only the top delete button is used */}
       </div>
       <div className="space-y-2 text-muted-foreground text-xs">
         <p>Updated {relativeTime(file.updatedAt)}</p>
@@ -3785,13 +4039,6 @@ function FileCard({ file, onOpenInSpreadsheet }: FileCardProps) {
             <p className="text-muted-foreground/70 text-[10px] mt-1">
               Processing for AI analysis
             </p>
-          </div>
-        ) : file.status === "queued" ? (
-          <div className="flex items-center gap-1">
-            <RotateCcw className="h-3 w-3" />
-            <Badge className="text-[11px] text-amber-600" variant="outline">
-              Queued for processing
-            </Badge>
           </div>
         ) : (
           <Badge className="text-[11px] text-emerald-600" variant="outline">
@@ -3816,9 +4063,11 @@ function FileCard({ file, onOpenInSpreadsheet }: FileCardProps) {
 type FileRowProps = {
   file: RealEstateFile;
   onOpenInSpreadsheet?: (file: RealEstateFile) => void;
+  isSelected?: boolean;
+  onSelect?: (fileId: string, selected: boolean) => void;
 };
 
-function FileRow({ file, onOpenInSpreadsheet }: FileRowProps) {
+function FileRow({ file, onOpenInSpreadsheet, isSelected = false, onSelect }: FileRowProps) {
   const handleOpenInSpreadsheet = () => {
     if (onOpenInSpreadsheet) {
       onOpenInSpreadsheet(file);
@@ -3828,11 +4077,19 @@ function FileRow({ file, onOpenInSpreadsheet }: FileRowProps) {
   const canOpenInSpreadsheet = file.type === 'csv' || file.type === 'xlsx';
 
   return (
-    <div className="flex items-center justify-between rounded-2xl border border-border/60 bg-background/95 px-4 py-4 shadow-sm">
+    <div className={`flex items-center justify-between rounded-2xl border px-4 py-4 shadow-sm ${
+      isSelected ? 'border-primary bg-primary/5' : 'border-border/60 bg-background/95'
+    }`}>
       <div className="flex items-center gap-3">
+        <Checkbox
+          checked={isSelected}
+          onCheckedChange={(checked) => onSelect?.(file.id, !!checked)}
+        />
         <FileTypeBadge type={file.type} />
-        <div>
-          <p className="font-semibold text-foreground text-sm">{file.name}</p>
+        <div className="flex-1 min-w-0">
+          <p className="font-semibold text-foreground text-sm truncate" title={file.name}>
+            {file.name}
+          </p>
           <p className="text-muted-foreground text-xs">
             Updated {relativeTime(file.updatedAt)}
           </p>
@@ -3844,11 +4101,6 @@ function FileRow({ file, onOpenInSpreadsheet }: FileRowProps) {
             <Loader2 className="h-3 w-3 animate-spin" />
             <span>Indexing {file.progress}%</span>
             <Progress className="h-1.5 w-24" value={file.progress} />
-          </div>
-        ) : file.status === "queued" ? (
-          <div className="flex items-center gap-1">
-            <RotateCcw className="h-3 w-3" />
-            <span className="text-amber-600">Queued</span>
           </div>
         ) : (
           <Badge className="text-[11px] text-emerald-600" variant="outline">
@@ -3864,9 +4116,7 @@ function FileRow({ file, onOpenInSpreadsheet }: FileRowProps) {
             Open in Spreadsheet
           </Button>
         )}
-        <Button className="text-muted-foreground" size="icon" variant="ghost">
-          ...
-        </Button>
+        {/* No action buttons - only the top delete button is used */}
       </div>
     </div>
   );
@@ -3880,6 +4130,7 @@ function FileTypeBadge({ type }: { type: RealEstateFile["type"] }) {
     </Badge>
   );
 }
+
 
 // ---------------------------------------------------------------------------
 // Helpers

@@ -22,15 +22,24 @@ export interface ChatResponse {
 }
 
 export interface FileUploadResponse {
-  message: string;
-  file_ids: string[];
   success: boolean;
+  status: string;
+  total_files: number;
+  successful_files: number;
+  failed_files: number;
+  processing_time: number;
+  results: Array<{ [key: string]: any }>;
+  agent_assignments: { [key: string]: string };
 }
 
 export interface ProcessFolderResponse {
-  message: string;
-  file_ids: string[];
   success: boolean;
+  total_files_found: number;
+  successful_uploads: number;
+  failed_uploads: number;
+  processing_time: number;
+  results: Array<{ [key: string]: any }>;
+  message: string;
 }
 
 export interface ClearMemoryResponse {
@@ -39,9 +48,11 @@ export interface ClearMemoryResponse {
 }
 
 export interface DeleteSelectedResponse {
-  message: string;
-  deleted_count: number;
   success: boolean;
+  deleted_count: number;
+  deleted_documents: string[];
+  failed_documents: Array<{ [key: string]: any }>;
+  message: string;
 }
 
 class BackendAPIError extends Error {
@@ -124,7 +135,7 @@ export class BackendAPI {
       formData.append('files', file);
     });
 
-    const response = await fetch(`${this.baseUrl}/api/v1/process-upload-parallel`, {
+    const response = await fetch(`${this.baseUrl}/api/v1/files/process-upload-parallel`, {
       method: 'POST',
       body: formData,
     });
@@ -135,13 +146,25 @@ export class BackendAPI {
   /**
    * Process all files in a folder
    */
-  async processFolder(folderPath: string): Promise<ProcessFolderResponse> {
-    const response = await fetch(`${this.baseUrl}/api/v1/process-folder`, {
+  async processFolder(
+    folderPath: string, 
+    options: {
+      extract_property_data?: boolean;
+      recursive?: boolean;
+      file_extensions?: string[];
+    } = {}
+  ): Promise<ProcessFolderResponse> {
+    const response = await fetch(`${this.baseUrl}/api/v1/files/process-folder`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ folder_path: folderPath }),
+      body: JSON.stringify({ 
+        folder_path: folderPath,
+        extract_property_data: options.extract_property_data ?? true,
+        recursive: options.recursive ?? false,
+        file_extensions: options.file_extensions ?? null
+      }),
     });
 
     return handleResponse<ProcessFolderResponse>(response);
@@ -167,7 +190,22 @@ export class BackendAPI {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ file_ids: fileIds }),
+      body: JSON.stringify({ document_ids: fileIds }),
+    });
+
+    return handleResponse<DeleteSelectedResponse>(response);
+  }
+
+  /**
+   * Delete documents by their filenames
+   */
+  async deleteDocumentsByFilenames(filenames: string[]): Promise<DeleteSelectedResponse> {
+    const response = await fetch(`${this.baseUrl}/api/v1/files/memory/documents/delete-by-filename`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ filenames }),
     });
 
     return handleResponse<DeleteSelectedResponse>(response);

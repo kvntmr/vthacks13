@@ -654,15 +654,19 @@ class DocumentMemory:
                     "message": "No collection available"
                 }
             
-            # Get all documents from ChromaDB to count them
-            all_docs = collection.get()
-            total_documents = len(all_docs.get('ids', [])) if all_docs else 0
+            # Get the actual document count that matches what the frontend sees
+            all_documents = await self.get_all_documents(include_property_data=False)
+            actual_document_count = len(all_documents)
             
-            # Clear metadata (in-memory)
+            # Get all documents from ChromaDB to delete them
+            all_docs = collection.get()
+            chromadb_count = len(all_docs.get('ids', [])) if all_docs else 0
+            
+            # Clear metadata (in-memory) first
             self.document_metadata.clear()
             
             # Clear vector store - delete all documents
-            if total_documents > 0:
+            if chromadb_count > 0:
                 # Get all document IDs and delete them
                 all_ids = all_docs.get('ids', [])
                 if all_ids:
@@ -671,11 +675,14 @@ class DocumentMemory:
                     # Fallback: try to delete with empty where clause
                     collection.delete(where={})
             
+            # Use the actual document count for the response
+            actual_deleted_count = actual_document_count
+            
             return {
                 "success": True,
-                "deleted_count": total_documents,
+                "deleted_count": actual_deleted_count,
                 "deleted_size_bytes": 0,  # Size calculation would be complex
-                "message": f"Successfully deleted {total_documents} documents"
+                "message": f"Successfully deleted {actual_deleted_count} documents from memory"
             }
             
         except Exception as e:

@@ -65,6 +65,15 @@ async function ensureUploadDirExists() {
   await fs.mkdir(FILE_UPLOAD_DIR, { recursive: true });
 }
 
+async function fileExists(filePath: string) {
+  try {
+    await fs.access(filePath);
+    return true;
+  } catch (_error) {
+    return false;
+  }
+}
+
 export async function POST(request: Request) {
   const session = await auth();
   const isProduction = process.env.NODE_ENV === "production";
@@ -100,34 +109,70 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unsupported file type" }, { status: 400 });
     }
 
-    const filename = sanitizeFilename(originalFile.name);
+    const filename = sanitizeFilename(path.basename(originalFile.name));
     const fileBuffer = Buffer.from(await file.arrayBuffer());
 
     await ensureUploadDirExists();
 
-    const timestamp = Date.now();
-    const storedFilename = `${timestamp}-${filename}`;
-    const filePath = path.join(FILE_UPLOAD_DIR, storedFilename);
+    // Use clean filename without timestamp prefix, but handle duplicates
+    let storedFilename = filename;
+    let filePath = path.join(FILE_UPLOAD_DIR, storedFilename);
+    
+    // Handle duplicate filenames by adding a counter
+    let counter = 1;
+    while (await fileExists(filePath)) {
+      const nameWithoutExt = path.parse(filename).name;
+      const ext = path.parse(filename).ext;
+      storedFilename = `${nameWithoutExt}_${counter}${ext}`;
+      filePath = path.join(FILE_UPLOAD_DIR, storedFilename);
+      counter++;
+    }
 
     try {
       await fs.writeFile(filePath, fileBuffer);
 
-      const processingResult = await maybeProcessFile({
-        filePath: path.resolve(filePath),
-        buffer: fileBuffer,
-        filename: originalFile.name,
-        mimeType: originalFile.type || "application/octet-stream",
-      });
+      // Call backend parsing endpoint
+      let processingResult = null;
       let processedJsonPath: string | undefined;
-
-      if (processingResult) {
-        const jsonFilename = `${storedFilename}.json`;
-        processedJsonPath = path.join(FILE_UPLOAD_DIR, jsonFilename);
-        await fs.writeFile(
-          processedJsonPath,
-          JSON.stringify(processingResult, null, 2),
-          "utf-8"
-        );
+      let backendProcessingSuccess = false;
+      
+      try {
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://127.0.0.1:8000';
+        const formData = new FormData();
+        formData.append('files', originalFile);
+        
+        const backendResponse = await fetch(`${backendUrl}/api/v1/files/process-upload-parallel`, {
+          method: 'POST',
+          body: formData,
+        });
+        
+        if (backendResponse.ok) {
+          const backendData = await backendResponse.json();
+          if (backendData.success && backendData.results && backendData.results.length > 0) {
+            processingResult = backendData.results[0];
+            backendProcessingSuccess = true;
+            
+            // Save the processing result as JSON
+            const jsonFilename = `${storedFilename}.json`;
+            processedJsonPath = path.join(FILE_UPLOAD_DIR, jsonFilename);
+            await fs.writeFile(
+              processedJsonPath,
+              JSON.stringify(processingResult, null, 2),
+              "utf-8"
+            );
+          } else {
+            console.error('Backend processing failed - no results:', backendData);
+            throw new Error('Backend processing failed - no results returned');
+          }
+        } else {
+          const errorText = await backendResponse.text();
+          console.error('Backend processing failed:', backendResponse.status, errorText);
+          throw new Error(`Backend processing failed: ${backendResponse.status} ${errorText}`);
+        }
+      } catch (error) {
+        console.error('Error calling backend processing:', error);
+        // Don't fallback to local processing - fail the upload if backend fails
+        throw new Error(`Failed to process file with backend: ${error instanceof Error ? error.message : 'Unknown error'}`);
       }
 
       return NextResponse.json({
@@ -198,7 +243,7 @@ async function maybeProcessFile({
     formData.append("extract_property_data", "true");
     formData.append(
       "file",
-      new Blob([buffer], { type: mimeType || "application/octet-stream" }),
+      new Blob([new Uint8Array(buffer)], { type: mimeType || "application/octet-stream" }),
       filename || path.basename(filePath)
     );
 
