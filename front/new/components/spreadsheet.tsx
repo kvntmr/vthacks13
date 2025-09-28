@@ -38,6 +38,7 @@ const spreadsheetStyles = `
   .react-spreadsheet .react-spreadsheet-container {
     background-color: hsl(var(--background)) !important;
     display: inline-block !important;
+    border: 1px solid hsl(var(--border)) !important;
   }
   
   .react-spreadsheet .react-spreadsheet-cell {
@@ -353,7 +354,7 @@ export default function SpreadsheetEditor() {
   return (
     <>
       <style>{spreadsheetStyles}</style>
-      <div className="flex flex-col h-full w-full bg-background rounded-3xl border border-border shadow-sm overflow-hidden">
+      <div className="flex h-full flex-col gap-6 rounded-3xl border border-border/60 bg-background/95 px-3 py-3 shadow-sm">
         {/* Toolbar */}
         <div className="flex items-center gap-2 p-3 border-b border-border bg-muted/30 rounded-t-3xl flex-shrink-0">
           <div className="flex items-center gap-1">
