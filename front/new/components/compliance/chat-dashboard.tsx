@@ -1336,7 +1336,7 @@ export function ChatDashboard() {
           />
         );
       case "chat":
-        return <ChatInterface setActiveNavId={setActiveNavId} handleOpenFolder={handleOpenFolder} />;
+        return <ChatInterface setActiveNavId={setActiveNavId} handleOpenFolder={handleOpenFolder} onCloseLeftSidebar={() => setIsSidebarOpen(false)} />;
       case "history":
         return (
           <HistoryOverviewView
@@ -1948,7 +1948,7 @@ function FolderCard({ folder, stats, onOpen }: FolderDisplayProps) {
 
   return (
     <button
-      className="flex h-full flex-col gap-3 rounded-3xl border border-border/60 bg-background/95 p-5 text-left shadow-sm transition hover:border-primary/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+      className="flex h-full flex-col gap-3 rounded-3xl border border-border/60 bg-background/95 p-5 text-left shadow-sm transition hover:border-primary/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 relative group"
       onClick={() => onOpen(folder.id)}
       type="button"
     >
@@ -1973,11 +1973,36 @@ function FolderCard({ folder, stats, onOpen }: FolderDisplayProps) {
           className="h-4 w-4 text-muted-foreground"
         />
       </div>
-      {details.length > 0 ? (
-        <p className="text-muted-foreground/80 text-xs">
-          {details.join(" | ")}
-        </p>
-      ) : null}
+
+      {/* Hover Statistics Tooltip */}
+      <div className="absolute top-full left-0 mt-2 bg-background border border-border/60 rounded-lg p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-20 shadow-lg w-80">
+        <div className="space-y-3">
+          <h5 className="font-medium text-sm text-foreground">File Statistics</h5>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+              <p className="text-2xl font-bold text-primary">{stats.total}</p>
+              <p className="text-xs text-muted-foreground">Total Files</p>
+            </div>
+            <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+              <p className="text-2xl font-bold text-green-600">{stats.indexed}</p>
+              <p className="text-xs text-muted-foreground">Ready</p>
+            </div>
+            <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+              <p className="text-2xl font-bold text-blue-600">{stats.indexing}</p>
+              <p className="text-xs text-muted-foreground">Indexing</p>
+            </div>
+            <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+              <p className="text-2xl font-bold text-amber-600">{stats.queued}</p>
+              <p className="text-xs text-muted-foreground">Queued</p>
+            </div>
+          </div>
+          {stats.lastUpdated && (
+            <p className="text-xs text-muted-foreground">
+              Updated {relativeTime(stats.lastUpdated)}
+            </p>
+          )}
+        </div>
+      </div>
     </button>
   );
 }
@@ -1987,7 +2012,7 @@ function FolderRow({ folder, stats, onOpen }: FolderDisplayProps) {
 
   return (
     <button
-      className="flex w-full items-center justify-between rounded-2xl border border-border/60 bg-background/95 px-4 py-4 text-left shadow-sm transition hover:border-primary/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+      className="flex w-full items-center justify-between rounded-2xl border border-border/60 bg-background/95 px-4 py-4 text-left shadow-sm transition hover:border-primary/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 relative group"
       onClick={() => onOpen(folder.id)}
       type="button"
     >
@@ -2004,10 +2029,38 @@ function FolderRow({ folder, stats, onOpen }: FolderDisplayProps) {
           ) : null}
         </div>
       </div>
-      <div className="flex items-center gap-3 text-muted-foreground text-xs">
-        {details.length > 0 ? <span>{details.join(" | ")}</span> : null}
-        <ChevronRight aria-hidden="true" className="h-4 w-4" />
+
+      {/* Hover Statistics Tooltip */}
+      <div className="absolute top-full left-0 mt-2 bg-background border border-border/60 rounded-lg p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-20 shadow-lg w-80">
+        <div className="space-y-3">
+          <h5 className="font-medium text-sm text-foreground">File Statistics</h5>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+              <p className="text-2xl font-bold text-primary">{stats.total}</p>
+              <p className="text-xs text-muted-foreground">Total Files</p>
+            </div>
+            <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+              <p className="text-2xl font-bold text-green-600">{stats.indexed}</p>
+              <p className="text-xs text-muted-foreground">Ready</p>
+            </div>
+            <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+              <p className="text-2xl font-bold text-blue-600">{stats.indexing}</p>
+              <p className="text-xs text-muted-foreground">Indexing</p>
+            </div>
+            <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+              <p className="text-2xl font-bold text-amber-600">{stats.queued}</p>
+              <p className="text-xs text-muted-foreground">Queued</p>
+            </div>
+          </div>
+          {stats.lastUpdated && (
+            <p className="text-xs text-muted-foreground">
+              Updated {relativeTime(stats.lastUpdated)}
+            </p>
+          )}
+        </div>
       </div>
+
+      <ChevronRight aria-hidden="true" className="h-4 w-4 text-muted-foreground" />
     </button>
   );
 }
@@ -2647,9 +2700,10 @@ type ChatInterfaceState = {
   datasetJsonData: Record<string, { data: any; lastFetched: number; loading: boolean; error: string | null }>; // JSON data for each dataset
 };
 
-function ChatInterface({ setActiveNavId, handleOpenFolder }: { 
+function ChatInterface({ setActiveNavId, handleOpenFolder, onCloseLeftSidebar }: { 
   setActiveNavId: (id: string) => void;
   handleOpenFolder: (id: string) => void;
+  onCloseLeftSidebar?: () => void;
 }) {
   const [state, setState] = useState<ChatInterfaceState>({
     messages: [
@@ -2953,6 +3007,7 @@ function ChatInterface({ setActiveNavId, handleOpenFolder }: {
 
   const openDatasetDetails = (datasetId: string) => {
     setState(prev => ({ ...prev, showDatasetDetails: datasetId }));
+    onCloseLeftSidebar?.();
   };
 
   const closeDatasetDetails = () => {
@@ -3293,7 +3348,7 @@ function ChatInterface({ setActiveNavId, handleOpenFolder }: {
                   return (
                     <>
                       {/* Dataset Header */}
-                      <div className="space-y-3">
+                      <div className="space-y-3 relative group">
                         <div className="flex items-center gap-3">
                           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                             <Folder className="h-5 w-5" />
@@ -3311,27 +3366,29 @@ function ChatInterface({ setActiveNavId, handleOpenFolder }: {
                             {dataset.description}
                           </p>
                         )}
-                      </div>
 
-                      {/* Statistics */}
-                      <div className="space-y-3">
-                        <h5 className="font-medium text-sm">File Statistics</h5>
-                        <div className="grid grid-cols-2 gap-3">
-                          <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
-                            <p className="text-2xl font-bold text-primary">{stats.total}</p>
-                            <p className="text-xs text-muted-foreground">Total Files</p>
-                          </div>
-                          <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
-                            <p className="text-2xl font-bold text-green-600">{stats.indexed}</p>
-                            <p className="text-xs text-muted-foreground">Ready</p>
-                          </div>
-                          <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
-                            <p className="text-2xl font-bold text-blue-600">{stats.indexing}</p>
-                            <p className="text-xs text-muted-foreground">Indexing</p>
-                          </div>
-                          <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
-                            <p className="text-2xl font-bold text-amber-600">{stats.queued}</p>
-                            <p className="text-xs text-muted-foreground">Queued</p>
+                        {/* Hover Statistics Tooltip */}
+                        <div className="absolute top-0 right-0 translate-x-full ml-4 bg-background border border-border/60 rounded-lg p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-20 shadow-lg w-80">
+                          <div className="space-y-3">
+                            <h5 className="font-medium text-sm text-foreground">File Statistics</h5>
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+                                <p className="text-2xl font-bold text-primary">{stats.total}</p>
+                                <p className="text-xs text-muted-foreground">Total Files</p>
+                              </div>
+                              <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+                                <p className="text-2xl font-bold text-green-600">{stats.indexed}</p>
+                                <p className="text-xs text-muted-foreground">Ready</p>
+                              </div>
+                              <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+                                <p className="text-2xl font-bold text-blue-600">{stats.indexing}</p>
+                                <p className="text-xs text-muted-foreground">Indexing</p>
+                              </div>
+                              <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+                                <p className="text-2xl font-bold text-amber-600">{stats.queued}</p>
+                                <p className="text-xs text-muted-foreground">Queued</p>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
