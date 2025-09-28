@@ -173,34 +173,25 @@ function PureMultimodalInput({
     formData.append("file", file);
 
     try {
-      console.log("Uploading file:", file.name, file.type, file.size);
       const response = await fetch("/api/files/upload", {
         method: "POST",
         body: formData,
       });
 
-      console.log("Upload response status:", response.status);
-
       if (response.ok) {
         const data = await response.json();
-        console.log("Upload response data:", data);
-        // The API returns { success: true, file: { originalName, storedName, mimeType, size, path, processedJsonPath } }
-        // But we need { url, name, contentType } for the attachment
-        const fileData = data.file;
+        const { url, pathname, contentType } = data;
 
         return {
-          url: `/api/files/file-${fileData.storedName}`, // Use the API route to serve the file with file- prefix
-          name: fileData.originalName,
-          contentType: fileData.mimeType,
+          url,
+          name: pathname,
+          contentType,
         };
-      } else {
-        const errorText = await response.text();
-        console.error("Upload failed:", response.status, errorText);
-        toast.error(`Upload failed: ${errorText}`);
       }
-    } catch (error) {
-      console.error("Upload error:", error);
-      toast.error(`Upload error: ${error}`);
+      const { error } = await response.json();
+      toast.error(error);
+    } catch (_error) {
+      toast.error("Failed to upload file, please try again!");
     }
   }, []);
 
@@ -260,7 +251,6 @@ function PureMultimodalInput({
         ref={fileInputRef}
         tabIndex={-1}
         type="file"
-        accept=".pdf,.doc,.docx,.txt,.csv,.xlsx,.xls,.ppt,.pptx,.rtf,.odt"
       />
 
       <PromptInput
