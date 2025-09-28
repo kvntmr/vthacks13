@@ -1,9 +1,11 @@
 "use client";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import Spreadsheet from "react-spreadsheet";
+import { useTheme } from "next-themes";
 import { Button } from "./ui/button";
+import { Download, Upload } from "lucide-react";
 
-// Custom styles for the spreadsheet
+// Simplified styles that rely on CSS variables and system theme detection
 const spreadsheetStyles = `
   .spreadsheet-wrapper {
     width: 100% !important;
@@ -36,6 +38,7 @@ const spreadsheetStyles = `
   .react-spreadsheet .react-spreadsheet-container {
     background-color: hsl(var(--background)) !important;
     display: inline-block !important;
+    border: 1px solid hsl(var(--border)) !important;
   }
   
   .react-spreadsheet .react-spreadsheet-cell {
@@ -45,13 +48,19 @@ const spreadsheetStyles = `
     min-width: 80px !important;
     width: 80px !important;
     max-width: 80px !important;
+    transition: background-color 0.15s ease !important;
   }
   
   .react-spreadsheet .react-spreadsheet-cell input {
-    background-color: hsl(var(--background)) !important;
+    background-color: transparent !important;
     color: hsl(var(--foreground)) !important;
     width: 100% !important;
     min-width: 0 !important;
+    border: none !important;
+    outline: none !important;
+    padding: 4px 8px !important;
+    font-size: 14px !important;
+    line-height: 1.4 !important;
   }
   
   .react-spreadsheet .react-spreadsheet-cell:hover {
@@ -60,13 +69,112 @@ const spreadsheetStyles = `
   
   .react-spreadsheet .react-spreadsheet-cell.selected {
     background-color: hsl(var(--accent)) !important;
+    box-shadow: inset 0 0 0 2px hsl(var(--ring)) !important;
+  }
+  
+  .react-spreadsheet .react-spreadsheet-cell.selected input {
+    background-color: transparent !important;
+  }
+  
+  /* Row and column headers */
+  .react-spreadsheet .react-spreadsheet-row-header,
+  .react-spreadsheet .react-spreadsheet-column-header {
+    background-color: hsl(var(--muted)) !important;
+    color: hsl(var(--muted-foreground)) !important;
+    border-color: hsl(var(--border)) !important;
+    font-weight: 500 !important;
+    font-size: 12px !important;
+  }
+  
+  /* Corner cell */
+  .react-spreadsheet .react-spreadsheet-corner {
+    background-color: hsl(var(--muted)) !important;
+    border-color: hsl(var(--border)) !important;
+  }
+  
+  /* Focus states for better accessibility */
+  .react-spreadsheet .react-spreadsheet-cell:focus-within {
+    outline: 2px solid hsl(var(--ring)) !important;
+    outline-offset: -2px !important;
+  }
+  
+  /* Scrollbar styling */
+  .spreadsheet-container::-webkit-scrollbar {
+    width: 8px !important;
+    height: 8px !important;
+  }
+  
+  .spreadsheet-container::-webkit-scrollbar-track {
+    background: hsl(var(--muted)) !important;
+  }
+  
+  .spreadsheet-container::-webkit-scrollbar-thumb {
+    background: hsl(var(--border)) !important;
+    border-radius: 4px !important;
+  }
+  
+  .spreadsheet-container::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground)) !important;
+  }
+  
+  /* System theme preference support - automatically applies when user's OS is in dark mode */
+  @media (prefers-color-scheme: dark) {
+    .spreadsheet-wrapper,
+    .spreadsheet-container,
+    .react-spreadsheet,
+    .react-spreadsheet .react-spreadsheet-container {
+      background-color: hsl(var(--background)) !important;
+      color: hsl(var(--foreground)) !important;
+    }
+    
+    .react-spreadsheet .react-spreadsheet-cell {
+      background-color: hsl(var(--background)) !important;
+      color: hsl(var(--foreground)) !important;
+      border-color: hsl(var(--border)) !important;
+    }
+    
+    .react-spreadsheet .react-spreadsheet-cell input {
+      background-color: transparent !important;
+      color: hsl(var(--foreground)) !important;
+    }
+    
+    .react-spreadsheet .react-spreadsheet-cell:hover {
+      background-color: hsl(var(--accent)) !important;
+    }
+    
+    .react-spreadsheet .react-spreadsheet-cell.selected {
+      background-color: hsl(var(--accent)) !important;
+      box-shadow: inset 0 0 0 2px hsl(var(--ring)) !important;
+    }
+    
+    .react-spreadsheet .react-spreadsheet-row-header,
+    .react-spreadsheet .react-spreadsheet-column-header {
+      background-color: hsl(var(--muted)) !important;
+      color: hsl(var(--muted-foreground)) !important;
+    }
+    
+    .react-spreadsheet .react-spreadsheet-corner {
+      background-color: hsl(var(--muted)) !important;
+    }
+    
+    .spreadsheet-container::-webkit-scrollbar-track {
+      background: hsl(var(--muted)) !important;
+    }
+    
+    .spreadsheet-container::-webkit-scrollbar-thumb {
+      background: hsl(var(--border)) !important;
+    }
+    
+    .spreadsheet-container::-webkit-scrollbar-thumb:hover {
+      background: hsl(var(--muted-foreground)) !important;
+    }
   }
 `;
 
-// Generate a fixed 50x50 grid
+// Generate initial data with a reasonable starting size
 const generateInitialData = () => {
   const rows = 50;
-  const cols = 50;
+  const cols = 20;
   const data = [];
   
   // Create data rows
@@ -96,14 +204,173 @@ const generateInitialData = () => {
   return data;
 };
 
-export default function SpreadsheetEditor() {
+interface SpreadsheetEditorProps {
+  fileToLoad?: {
+    id: string;
+    name: string;
+    type: string;
+  };
+}
+
+export default function SpreadsheetEditor({ fileToLoad }: SpreadsheetEditorProps = {}) {
   const [data, setData] = useState(generateInitialData);
   const [selectedCells, setSelectedCells] = useState<any>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { resolvedTheme } = useTheme();
 
-  // Handle data changes - keep fixed 50x50 grid
+  // Load file data when fileToLoad prop changes
+  useEffect(() => {
+    if (fileToLoad) {
+      loadFileFromAPI(fileToLoad.id, fileToLoad.name);
+    }
+  }, [fileToLoad]);
+  // Handle data changes - allow dynamic expansion
   const handleDataChange = useCallback((newData: any) => {
-    setData(newData);
+    // Ensure minimum grid size for usability
+    const minRows = 50;
+    const minCols = 20;
+    
+    // Ensure we have at least the minimum number of rows
+    while (newData.length < minRows) {
+      const newRow = Array(newData[0]?.length || minCols).fill({ value: "" });
+      newData.push(newRow);
+    }
+    
+    // Ensure we have at least the minimum number of columns
+    const maxCols = Math.max(...newData.map((row: any) => row.length), minCols);
+    const expandedData = newData.map((row: any) => {
+      while (row.length < maxCols) {
+        row.push({ value: "" });
+      }
+      return row;
+    });
+    
+    setData(expandedData);
   }, []);
+
+  // CSV import functionality
+  const handleImportCSV = useCallback(() => {
+    fileInputRef.current?.click();
+  }, []);
+
+  const handleFileChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const fileExtension = file.name.split('.').pop()?.toLowerCase();
+    
+    if (fileExtension === 'csv') {
+      handleCSVFile(file);
+    } else if (fileExtension === 'xlsx' || fileExtension === 'xls') {
+      handleExcelFile(file);
+    } else {
+      alert('Unsupported file type. Please select a CSV or Excel file.');
+    }
+    
+    // Reset the file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  }, []);
+
+  const handleCSVFile = useCallback((file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const text = e.target?.result as string;
+      if (!text) return;
+
+      try {
+        // Parse CSV data
+        const lines = text.split('\n').filter(line => line.trim() !== '');
+        const csvData = lines.map(line => {
+          // Simple CSV parsing - handles basic cases
+          const values = line.split(',').map(value => value.trim().replace(/^"|"$/g, ''));
+          return values.map(value => ({ value }));
+        });
+
+        // Ensure we have at least some data
+        if (csvData.length === 0) {
+          alert('No data found in CSV file');
+          return;
+        }
+
+        loadDataIntoSpreadsheet(csvData, file.name);
+      } catch (error) {
+        console.error('Error parsing CSV:', error);
+        alert('Error parsing CSV file. Please check the format.');
+      }
+    };
+
+    reader.readAsText(file);
+  }, []);
+
+  const handleExcelFile = useCallback((file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const data = e.target?.result;
+      if (!data) return;
+
+      try {
+        // For now, we'll show a message that Excel parsing is not fully implemented
+        // In a real implementation, you would use a library like xlsx or exceljs
+        alert('Excel file parsing is not fully implemented yet. Please convert to CSV format.');
+      } catch (error) {
+        console.error('Error parsing Excel file:', error);
+        alert('Error parsing Excel file. Please check the format.');
+      }
+    };
+
+    reader.readAsArrayBuffer(file);
+  }, []);
+
+  const loadDataIntoSpreadsheet = useCallback((fileData: any[][], fileName: string) => {
+    // Find the maximum number of columns in the data
+    const maxCols = Math.max(...fileData.map(row => row.length));
+    const numRows = Math.max(fileData.length, 50);
+    const numCols = Math.max(maxCols, 20); // Minimum 20 columns
+
+    // Create a dynamic grid based on data size
+    const newData = [];
+    for (let i = 0; i < numRows; i++) {
+      const row = [];
+      for (let j = 0; j < numCols; j++) {
+        if (i < fileData.length && j < fileData[i].length) {
+          row.push(fileData[i][j]);
+        } else {
+          row.push({ value: "" });
+        }
+      }
+      newData.push(row);
+    }
+
+    setData(newData);
+    alert(`${fileName} imported successfully! Loaded ${fileData.length} rows and ${maxCols} columns.`);
+  }, []);
+
+  const loadFileFromAPI = useCallback(async (fileId: string, fileName: string) => {
+    try {
+      const response = await fetch(`/api/files/${fileId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch file data');
+      }
+      
+      const fileData = await response.json();
+      
+      if (fileData.data && Array.isArray(fileData.data)) {
+        // Convert the data to the format expected by the spreadsheet
+        const spreadsheetData = fileData.data.map((row: string[]) => 
+          row.map((cell: string) => ({ value: cell }))
+        );
+        
+        loadDataIntoSpreadsheet(spreadsheetData, fileName);
+      } else {
+        alert('No data found in file');
+      }
+    } catch (error) {
+      console.error('Error loading file from API:', error);
+      alert('Error loading file. Please try again.');
+    }
+  }, [loadDataIntoSpreadsheet]);
 
   // Text formatting functions
   const handleBold = useCallback(() => {
@@ -121,12 +388,63 @@ export default function SpreadsheetEditor() {
     // TODO: Implement underline formatting for selected cells
   }, []);
 
+  // Export functionality
+  const handleExportCSV = useCallback(() => {
+    try {
+      // Convert data to CSV format
+      const csvContent = data
+        .map(row => 
+          row.map(cell => {
+            const value = cell.value || '';
+            // Escape values that contain commas, quotes, or newlines
+            if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+              return `"${value.replace(/"/g, '""')}"`;
+            }
+            return value;
+          }).join(',')
+        )
+        .join('\n');
+
+      // Create and download the file
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      
+      link.setAttribute('href', url);
+      link.setAttribute('download', `spreadsheet-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Clean up the URL object
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error exporting CSV:', error);
+      alert('Error exporting CSV file. Please try again.');
+    }
+  }, [data]);
+
   return (
     <>
-      <style dangerouslySetInnerHTML={{ __html: spreadsheetStyles }} />
-      <div className="flex flex-col h-full w-full bg-background rounded-lg border border-border shadow-sm overflow-hidden">
+      <style>{spreadsheetStyles}</style>
+      <div className="flex h-full flex-col gap-6 rounded-3xl border border-border/60 bg-background/95 px-3 py-3 shadow-sm">
         {/* Toolbar */}
-        <div className="flex items-center gap-2 p-3 border-b border-border bg-muted/30 rounded-t-lg flex-shrink-0">
+        <div className="flex items-center gap-2 p-3 border-b border-border bg-muted/30 rounded-t-3xl flex-shrink-0">
+          <div className="flex items-center gap-1">
+            <Button variant="outline" size="sm" onClick={handleImportCSV} className="flex items-center gap-2">
+              <Upload className="h-4 w-4" />
+              Import File
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleExportCSV} className="flex items-center gap-2">
+              <Download className="h-4 w-4" />
+              Export CSV
+            </Button>
+          </div>
+          
+          <div className="w-px h-6 bg-border mx-2" />
+          
           <div className="flex items-center gap-1">
             <Button variant="outline" size="sm" onClick={handleBold} className="h-8 w-8 p-0">
               <strong>B</strong>
@@ -141,9 +459,9 @@ export default function SpreadsheetEditor() {
         </div>
 
         {/* Spreadsheet Container */}
-        <div className="flex-1 bg-background rounded-b-lg overflow-hidden">
+        <div className="flex-1 bg-background rounded-b-3xl overflow-hidden">
           <div 
-            className="spreadsheet-wrapper w-full h-full" 
+            className="spreadsheet-wrapper w-full h-full"
             style={{ 
               maxHeight: 'calc(100vh - 200px)',
               maxWidth: '100%'
@@ -154,11 +472,21 @@ export default function SpreadsheetEditor() {
                 data={data} 
                 onChange={handleDataChange}
                 onSelect={(selected: any) => setSelectedCells(selected)}
+                darkMode={resolvedTheme === "dark"}
               />
             </div>
           </div>
         </div>
       </div>
+      
+      {/* Hidden file input for CSV and Excel import */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".csv,.xlsx,.xls"
+        onChange={handleFileChange}
+        style={{ display: 'none' }}
+      />
     </>
   );
 }

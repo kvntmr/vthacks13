@@ -7,20 +7,48 @@ import {
   ChevronRight,
   ClipboardList,
   FileStack,
+  FileText,
   Folder,
   Home,
   LayoutGrid,
   List,
+  MessageSquare,
   RotateCcw,
   Search,
+  Settings,
   Sparkles,
   Upload,
+  X,
+  CheckCircle,
+  AlertCircle,
+  Loader2,
+  Minimize2,
+  Maximize2,
+  ChevronDown,
+  ChevronUp,
+  Plus,
 } from "lucide-react";
-import { type ElementType, Fragment, useMemo, useRef, useState } from "react";
+import { type ElementType, Fragment, useEffect, useMemo, useRef, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
@@ -34,9 +62,11 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import SpreadsheetEditor from "@/components/spreadsheet";
 import React from "react";
+
 import { Spreadsheet, Worksheet, jspreadsheet } from "@jspreadsheet-ce/react";
 import "jsuites/dist/jsuites.css";
 import "jspreadsheet-ce/dist/jspreadsheet.css";
+import "handsontable/dist/handsontable.full.min.css";
 
 // ---------------------------------------------------------------------------
 // Types & mock data for the real estate file library
@@ -46,13 +76,13 @@ type NavItem = {
   id: string;
   label: string;
   icon: ElementType;
-  children?: { id: string; label: string }[];
+  children?: { id: string; label: string; icon: ElementType }[];
 };
 
 type RealEstateFile = {
   id: string;
   name: string;
-  type: "pdf" | "xlsx" | "doc";
+  type: "pdf" | "xlsx" | "doc" | "csv";
   size: string;
   status: "indexed" | "indexing" | "queued";
   progress?: number;
@@ -83,6 +113,23 @@ type FolderStats = {
 type FolderIndexEntry = {
   folder: RealEstateFolder;
   ancestors: BreadcrumbItem[];
+};
+
+// Upload Manager Types
+type UploadStatus = 'uploading' | 'completed' | 'error' | 'cancelled';
+
+type UploadItem = {
+  id: string;
+  file: File;
+  progress: number;
+  status: UploadStatus;
+  error?: string;
+};
+
+type UploadManagerState = {
+  uploads: UploadItem[];
+  isMinimized: boolean;
+  isVisible: boolean;
 };
 
 
@@ -151,34 +198,8 @@ function collectFolderStats(folder: RealEstateFolder): FolderStats {
   };
 }
 
-const NAV_ITEMS: NavItem[] = [
-  { id: "home", label: "Overview", icon: Home },
-  {
-    id: "history",
-    label: "Deliverables",
-    icon: ClipboardList,
-    children: [
-      { id: "history-chats", label: "Deal chat" },
-      { id: "history-reports", label: "Screening memo" },
-      { id: "history-settings", label: "Memo controls" },
-    ],
-  },
-  { id: "file-library", label: "Deal files", icon: FileStack },
-  { id: "sheets", label: "Sheets sync", icon: Building2 },
-];
 
-const NAV_LABEL_LOOKUP = NAV_ITEMS.reduce<Record<string, string>>(
-  (accumulator, item) => {
-    accumulator[item.id] = item.label;
-    if (item.children) {
-      for (const child of item.children) {
-        accumulator[child.id] = child.label;
-      }
-    }
-    return accumulator;
-  },
-  {}
-);
+
 
 const FILE_LIBRARY_ROOT: RealEstateFolder = {
   id: "library-root",
@@ -199,8 +220,7 @@ const FILE_LIBRARY_ROOT: RealEstateFolder = {
       name: "Lease Comps Summary.xlsx",
       type: "xlsx",
       size: "1.2 MB",
-      status: "indexing",
-      progress: 88,
+      status: "indexed",
       updatedAt: "2024-09-28T10:15:00Z",
     },
     {
@@ -210,6 +230,22 @@ const FILE_LIBRARY_ROOT: RealEstateFolder = {
       size: "864 KB",
       status: "queued",
       updatedAt: "2024-09-28T09:45:00Z",
+    },
+    {
+      id: "file-financial-data",
+      name: "Financial Data Q3.csv",
+      type: "csv",
+      size: "245 KB",
+      status: "indexed",
+      updatedAt: "2024-09-28T14:20:00Z",
+    },
+    {
+      id: "file-tenant-list",
+      name: "Tenant List.csv",
+      type: "csv",
+      size: "156 KB",
+      status: "indexed",
+      updatedAt: "2024-09-28T11:30:00Z",
     },
   ],
   children: [
@@ -449,38 +485,40 @@ const HOME_DEALS: DealSummary[] = [
   },
 ];
 
-const HOME_ACTIVITY: ActivityItem[] = [
+const NAV_ITEMS: NavItem[] = [
+  { id: "home", label: "Overview", icon: Home },
+  { id: "chat", label: "Chat", icon: MessageSquare },
   {
-    id: "activity-memo",
-    title: "Screening memo draft ready",
-    timestamp: "10 minutes ago",
-    summary:
-      "Stag drafted the Horizon Logistics screening memo with rent roll highlights and risk flags.",
-    actionLabel: "Review memo",
-    actionNavId: "history-reports",
+    id: "reports",
+    label: "Reports",
+    icon: ClipboardList,
+    children: [
+      ...HOME_DEALS.map(deal => ({
+        id: `memo-${deal.id}`,
+        label: `${deal.name} Memo`,
+        icon: FileText,
+      })),
+      { id: "history-settings", label: "Memo controls", icon: Settings },
+    ],
   },
-  {
-    id: "activity-argus",
-    title: "ARGUS export synced",
-    timestamp: "1 hour ago",
-    summary:
-      "Latest ARGUS sensitivity scenarios pushed to Sheets for Seaside Multifamily.",
-    actionLabel: "Open Sheets",
-    actionNavId: "sheets",
-  },
-  {
-    id: "activity-files",
-    title: "New diligence docs indexed",
-    timestamp: "Yesterday",
-    summary:
-      "CAM reconciliation and traffic study processed for Suncrest Retail.",
-    actionLabel: "View files",
-    actionNavId: "file-library",
-    actionFolderId: "folder-suncrest-retail",
-  },
+  { id: "file-library", label: "Deal files", icon: FileStack },
+  { id: "sheets", label: "Sheets sync", icon: Building2 },
 ];
 
-const HISTORY_TIMELINE: ActivityItem[] = [
+const NAV_LABEL_LOOKUP = NAV_ITEMS.reduce<Record<string, string>>(
+  (accumulator, item) => {
+    accumulator[item.id] = item.label;
+    if (item.children) {
+      for (const child of item.children) {
+        accumulator[child.id] = child.label;
+      }
+    }
+    return accumulator;
+  },
+  {}
+);
+
+const HOME_ACTIVITY: ActivityItem[] = [
   {
     id: "timeline-memo",
     title: "Screening memo delivered",
@@ -506,6 +544,49 @@ const HISTORY_TIMELINE: ActivityItem[] = [
     actionNavId: "sheets",
   },
 ]
+
+const HISTORY_TIMELINE: ActivityItem[] = [
+  {
+    id: "history-memo-1",
+    title: "Screening memo delivered",
+    timestamp: "Today · 10:12 AM",
+    summary: "Shared to deal team and staged for IC review.",
+    actionLabel: "Open memo",
+    actionNavId: "history-reports",
+  },
+  {
+    id: "history-chat-1",
+    title: "Conversation: rent roll QA",
+    timestamp: "Yesterday · 4:36 PM",
+    summary: "Analyst confirmed missing suite details for Horizon Logistics.",
+    actionLabel: "View chat",
+    actionNavId: "history-chats",
+  },
+  {
+    id: "history-sheet-1",
+    title: "Sheets export refreshed",
+    timestamp: "Yesterday · 9:05 AM",
+    summary: "Updated waterfall assumptions synced to 'Deal Scorecard'.",
+    actionLabel: "Open Sheets",
+    actionNavId: "sheets",
+  },
+  {
+    id: "history-memo-2",
+    title: "Previous screening memo",
+    timestamp: "Last week · 2:15 PM",
+    summary: "Suncrest Retail memo shared with underwriting team.",
+    actionLabel: "View memo",
+    actionNavId: "memo-deal-suncrest",
+  },
+  {
+    id: "history-chat-2",
+    title: "Conversation: tenant analysis",
+    timestamp: "Last week · 11:30 AM",
+    summary: "Reviewed anchor lease terms and CAM reconciliation.",
+    actionLabel: "View chat",
+    actionNavId: "history-chats",
+  },
+];
 
 //hardcoded conversation messages for the chat view
 const CONVERSATION_MESSAGES: ConversationMessage[] = [
@@ -649,6 +730,66 @@ const REPORT_SECTIONS: MemoSection[] = [
   },
 ];
 
+const SUNCREST_REPORT_SECTIONS: MemoSection[] = [
+  {
+    id: "suncrest-overview",
+    title: "Executive highlights",
+    bullets: [
+      "Suncrest Retail pricing at $45M, going-in cap 6.8% with strong tenant concentration.",
+      "Phoenix submarket vacancy at 3.2% with limited new supply supporting rent growth.",
+      "Anchor tenant mix led by national retailers with staggered lease maturities.",
+    ],
+  },
+  {
+    id: "suncrest-operations",
+    title: "Operations snapshot",
+    bullets: [
+      "Occupancy stabilized at 94% with minimal rollover risk in near term.",
+      "Expense ratio at 12.5% with recent CAM reconciliation reducing landlord expenses.",
+      "Property management contract renewed with performance incentives.",
+    ],
+  },
+  {
+    id: "suncrest-tasks",
+    title: "Next steps",
+    bullets: [
+      "Complete tenant estoppel certificates for anchor spaces.",
+      "Review 2025 budget assumptions with property manager.",
+      "Schedule property inspection ahead of year-end reporting.",
+    ],
+  },
+];
+
+const SEASIDE_REPORT_SECTIONS: MemoSection[] = [
+  {
+    id: "seaside-overview",
+    title: "Executive highlights",
+    bullets: [
+      "Seaside Multifamily acquisition at $185M, going-in cap 5.2% with value-add potential.",
+      "San Diego coastal submarket showing 2.1% vacancy with strong rental demand.",
+      "88-unit portfolio with mix of one and two-bedroom units averaging 850 SF.",
+    ],
+  },
+  {
+    id: "seaside-operations",
+    title: "Operations snapshot",
+    bullets: [
+      "Occupancy at 93% with waiting list for move-ins supporting rent growth.",
+      "Operating expenses at $8,450 per unit with recent utility cost reductions.",
+      "Capital improvement program focused on unit upgrades and common area enhancements.",
+    ],
+  },
+  {
+    id: "seaside-tasks",
+    title: "Next steps",
+    bullets: [
+      "Complete unit renovation schedule for Q1 2025.",
+      "Negotiate service contracts for HVAC and landscaping.",
+      "Update market rent analysis with recent comparable data.",
+    ],
+  },
+];
+
 const SHEETS_EXPORTS: SheetsExport[] = [
   {
     id: "sheet-memo",
@@ -705,21 +846,206 @@ const REPORT_SETTINGS: ReportPreference[] = [
 ];
 
 // ---------------------------------------------------------------------------
+// Upload Manager Component
+// ---------------------------------------------------------------------------
+
+type UploadManagerProps = {
+  uploads: UploadItem[];
+  isMinimized: boolean;
+  isVisible: boolean;
+  onCancel: (uploadId: string) => void;
+  onMinimize: () => void;
+  onRemove: (uploadId: string) => void;
+  onRetry: (uploadId: string) => void;
+};
+
+function UploadManager({
+  uploads,
+  isMinimized,
+  isVisible,
+  onCancel,
+  onMinimize,
+  onRemove,
+  onRetry,
+}: UploadManagerProps) {
+  const activeUploads = uploads.filter(u => u.status === 'uploading');
+  const completedUploads = uploads.filter(u => u.status === 'completed');
+  const errorUploads = uploads.filter(u => u.status === 'error');
+  const cancelledUploads = uploads.filter(u => u.status === 'cancelled');
+
+  const totalUploads = uploads.length;
+  const completedCount = completedUploads.length + errorUploads.length + cancelledUploads.length;
+
+  const getStatusIcon = (status: UploadStatus) => {
+    switch (status) {
+      case 'uploading':
+        return <Loader2 className="h-4 w-4 animate-spin text-blue-500" />;
+      case 'completed':
+        return <CheckCircle className="h-4 w-4 text-green-500" />;
+      case 'error':
+        return <AlertCircle className="h-4 w-4 text-red-500" />;
+      case 'cancelled':
+        return <X className="h-4 w-4 text-gray-500" />;
+      default:
+        return null;
+    }
+  };
+
+  const getHeaderText = () => {
+    if (activeUploads.length > 0) {
+      return `Uploading... ${completedCount} of ${totalUploads} files`;
+    }
+    return 'All uploads complete';
+  };
+
+  if (!isVisible) return null;
+
+  return (
+    <div className="fixed bottom-4 right-4 z-50">
+      {isMinimized ? (
+        // Minimized pill view
+        <div className="flex items-center gap-2 rounded-full bg-background border border-border/60 px-4 py-2 shadow-lg">
+          <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
+          <span className="text-sm font-medium">
+            {activeUploads.length > 0
+              ? `Uploading ${activeUploads.length} file${activeUploads.length === 1 ? '' : 's'}`
+              : 'Uploads complete'
+            }
+          </span>
+          <Button
+            onClick={onMinimize}
+            size="sm"
+            variant="ghost"
+            className="h-6 w-6 p-0"
+          >
+            <Maximize2 className="h-3 w-3" />
+          </Button>
+        </div>
+      ) : (
+        // Full drawer view
+        <div className="w-96 max-h-96 bg-background border border-border/60 rounded-lg shadow-xl overflow-hidden">
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b border-border/60">
+            <h3 className="font-semibold text-sm">{getHeaderText()}</h3>
+            <Button
+              onClick={onMinimize}
+              size="sm"
+              variant="ghost"
+              className="h-6 w-6 p-0"
+            >
+              <Minimize2 className="h-3 w-3" />
+            </Button>
+          </div>
+
+          {/* Upload list */}
+          <div className="max-h-80 overflow-y-auto">
+            {uploads.map((upload) => (
+              <div
+                key={upload.id}
+                className="flex items-center gap-3 p-3 border-b border-border/20 last:border-b-0"
+              >
+                {/* Status icon */}
+                <div className="flex-shrink-0">
+                  {getStatusIcon(upload.status)}
+                </div>
+
+                {/* File info */}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate" title={upload.file.name}>
+                    {upload.file.name}
+                  </p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Progress
+                      value={upload.progress}
+                      className="flex-1 h-1"
+                    />
+                    <span className="text-xs text-muted-foreground">
+                      {upload.progress.toFixed(0)}%
+                    </span>
+                  </div>
+                  {upload.error && (
+                    <p className="text-xs text-red-500 mt-1">{upload.error}</p>
+                  )}
+                </div>
+
+                {/* Action buttons */}
+                <div className="flex items-center gap-1">
+                  {upload.status === 'uploading' && (
+                    <Button
+                      onClick={() => onCancel(upload.id)}
+                      size="sm"
+                      variant="ghost"
+                      className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+                      title="Cancel upload"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  )}
+                  {upload.status === 'error' && (
+                    <Button
+                      onClick={() => onRetry(upload.id)}
+                      size="sm"
+                      variant="ghost"
+                      className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+                      title="Retry upload"
+                    >
+                      <RotateCcw className="h-3 w-3" />
+                    </Button>
+                  )}
+                  {(upload.status === 'completed' || upload.status === 'error' || upload.status === 'cancelled') && (
+                    <Button
+                      onClick={() => onRemove(upload.id)}
+                      size="sm"
+                      variant="ghost"
+                      className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+                      title="Remove from list"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Main component
 // ---------------------------------------------------------------------------
 
 export function ChatDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [activeNavId, setActiveNavId] = useState<string>("file-library");
+  const [activeNavId, setActiveNavId] = useState<string>("home");
   const [expandedNav, setExpandedNav] = useState<string[]>(["history"]);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
   const [activeFolderId, setActiveFolderId] = useState<string>(
     FILE_LIBRARY_ROOT.id
   );
+  const [fileLibraryData, setFileLibraryData] = useState<RealEstateFolder>(FILE_LIBRARY_ROOT);
+  const [folderIndex, setFolderIndex] = useState<Record<string, FolderIndexEntry>>(() => buildFolderIndex(FILE_LIBRARY_ROOT));
+  const [uploadManager, setUploadManager] = useState<UploadManagerState>({
+    uploads: [],
+    isMinimized: false,
+    isVisible: false,
+  });
+  const [fileToLoad, setFileToLoad] = useState<{
+    id: string;
+    name: string;
+    type: string;
+  } | undefined>(undefined);
+
+  // Update folder index when data changes
+  useEffect(() => {
+    setFolderIndex(buildFolderIndex(fileLibraryData));
+  }, [fileLibraryData]);
 
   const activeFolderEntry =
-    FOLDER_INDEX[activeFolderId] ?? FOLDER_INDEX[FILE_LIBRARY_ROOT.id];
+    folderIndex[activeFolderId] ?? folderIndex[fileLibraryData.id];
 
   const breadcrumbs = useMemo(() => {
     return [
@@ -764,6 +1090,165 @@ export function ChatDashboard() {
     );
   };
 
+  // Upload Manager Functions
+  const startUploads = (files: File[]) => {
+    const newUploads: UploadItem[] = files.map(file => ({
+      id: `upload-${Date.now()}-${Math.random()}`,
+      file,
+      progress: 0,
+      status: 'uploading' as const,
+    }));
+
+    setUploadManager(prev => ({
+      ...prev,
+      uploads: [...prev.uploads, ...newUploads],
+      isVisible: true,
+      isMinimized: false,
+    }));
+
+    // Start mock upload for each file
+    newUploads.forEach(upload => {
+      simulateUpload(upload.id);
+    });
+  };
+
+  const simulateUpload = (uploadId: string) => {
+    const targetFolderId = activeFolderId;
+    // Simulate random upload time between 1-5 seconds
+    const totalTime = Math.random() * 4000 + 1000;
+    const steps = 20;
+    const stepTime = totalTime / steps;
+    let currentStep = 0;
+
+    const interval = setInterval(() => {
+      currentStep++;
+      const progress = Math.min((currentStep / steps) * 100, 95); // Cap at 95% until complete
+
+      setUploadManager(prev => ({
+        ...prev,
+        uploads: prev.uploads.map(u =>
+          u.id === uploadId ? { ...u, progress } : u
+        ),
+      }));
+
+      if (currentStep >= steps) {
+        clearInterval(interval);
+
+        // Randomly simulate error (10% chance)
+        const hasError = Math.random() < 0.1;
+
+        setTimeout(() => {
+          let completedFile: File | null = null;
+
+          setUploadManager(prev => {
+            const uploadEntry = prev.uploads.find(u => u.id === uploadId);
+            if (!hasError && uploadEntry && uploadEntry.status === 'uploading') {
+              completedFile = uploadEntry.file;
+            }
+
+            return {
+              ...prev,
+              uploads: prev.uploads.map(u =>
+                u.id === uploadId
+                  ? {
+                      ...u,
+                      progress: hasError ? u.progress : 100,
+                      status: hasError ? 'error' : 'completed',
+                      error: hasError ? 'Upload failed. Please try again.' : undefined,
+                    }
+                  : u
+              ),
+            };
+          });
+
+          if (!hasError && completedFile) {
+            const fileType = completedFile.name.toLowerCase().endsWith('.pdf')
+              ? 'pdf'
+              : completedFile.name.toLowerCase().endsWith('.xlsx') || completedFile.name.toLowerCase().endsWith('.xls')
+              ? 'xlsx'
+              : 'doc';
+
+            const fileSize = completedFile.size < 1024 * 1024 
+              ? `${(completedFile.size / 1024).toFixed(1)} KB`
+              : `${(completedFile.size / (1024 * 1024)).toFixed(1)} MB`;
+
+            const newFile: RealEstateFile = {
+              id: `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+              name: completedFile.name,
+              type: fileType as "pdf" | "xlsx" | "doc",
+              size: fileSize,
+              status: "queued",
+              updatedAt: new Date().toISOString(),
+            };
+
+            setFileLibraryData(prevData => {
+              const updateFolder = (folder: RealEstateFolder): RealEstateFolder => {
+                if (folder.id === targetFolderId) {
+                  return {
+                    ...folder,
+                    files: [...folder.files, newFile],
+                  };
+                }
+                if (folder.children) {
+                  return {
+                    ...folder,
+                    children: folder.children.map(updateFolder),
+                  };
+                }
+                return folder;
+              };
+
+              return updateFolder(prevData);
+            });
+          }
+
+          // Auto-dismiss after 3 seconds if all uploads are complete
+          setTimeout(() => {
+            setUploadManager(prev => {
+              const activeUploads = prev.uploads.filter(u => u.status === 'uploading');
+              if (activeUploads.length === 0) {
+                return { ...prev, isVisible: false };
+              }
+              return prev;
+            });
+          }, 3000);
+        }, 200);
+      }
+    }, stepTime);
+  };
+
+  const cancelUpload = (uploadId: string) => {
+    setUploadManager(prev => ({
+      ...prev,
+      uploads: prev.uploads.map(u =>
+        u.id === uploadId ? { ...u, status: 'cancelled' } : u
+      ),
+    }));
+  };
+
+  const retryUpload = (uploadId: string) => {
+    setUploadManager(prev => ({
+      ...prev,
+      uploads: prev.uploads.map(u =>
+        u.id === uploadId
+          ? { ...u, progress: 0, status: 'uploading', error: undefined }
+          : u
+      ),
+    }));
+    simulateUpload(uploadId);
+  };
+
+  const removeUpload = (uploadId: string) => {
+    setUploadManager(prev => ({
+      ...prev,
+      uploads: prev.uploads.filter(u => u.id !== uploadId),
+    }));
+  };
+
+  const toggleMinimize = () => {
+    setUploadManager(prev => ({ ...prev, isMinimized: !prev.isMinimized }));
+  };
+
   const renderNavItem = (item: NavItem) => {
     const isActive = activeNavId === item.id;
     const isExpanded = expandedNav.includes(item.id);
@@ -781,7 +1266,7 @@ export function ChatDashboard() {
           onClick={() => {
             setActiveNavId(item.id);
             if (item.id === "file-library") {
-              setActiveFolderId(FILE_LIBRARY_ROOT.id);
+              setActiveFolderId(fileLibraryData.id);
               setSearchQuery("");
             }
             if (item.children) {
@@ -792,28 +1277,39 @@ export function ChatDashboard() {
         >
           <item.icon className="h-4 w-4" />
           {isSidebarOpen && (
-            <span className="flex-1 text-left">{item.label}</span>
+            <span className="flex-1 text-left truncate">{item.label}</span>
           )}
           {isSidebarOpen && item.children && (
-            <span>{isExpanded ? "−" : "+"}</span>
+            isExpanded ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )
           )}
         </Button>
 
         {isSidebarOpen && item.children && isExpanded && (
-          <div className="mt-2 space-y-2 pl-6 text-muted-foreground text-sm">
-            {item.children.map((child) => (
-              <button
-                className={cn(
-                  "block w-full text-left transition hover:text-foreground",
-                  activeNavId === child.id && "font-medium text-foreground"
-                )}
-                key={child.id}
-                onClick={() => setActiveNavId(child.id)}
-                type="button"
-              >
-                {child.label}
-              </button>
-            ))}
+          <div className="mt-2 space-y-1">
+            {item.children.map((child) => {
+              const isChildActive = activeNavId === child.id;
+              return (
+                <Button
+                  key={child.id}
+                  className={cn(
+                    "w-full justify-start gap-3 pl-8 border border-transparent text-sm",
+                    isChildActive
+                      ? "bg-primary text-primary-foreground shadow"
+                      : "bg-transparent text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                  )}
+                  onClick={() => setActiveNavId(child.id)}
+                  variant={isChildActive ? "default" : "ghost"}
+                  size="sm"
+                >
+                  <child.icon className="h-3.5 w-3.5" />
+                  <span className="flex-1 text-left truncate">{child.label}</span>
+                </Button>
+              );
+            })}
           </div>
         )}
       </div>
@@ -823,7 +1319,7 @@ export function ChatDashboard() {
   const navigateTo = (viewId: string) => {
     setActiveNavId(viewId);
     if (viewId === "file-library") {
-      handleOpenFolder(FILE_LIBRARY_ROOT.id);
+      handleOpenFolder(fileLibraryData.id);
     }
   };
 
@@ -832,21 +1328,35 @@ export function ChatDashboard() {
     handleOpenFolder(folderId);
   };
 
+  const handleOpenInSpreadsheet = (file: RealEstateFile) => {
+    setFileToLoad({
+      id: file.id,
+      name: file.name,
+      type: file.type,
+    });
+    setActiveNavId("sheets");
+  };
+
   const renderContent = () => {
     switch (activeNavId) {
       case "file-library":
         return (
           <FileLibraryView
             activeFolder={activeFolder}
+            activeFolderId={activeFolderId}
             breadcrumbs={breadcrumbs}
             files={filteredFiles}
+            fileLibraryData={fileLibraryData}
             folderStats={folderStats}
             folders={childFolders}
             isSearching={isSearching}
             onBreadcrumbSelect={handleOpenFolder}
+            onFileUpload={startUploads}
             onFolderOpen={handleOpenFolder}
             onSearchChange={setSearchQuery}
+            onUpdateFileLibraryData={setFileLibraryData}
             onViewModeChange={setViewMode}
+            onOpenInSpreadsheet={handleOpenInSpreadsheet}
             searchQuery={searchQuery}
             viewMode={viewMode}
           />
@@ -861,22 +1371,14 @@ export function ChatDashboard() {
             onOpenFolder={openFolderInLibrary}
           />
         );
+      case "chat":
+        return <ChatInterface setActiveNavId={setActiveNavId} handleOpenFolder={handleOpenFolder} onCloseLeftSidebar={() => setIsSidebarOpen(false)} />;
       case "history":
         return (
           <HistoryOverviewView
             onNavigate={navigateTo}
             onOpenFolder={openFolderInLibrary}
             timeline={HISTORY_TIMELINE}
-          />
-        );
-      case "history-chats":
-        return (
-          <ConversationWorkspaceView
-            actions={CONVERSATION_ACTIONS}
-            memoSections={MEMO_SECTIONS}
-            messages={CONVERSATION_MESSAGES}
-            onNavigate={navigateTo}
-            onOpenFolder={openFolderInLibrary}
           />
         );
       case "history-reports":
@@ -891,7 +1393,34 @@ export function ChatDashboard() {
         return <ReportSettingsView preferences={REPORT_SETTINGS} />;
       case "sheets":
         return (
-          <SpreadsheetEditor />
+          <SpreadsheetEditor fileToLoad={fileToLoad} />
+        );
+      case "memo-deal-horizon":
+        return (
+          <ReportWorkspaceView
+            onNavigate={navigateTo}
+            onOpenFolder={openFolderInLibrary}
+            sections={REPORT_SECTIONS}
+            dealSummary={HOME_DEALS[0]}
+          />
+        );
+      case "memo-deal-suncrest":
+        return (
+          <ReportWorkspaceView
+            onNavigate={navigateTo}
+            onOpenFolder={openFolderInLibrary}
+            sections={SUNCREST_REPORT_SECTIONS}
+            dealSummary={HOME_DEALS[1]}
+          />
+        );
+      case "memo-deal-seaside":
+        return (
+          <ReportWorkspaceView
+            onNavigate={navigateTo}
+            onOpenFolder={openFolderInLibrary}
+            sections={SEASIDE_REPORT_SECTIONS}
+            dealSummary={HOME_DEALS[2]}
+          />
         );
       default:
         return (
@@ -948,7 +1477,7 @@ export function ChatDashboard() {
           {NAV_ITEMS.map((item) => renderNavItem(item))}
         </nav>
 
-        <div className="mt-6 flex-1 space-y-3 overflow-y-auto pr-1">
+        <div className="mt-auto space-y-3 overflow-y-auto pr-1">
           {isSidebarOpen && <SidebarSummary />}
         </div>
 
@@ -973,7 +1502,23 @@ export function ChatDashboard() {
             onValueChange={(value) => {
               setActiveNavId(value);
               if (value === "file-library") {
-                handleOpenFolder(FILE_LIBRARY_ROOT.id);
+                handleOpenFolder(fileLibraryData.id);
+              }
+              // Handle child navigation items
+              if (value === "history-reports") {
+                setActiveNavId("history-reports");
+              }
+              if (value === "history-settings") {
+                setActiveNavId("history-settings");
+              }
+              if (value === "memo-deal-horizon") {
+                setActiveNavId("memo-deal-horizon");
+              }
+              if (value === "memo-deal-suncrest") {
+                setActiveNavId("memo-deal-suncrest");
+              }
+              if (value === "memo-deal-seaside") {
+                setActiveNavId("memo-deal-seaside");
               }
             }}
             value={activeNavId}
@@ -983,9 +1528,16 @@ export function ChatDashboard() {
             </SelectTrigger>
             <SelectContent>
               {NAV_ITEMS.map((item) => (
-                <SelectItem key={item.id} value={item.id}>
-                  {item.label}
-                </SelectItem>
+                <React.Fragment key={item.id}>
+                  <SelectItem value={item.id}>
+                    {item.label}
+                  </SelectItem>
+                  {item.children?.map((child) => (
+                    <SelectItem key={child.id} value={child.id}>
+                      &nbsp;&nbsp;{child.label}
+                    </SelectItem>
+                  ))}
+                </React.Fragment>
               ))}
             </SelectContent>
           </Select>
@@ -998,6 +1550,17 @@ export function ChatDashboard() {
 
         </div>
       </div>
+
+      {/* Upload Manager */}
+      <UploadManager
+        uploads={uploadManager.uploads}
+        isMinimized={uploadManager.isMinimized}
+        isVisible={uploadManager.isVisible}
+        onCancel={cancelUpload}
+        onMinimize={toggleMinimize}
+        onRemove={removeUpload}
+        onRetry={retryUpload}
+      />
     </div>
   );
 }
@@ -1008,33 +1571,166 @@ export function ChatDashboard() {
 
 type FileLibraryViewProps = {
   activeFolder: RealEstateFolder;
+  activeFolderId: string;
   breadcrumbs: BreadcrumbItem[];
   files: RealEstateFile[];
+  fileLibraryData: RealEstateFolder;
   folderStats: FolderStats;
   folders: RealEstateFolder[];
   isSearching: boolean;
   onBreadcrumbSelect: (id: string) => void;
+  onFileUpload: (files: File[]) => void;
   onFolderOpen: (id: string) => void;
   onSearchChange: (value: string) => void;
   onViewModeChange: (mode: "grid" | "list") => void;
+  onUpdateFileLibraryData: (updater: (prev: RealEstateFolder) => RealEstateFolder) => void;
+  onOpenInSpreadsheet: (file: RealEstateFile) => void;
   searchQuery: string;
   viewMode: "grid" | "list";
 };
 
 function FileLibraryView({
   activeFolder,
+  activeFolderId,
   breadcrumbs,
   files,
+  fileLibraryData,
   folderStats,
   folders,
   isSearching,
   onBreadcrumbSelect,
+  onFileUpload,
   onFolderOpen,
   onSearchChange,
+  onUpdateFileLibraryData,
   onViewModeChange,
+  onOpenInSpreadsheet,
   searchQuery,
   viewMode,
 }: FileLibraryViewProps) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const folderInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    if (files.length === 0) return;
+
+    // Start uploads using the upload manager
+    onFileUpload(files);
+
+    // Clear the input
+    event.target.value = '';
+  };
+
+  const handleFolderUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    if (files.length === 0) return;
+
+    // Start uploads using the upload manager for visual feedback
+    onFileUpload(files);
+
+    // Also create the folder structure immediately
+    const firstFile = files[0] as any;
+    const folderPath = firstFile.webkitRelativePath;
+    const rootFolderName = folderPath.split('/')[0];
+
+    // Create a new folder structure
+    const createFolderStructure = (files: File[]): RealEstateFolder => {
+      const folderMap: Record<string, RealEstateFolder> = {};
+      
+      // Create root folder
+      const rootFolder: RealEstateFolder = {
+        id: `folder-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        name: rootFolderName,
+        description: `Uploaded folder containing ${files.length} files`,
+        files: [],
+        children: [],
+      };
+      
+      folderMap[''] = rootFolder;
+      
+      // Process each file
+      files.forEach((file) => {
+        const fileWithPath = file as any;
+        const relativePath = fileWithPath.webkitRelativePath;
+        const pathParts = relativePath.split('/').slice(1); // Remove root folder name
+        const fileName = pathParts.pop() || '';
+        const folderPath = pathParts.join('/');
+        
+        // Ensure parent folders exist
+        let currentPath = '';
+        let currentFolder = rootFolder;
+        
+        for (const part of pathParts) {
+          currentPath += (currentPath ? '/' : '') + part;
+          
+          if (!folderMap[currentPath]) {
+            const newFolder: RealEstateFolder = {
+              id: `folder-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${currentPath.replace(/\//g, '-')}`,
+              name: part,
+              files: [],
+              children: [],
+            };
+            folderMap[currentPath] = newFolder;
+            
+            // Add to parent
+            if (!currentFolder.children) currentFolder.children = [];
+            currentFolder.children.push(newFolder);
+          }
+          
+          currentFolder = folderMap[currentPath];
+        }
+        
+        // Add file to the appropriate folder
+        const fileType = file.name.toLowerCase().endsWith('.pdf') ? 'pdf' :
+                        file.name.toLowerCase().endsWith('.xlsx') || file.name.toLowerCase().endsWith('.xls') ? 'xlsx' :
+                        'doc';
+        
+        const fileSize = file.size < 1024 * 1024 
+          ? `${(file.size / 1024).toFixed(1)} KB`
+          : `${(file.size / (1024 * 1024)).toFixed(1)} MB`;
+
+        const newFile: RealEstateFile = {
+          id: `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          name: file.name,
+          type: fileType as "pdf" | "xlsx" | "doc",
+          size: fileSize,
+          status: "queued",
+          updatedAt: new Date().toISOString(),
+        };
+        
+        currentFolder.files.push(newFile);
+      });
+      
+      return rootFolder;
+    };
+
+    const newFolder = createFolderStructure(files);
+
+    // Add the new folder to the current active folder
+    onUpdateFileLibraryData(prevData => {
+      const updateFolder = (folder: RealEstateFolder): RealEstateFolder => {
+        if (folder.id === activeFolderId) {
+          return {
+            ...folder,
+            children: [...(folder.children || []), newFolder],
+          };
+        }
+        if (folder.children) {
+          return {
+            ...folder,
+            children: folder.children.map(updateFolder),
+          };
+        }
+        return folder;
+      };
+
+      return updateFolder(prevData);
+    });
+
+    // Clear the input
+    event.target.value = '';
+  };
   const isGrid = viewMode === "grid";
   const folderSummaries = isSearching
     ? []
@@ -1059,46 +1755,28 @@ function FileLibraryView({
   if (folderStats.queued) {
     headerMeta.push(`${folderStats.queued} queued`);
   }
-  if (folderStats.lastUpdated) {
-    headerMeta.push(`Updated ${relativeTime(folderStats.lastUpdated)}`);
-  }
 
   return (
     <div className="flex h-full flex-col gap-6 rounded-3xl border border-border/60 bg-background/95 px-6 py-6 shadow-sm">
       <div className="flex flex-col gap-3">
         <BreadcrumbTrail items={breadcrumbs} onSelect={onBreadcrumbSelect} />
         <div className="flex flex-col gap-2">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <h1 className="font-semibold text-2xl text-foreground">
-              {activeFolder.name}
-            </h1>
-          </div>
-          {activeFolder.description ? (
-            <p className="text-muted-foreground text-sm">
-              {activeFolder.description}
-            </p>
-          ) : null}
-          {headerMeta.length > 0 ? (
-            <div className="flex flex-wrap items-center gap-2 text-muted-foreground text-xs">
-              {headerMeta.map((item, index) => (
-                <Fragment key={item}>
-                  {index > 0 ? (
-                    <span
-                      aria-hidden="true"
-                      className="text-muted-foreground/50"
-                    >
-                      |
-                    </span>
-                  ) : null}
-                  <span>{item}</span>
-                </Fragment>
-              ))}
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex flex-col gap-2">
+              <h1 className="font-semibold text-2xl text-foreground">
+                {activeFolder.name}
+              </h1>
+              {activeFolder.description ? (
+                <p className="text-muted-foreground text-sm">
+                  {activeFolder.description}
+                </p>
+              ) : null}
             </div>
-          ) : null}
+          </div>
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between xl:gap-6">
         <div className="flex flex-1 items-center gap-2 rounded-2xl border border-border/60 bg-muted/20 px-4 py-3">
           <Search className="h-4 w-4 text-muted-foreground" />
           <Input
@@ -1110,7 +1788,7 @@ function FileLibraryView({
           <Separator className="h-6" orientation="vertical" />
           <span className="text-muted-foreground text-xs">{resultLabel}</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3 xl:gap-2">
           <Button
             className="h-9 w-9"
             onClick={() => onViewModeChange("grid")}
@@ -1130,14 +1808,27 @@ function FileLibraryView({
           <Button className="h-9 w-9" size="icon" variant="outline">
             <RotateCcw className="h-4 w-4" />
           </Button>
-          <Button className="gap-2" variant="outline">
-            <Folder className="h-4 w-4" />
-            New Folder
-          </Button>
-          <Button className="gap-2">
-            <Upload className="h-4 w-4" />
-            Upload Files
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button className="gap-2">
+                <Upload className="h-4 w-4" />
+                Upload
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => fileInputRef.current?.click()}>
+                <Upload className="h-4 w-4 mr-2" />
+                Upload Files
+                <span className="ml-auto text-xs text-muted-foreground">to current folder</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => folderInputRef.current?.click()}>
+                <Folder className="h-4 w-4 mr-2" />
+                Upload Folder
+                <span className="ml-auto text-xs text-muted-foreground">with subfolders</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
@@ -1155,7 +1846,7 @@ function FileLibraryView({
                   />
                 ))}
                 {files.map((file) => (
-                  <FileCard file={file} key={file.id} />
+                  <FileCard file={file} key={file.id} onOpenInSpreadsheet={onOpenInSpreadsheet} />
                 ))}
               </div>
             ) : (
@@ -1169,18 +1860,26 @@ function FileLibraryView({
                   />
                 ))}
                 {files.map((file) => (
-                  <FileRow file={file} key={file.id} />
+                  <FileRow file={file} key={file.id} onOpenInSpreadsheet={onOpenInSpreadsheet} />
                 ))}
               </div>
             )
           ) : isSearching ? (
             <div className="flex h-full flex-col items-center justify-center gap-3 py-12 text-center text-muted-foreground text-sm">
-              <FileStack className="h-10 w-10" />
+              <Search className="h-10 w-10" />
               <div>
                 <p>No files match your search.</p>
                 <p className="text-muted-foreground/80 text-xs">
                   Try different keywords or clear the filter.
                 </p>
+                <Button
+                  onClick={() => onSearchChange("")}
+                  size="sm"
+                  variant="outline"
+                  className="mt-3"
+                >
+                  Clear search
+                </Button>
               </div>
             </div>
           ) : (
@@ -1191,11 +1890,45 @@ function FileLibraryView({
                 <p className="text-muted-foreground/80 text-xs">
                   Upload files or create a subfolder to organize documents.
                 </p>
+                <div className="flex gap-2 mt-3">
+                  <Button
+                    onClick={() => fileInputRef.current?.click()}
+                    size="sm"
+                    variant="outline"
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload Files
+                  </Button>
+                  <Button
+                    onClick={() => folderInputRef.current?.click()}
+                    size="sm"
+                    variant="outline"
+                  >
+                    <Folder className="h-4 w-4 mr-2" />
+                    Upload Folder
+                  </Button>
+                </div>
               </div>
             </div>
           )}
         </ScrollArea>
       </div>
+
+      {/* Hidden file inputs */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        onChange={handleFileUpload}
+        className="hidden"
+      />
+      <input
+        ref={folderInputRef}
+        type="file"
+        {...({ webkitdirectory: "" } as any)}
+        onChange={handleFolderUpload}
+        className="hidden"
+      />
+
     </div>
   );
 }
@@ -1253,7 +1986,7 @@ function FolderCard({ folder, stats, onOpen }: FolderDisplayProps) {
 
   return (
     <button
-      className="flex h-full flex-col gap-3 rounded-3xl border border-border/60 bg-background/95 p-5 text-left shadow-sm transition hover:border-primary/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+      className="flex h-full flex-col gap-3 rounded-3xl border border-border/60 bg-background/95 p-5 text-left shadow-sm transition hover:border-primary/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 relative group"
       onClick={() => onOpen(folder.id)}
       type="button"
     >
@@ -1278,11 +2011,36 @@ function FolderCard({ folder, stats, onOpen }: FolderDisplayProps) {
           className="h-4 w-4 text-muted-foreground"
         />
       </div>
-      {details.length > 0 ? (
-        <p className="text-muted-foreground/80 text-xs">
-          {details.join(" | ")}
-        </p>
-      ) : null}
+
+      {/* Hover Statistics Tooltip */}
+      <div className="absolute top-full left-0 mt-2 bg-background border border-border/60 rounded-lg p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-20 shadow-lg w-80">
+        <div className="space-y-3">
+          <h5 className="font-medium text-sm text-foreground">File Statistics</h5>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+              <p className="text-2xl font-bold text-primary">{stats.total}</p>
+              <p className="text-xs text-muted-foreground">Total Files</p>
+            </div>
+            <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+              <p className="text-2xl font-bold text-green-600">{stats.indexed}</p>
+              <p className="text-xs text-muted-foreground">Ready</p>
+            </div>
+            <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+              <p className="text-2xl font-bold text-blue-600">{stats.indexing}</p>
+              <p className="text-xs text-muted-foreground">Indexing</p>
+            </div>
+            <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+              <p className="text-2xl font-bold text-amber-600">{stats.queued}</p>
+              <p className="text-xs text-muted-foreground">Queued</p>
+            </div>
+          </div>
+          {stats.lastUpdated && (
+            <p className="text-xs text-muted-foreground">
+              Updated {relativeTime(stats.lastUpdated)}
+            </p>
+          )}
+        </div>
+      </div>
     </button>
   );
 }
@@ -1292,7 +2050,7 @@ function FolderRow({ folder, stats, onOpen }: FolderDisplayProps) {
 
   return (
     <button
-      className="flex w-full items-center justify-between rounded-2xl border border-border/60 bg-background/95 px-4 py-4 text-left shadow-sm transition hover:border-primary/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+      className="flex w-full items-center justify-between rounded-2xl border border-border/60 bg-background/95 px-4 py-4 text-left shadow-sm transition hover:border-primary/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 relative group"
       onClick={() => onOpen(folder.id)}
       type="button"
     >
@@ -1309,10 +2067,38 @@ function FolderRow({ folder, stats, onOpen }: FolderDisplayProps) {
           ) : null}
         </div>
       </div>
-      <div className="flex items-center gap-3 text-muted-foreground text-xs">
-        {details.length > 0 ? <span>{details.join(" | ")}</span> : null}
-        <ChevronRight aria-hidden="true" className="h-4 w-4" />
+
+      {/* Hover Statistics Tooltip */}
+      <div className="absolute top-full left-0 mt-2 bg-background border border-border/60 rounded-lg p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-20 shadow-lg w-80">
+        <div className="space-y-3">
+          <h5 className="font-medium text-sm text-foreground">File Statistics</h5>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+              <p className="text-2xl font-bold text-primary">{stats.total}</p>
+              <p className="text-xs text-muted-foreground">Total Files</p>
+            </div>
+            <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+              <p className="text-2xl font-bold text-green-600">{stats.indexed}</p>
+              <p className="text-xs text-muted-foreground">Ready</p>
+            </div>
+            <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+              <p className="text-2xl font-bold text-blue-600">{stats.indexing}</p>
+              <p className="text-xs text-muted-foreground">Indexing</p>
+            </div>
+            <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+              <p className="text-2xl font-bold text-amber-600">{stats.queued}</p>
+              <p className="text-xs text-muted-foreground">Queued</p>
+            </div>
+          </div>
+          {stats.lastUpdated && (
+            <p className="text-xs text-muted-foreground">
+              Updated {relativeTime(stats.lastUpdated)}
+            </p>
+          )}
+        </div>
       </div>
+
+      <ChevronRight aria-hidden="true" className="h-4 w-4 text-muted-foreground" />
     </button>
   );
 }
@@ -1364,6 +2150,14 @@ function HomeOverviewView({
           Track active deals, monitor ingestion progress, and jump into the
           latest deliverables.
         </p>
+        {metrics.every(m => m.value === "0") && (
+          <div className="mt-2 p-3 rounded-lg bg-blue-50 border border-blue-200 text-blue-800 text-sm">
+            <p className="font-medium">Welcome to Stag! 🎉</p>
+            <p className="text-blue-700 mt-1">
+              Start by uploading some real estate documents to the File Library, then use the Chat to ask questions about your data.
+            </p>
+          </div>
+        )}
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
@@ -1433,9 +2227,18 @@ function HomeOverviewView({
         </div>
 
         <div className="flex flex-col gap-3 rounded-3xl border border-border/60 bg-background/95 p-5 shadow-sm">
-          <h2 className="font-semibold text-foreground text-sm">
-            Recent activity
-          </h2>
+          <div className="flex items-center justify-between">
+            <h2 className="font-semibold text-foreground text-sm">
+              Recent activity
+            </h2>
+            <Button
+              onClick={() => onNavigate("history")}
+              size="sm"
+              variant="outline"
+            >
+              View All
+            </Button>
+          </div>
           <div className="space-y-3">
             {activity.map((item) => {
               const handleAction = () => {
@@ -1733,12 +2536,14 @@ function ConversationWorkspaceView({
 
 type ReportWorkspaceViewProps = {
   sections: MemoSection[];
+  dealSummary?: DealSummary;
   onNavigate: (viewId: string) => void;
   onOpenFolder: (folderId: string) => void;
 };
 
 function ReportWorkspaceView({
   sections,
+  dealSummary,
   onNavigate,
   onOpenFolder,
 }: ReportWorkspaceViewProps) {
@@ -1770,7 +2575,7 @@ function ReportWorkspaceView({
             </Badge>
             <div>
               <h1 className="font-semibold text-2xl text-foreground">
-                Horizon Logistics Park
+                {dealSummary?.name || "Horizon Logistics Park"}
               </h1>
               <p className="text-muted-foreground text-sm">
                 Real estate diligence memo generated by Stag with analyst commentary.
@@ -1781,7 +2586,7 @@ function ReportWorkspaceView({
             <Button onClick={() => onNavigate("history-settings")} variant="outline">
               Memo controls
             </Button>
-            <Button onClick={() => onOpenFolder("folder-horizon-logistics")} variant="outline">
+            <Button onClick={() => onOpenFolder(dealSummary?.folderId || "folder-horizon-logistics")} variant="outline">
               Deal files
             </Button>
           </div>
@@ -1825,7 +2630,7 @@ function ReportWorkspaceView({
         <Button onClick={() => onNavigate("history-chats")} variant="outline">
           View deal chat
         </Button>
-        <Button onClick={() => onOpenFolder("folder-horizon-logistics")} variant="outline">
+        <Button onClick={() => onOpenFolder(dealSummary?.folderId || "folder-horizon-logistics")} variant="outline">
           Export source files
         </Button>
       </div>
@@ -1901,37 +2706,898 @@ function ComingSoonView({ label }: ComingSoonViewProps) {
 }
 
 // ---------------------------------------------------------------------------
-// Upload queue panel
+// Chat Interface Component
 // ---------------------------------------------------------------------------
 
+type ChatMessage = {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  timestamp: string;
+  attachments?: File[];
+  visualizations?: VisualizationData[];
+};
 
+type VisualizationData = {
+  id: string;
+  type: "chart" | "spreadsheet" | "map";
+  title: string;
+  data: any;
+};
 
+type ChatInterfaceState = {
+  messages: ChatMessage[];
+  isStreaming: boolean;
+  currentMessage: string;
+  attachedFiles: File[];
+  showVisualization: VisualizationData | null;
+  selectedFolders: string[];
+  showDatasetSidebar: boolean;
+  showDatasetDetails: string | null; // ID of dataset to show details for
+  clickedButton: string | null; // ID of button that was just clicked for animation
+  datasetJsonData: Record<string, { data: any; lastFetched: number; loading: boolean; error: string | null }>; // JSON data for each dataset
+};
 
-// ---------------------------------------------------------------------------
-// Sidebar summary placeholder (when expanded)
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// Sidebar summary placeholder (when expanded)
-// ---------------------------------------------------------------------------
+function ChatInterface({ setActiveNavId, handleOpenFolder, onCloseLeftSidebar }: { 
+  setActiveNavId: (id: string) => void;
+  handleOpenFolder: (id: string) => void;
+  onCloseLeftSidebar?: () => void;
+}) {
+  const [state, setState] = useState<ChatInterfaceState>({
+    messages: [
+      {
+        id: "welcome",
+        role: "assistant",
+        content: "Hello! I'm here to help you analyze real estate data. You can upload files, ask questions, and I'll provide insights with interactive visualizations. What would you like to explore?",
+        timestamp: new Date().toLocaleTimeString(),
+      },
+    ],
+    isStreaming: false,
+    currentMessage: "",
+    attachedFiles: [],
+    showVisualization: null,
+    selectedFolders: [],
+    showDatasetSidebar: false,
+    showDatasetDetails: null,
+    clickedButton: null,
+    datasetJsonData: {},
+  });
 
-function SidebarSummary() {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const folderInputRef = useRef<HTMLInputElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const setStateRef = useRef<typeof setState>();
+  const attachedFilesRef = useRef<File[]>([]);
+  const isProcessingUploadRef = useRef(false);
+
+  // Update the ref whenever setState changes
+  useEffect(() => {
+    setStateRef.current = setState;
+  }, [setState]);
+
+  // Keep the ref in sync with state
+  useEffect(() => {
+    attachedFilesRef.current = state.attachedFiles;
+  }, [state.attachedFiles]);
+
+  // Get all available folders for selection
+  const availableFolders = useMemo(() => {
+    const folders = [];
+    if (FILE_LIBRARY_ROOT.children) {
+      for (const folder of FILE_LIBRARY_ROOT.children) {
+        folders.push({
+          id: folder.id,
+          name: folder.name,
+          description: folder.description,
+        });
+        // Also include subfolders
+        if (folder.children) {
+          for (const subfolder of folder.children) {
+            folders.push({
+              id: subfolder.id,
+              name: `${folder.name} > ${subfolder.name}`,
+              description: subfolder.description,
+            });
+          }
+        }
+      }
+    }
+    return folders;
+  }, []);
+
+  // Expose API for backend to call
+  useEffect(() => {
+    // Create global API object if it doesn't exist
+    if (typeof window !== 'undefined') {
+      (window as any).StagAPI = (window as any).StagAPI || {};
+      
+      // Expose dataset selection function
+      (window as any).StagAPI.selectDatasets = (datasetIds: string[]) => {
+        if (setStateRef.current) {
+          setStateRef.current(prev => ({
+            ...prev,
+            selectedFolders: datasetIds,
+            clickedButton: null // Clear any animation state
+          }));
+          return true; // Success
+        }
+        return false; // Failed - component not mounted
+      };
+
+      // Expose function to get current selected datasets
+      (window as any).StagAPI.getSelectedDatasets = () => {
+        return state.selectedFolders;
+      };
+
+      // Expose function to get available datasets
+      (window as any).StagAPI.getAvailableDatasets = () => {
+        return availableFolders.map(folder => ({
+          id: folder.id,
+          name: folder.name,
+          description: folder.description,
+        }));
+      };
+    }
+
+    // Cleanup on unmount
+    return () => {
+      if (typeof window !== 'undefined' && (window as any).StagAPI) {
+        delete (window as any).StagAPI.selectDatasets;
+        delete (window as any).StagAPI.getSelectedDatasets;
+        delete (window as any).StagAPI.getAvailableDatasets;
+      }
+    };
+  }, [state.selectedFolders, availableFolders]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [state.messages]);
+
+  // Clear clicked button animation after 600ms
+  useEffect(() => {
+    if (state.clickedButton) {
+      const timer = setTimeout(() => {
+        setState(prev => ({ ...prev, clickedButton: null }));
+      }, 600);
+      return () => clearTimeout(timer);
+    }
+  }, [state.clickedButton]);
+
+  // Poll for JSON data every 5 seconds when dataset details sidebar is open
+  useEffect(() => {
+    if (!state.showDatasetDetails) return;
+
+    const datasetId = state.showDatasetDetails;
+    const pollJsonData = async () => {
+      const lastFetched = state.datasetJsonData[datasetId]?.lastFetched || 0;
+      const now = Date.now();
+      
+      // Only fetch if it's been more than 5 seconds since last fetch
+      if (now - lastFetched > 5000) {
+        try {
+          setState(prev => ({
+            ...prev,
+            datasetJsonData: {
+              ...prev.datasetJsonData,
+              [datasetId]: {
+                ...prev.datasetJsonData[datasetId],
+                loading: true,
+                error: null,
+              }
+            }
+          }));
+
+          // Fetch JSON data for this dataset
+          const response = await fetch(`/api/datasets/${datasetId}/data.json`);
+          
+          if (response.ok) {
+            const jsonData = await response.json();
+            setState(prev => ({
+              ...prev,
+              datasetJsonData: {
+                ...prev.datasetJsonData,
+                [datasetId]: {
+                  data: jsonData,
+                  lastFetched: now,
+                  loading: false,
+                  error: null,
+                }
+              }
+            }));
+          } else if (response.status === 404) {
+            // JSON file doesn't exist yet, clear any existing data
+            setState(prev => ({
+              ...prev,
+              datasetJsonData: {
+                ...prev.datasetJsonData,
+                [datasetId]: {
+                  data: null,
+                  lastFetched: now,
+                  loading: false,
+                  error: null,
+                }
+              }
+            }));
+          } else {
+            throw new Error(`HTTP ${response.status}`);
+          }
+        } catch (error) {
+          setState(prev => ({
+            ...prev,
+            datasetJsonData: {
+              ...prev.datasetJsonData,
+              [datasetId]: {
+                ...prev.datasetJsonData[datasetId],
+                loading: false,
+                error: error instanceof Error ? error.message : 'Failed to fetch data',
+                lastFetched: now,
+              }
+            }
+          }));
+        }
+      }
+    };
+
+    // Initial poll
+    pollJsonData();
+
+    // Set up polling interval
+    const interval = setInterval(pollJsonData, 5000);
+
+    return () => clearInterval(interval);
+  }, [state.showDatasetDetails]);
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Prevent multiple simultaneous uploads
+    if (isProcessingUploadRef.current) return;
+    isProcessingUploadRef.current = true;
+    
+    try {
+      // Clear the input immediately to prevent duplicate events
+      event.target.value = '';
+      
+      const files = Array.from(event.target.files || []);
+      if (files.length === 0) return;
+      
+      // Filter out files that are already attached to prevent duplicates
+      const newFiles = files.filter(newFile => 
+        !attachedFilesRef.current.some(existingFile => 
+          existingFile.name === newFile.name && existingFile.size === newFile.size
+        )
+      );
+      
+      if (newFiles.length > 0) {
+        setState(prev => ({
+          ...prev,
+          attachedFiles: [...prev.attachedFiles, ...newFiles],
+        }));
+      }
+    } finally {
+      isProcessingUploadRef.current = false;
+    }
+  };
+
+  const handleFolderUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Prevent multiple simultaneous uploads
+    if (isProcessingUploadRef.current) return;
+    isProcessingUploadRef.current = true;
+    
+    try {
+      // Clear the input immediately to prevent duplicate events
+      event.target.value = '';
+      
+      const files = Array.from(event.target.files || []);
+      if (files.length === 0) return;
+      
+      // Filter out files that are already attached to prevent duplicates
+      const newFiles = files.filter(newFile => 
+        !attachedFilesRef.current.some(existingFile => 
+          existingFile.name === newFile.name && existingFile.size === newFile.size
+        )
+      );
+      
+      if (newFiles.length > 0) {
+        setState(prev => ({
+          ...prev,
+          attachedFiles: [...prev.attachedFiles, ...newFiles],
+        }));
+      }
+    } finally {
+      isProcessingUploadRef.current = false;
+    }
+  };
+
+  const removeFile = (index: number) => {
+    setState(prev => ({
+      ...prev,
+      attachedFiles: prev.attachedFiles.filter((_, i) => i !== index),
+    }));
+  };
+
+  const sendMessage = async () => {
+    if (!state.currentMessage.trim() && state.attachedFiles.length === 0) return;
+
+    const userMessage: ChatMessage = {
+      id: Date.now().toString(),
+      role: "user",
+      content: state.currentMessage,
+      timestamp: new Date().toLocaleTimeString(),
+      attachments: state.attachedFiles.length > 0 ? [...state.attachedFiles] : undefined,
+    };
+
+    setState(prev => ({
+      ...prev,
+      messages: [...prev.messages, userMessage],
+      currentMessage: "",
+      attachedFiles: [],
+      isStreaming: true,
+    }));
+
+    // Simulate streaming response with folder context
+    setTimeout(() => {
+      const selectedFolderNames = state.selectedFolders.length > 0
+        ? state.selectedFolders.map(folderId => availableFolders.find(f => f.id === folderId)?.name).filter(Boolean)
+        : [];
+
+      const assistantContent = selectedFolderNames.length > 0
+        ? `I've analyzed your query using documents from the following datasets: ${selectedFolderNames.join(", ")}. Here are some insights based on that context.`
+        : "I've analyzed your data and found some interesting insights.";
+
+      const assistantMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: `${assistantContent} Let me show you a visualization of the property values over time.`,
+        timestamp: new Date().toLocaleTimeString(),
+        visualizations: [
+          {
+            id: "chart-1",
+            type: "chart",
+            title: "Property Value Trends",
+            data: {
+              labels: ["2020", "2021", "2022", "2023", "2024"],
+              datasets: [{
+                label: "Average Property Value",
+                data: [250000, 275000, 310000, 345000, 380000],
+                borderColor: "rgb(75, 192, 192)",
+                tension: 0.1
+              }]
+            }
+          }
+        ],
+      };
+
+      setState(prev => ({
+        ...prev,
+        messages: [...prev.messages, assistantMessage],
+        isStreaming: false,
+      }));
+    }, 2000);
+  };
+
+  const openVisualization = (viz: VisualizationData) => {
+    setState(prev => ({ ...prev, showVisualization: viz }));
+  };
+
+  const closeVisualization = () => {
+    setState(prev => ({ ...prev, showVisualization: null }));
+  };
+
+  const openDatasetSidebar = () => {
+    setState(prev => ({ ...prev, showDatasetSidebar: true }));
+  };
+
+  const closeDatasetSidebar = () => {
+    setState(prev => ({ ...prev, showDatasetSidebar: false }));
+  };
+
+  const openDatasetDetails = (datasetId: string) => {
+    setState(prev => ({ ...prev, showDatasetDetails: datasetId }));
+    onCloseLeftSidebar?.();
+  };
+
+  const closeDatasetDetails = () => {
+    setState(prev => ({ ...prev, showDatasetDetails: null }));
+  };
+
   return (
-    <div className="space-y-4 text-muted-foreground text-xs">
-      <div>
-        <p className="font-semibold text-foreground">Last activity</p>
-        <p className="mt-1">
-          Screening memo generated for Horizon Logistics (5 min ago).
+    <div className="flex h-full flex-col gap-6 rounded-3xl border border-border/60 bg-background/95 px-6 py-6 shadow-sm">
+      {/* Header */}
+      <div className="flex flex-col gap-2">
+        <h1 className="font-semibold text-2xl text-foreground">AI Assistant</h1>
+        <p className="text-muted-foreground text-sm">
+          Upload files, ask questions, and get AI-powered insights with interactive visualizations.
         </p>
       </div>
-      <Separator />
-      <div>
-        <p className="font-semibold text-foreground">Team</p>
-        <p className="mt-1">
-          Adam O'Neill and 3 others reviewing deal documents.
-        </p>
+
+      {/* Messages Area */}
+      <div className="flex-1 overflow-hidden">
+        <ScrollArea className="h-full pr-2">
+          <div className="space-y-4">
+            {state.messages.map((message) => (
+              <div
+                key={message.id}
+                className={cn(
+                  "flex gap-3",
+                  message.role === "user" ? "justify-end" : "justify-start"
+                )}
+              >
+                <div
+                  className={cn(
+                    "max-w-[80%] rounded-2xl px-4 py-3 text-sm",
+                    message.role === "user"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-foreground"
+                  )}
+                >
+                  {message.attachments && message.attachments.length > 0 && (
+                    <div className="mb-2 space-y-1">
+                      {message.attachments.map((file, index) => (
+                        <div key={index} className="flex items-center gap-2 text-xs">
+                          <FileStack className="h-3 w-3" />
+                          <span>{file.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <p className="whitespace-pre-wrap">{message.content}</p>
+                  {message.visualizations && message.visualizations.length > 0 && (
+                    <div className="mt-3 space-y-2">
+                      {message.visualizations.map((viz) => (
+                        <Button
+                          key={viz.id}
+                          onClick={() => openVisualization(viz)}
+                          size="sm"
+                          variant="outline"
+                          className="text-xs"
+                        >
+                          📊 {viz.title}
+                        </Button>
+                      ))}
+                    </div>
+                  )}
+                  <p className="mt-2 text-xs opacity-70">{message.timestamp}</p>
+                </div>
+              </div>
+            ))}
+            {state.isStreaming && (
+              <div className="flex justify-start">
+                <div className="max-w-[80%] rounded-2xl bg-muted px-4 py-3 text-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="flex space-x-1">
+                      <div className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/50"></div>
+                      <div className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/50" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/50" style={{ animationDelay: '0.2s' }}></div>
+                    </div>
+                    <span className="text-muted-foreground">Analyzing...</span>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+        </ScrollArea>
       </div>
+
+      {/* File Attachments */}
+      {state.attachedFiles.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {state.attachedFiles.map((file, index) => (
+            <div
+              key={`${file.name}-${file.size}-${file.lastModified}-${index}`}
+              className="flex items-center gap-2 rounded-lg border border-border/60 bg-muted/30 px-3 py-2 text-sm"
+            >
+              <FileStack className="h-4 w-4" />
+              <span className="max-w-32 truncate">{file.name}</span>
+              <Button
+                onClick={() => removeFile(index)}
+                size="sm"
+                variant="ghost"
+                className="h-4 w-4 p-0"
+              >
+                ×
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Dataset Selection */}
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center justify-between text-sm">
+          <div className="flex items-center gap-2">
+            <Folder className="h-4 w-4 text-muted-foreground" />
+            <span className="text-muted-foreground">Active datasets:</span>
+            <span className="text-xs text-muted-foreground/80">
+              {state.selectedFolders.length} selected
+            </span>
+          </div>
+          <Button
+            onClick={openDatasetSidebar}
+            size="sm"
+            variant="ghost"
+            className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+          >
+            <ChevronRight className="h-3 w-3" />
+          </Button>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {availableFolders.length === 0 ? (
+            <div className="w-full rounded-lg border border-dashed border-border/60 bg-muted/20 p-8 text-center">
+              <div className="flex flex-col items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted/50">
+                  <Folder className="h-6 w-6 text-muted-foreground" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="font-medium text-sm text-foreground">No datasets available</h4>
+                  <p className="text-xs text-muted-foreground max-w-sm">
+                    Upload files or folders to create datasets that the AI can analyze. 
+                    Your documents will be organized and indexed for intelligent insights.
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => fileInputRef.current?.click()}
+                    size="sm"
+                    variant="outline"
+                    className="gap-2"
+                  >
+                    <Upload className="h-3 w-3" />
+                    Upload Files
+                  </Button>
+                  <Button
+                    onClick={() => folderInputRef.current?.click()}
+                    size="sm"
+                    variant="outline"
+                    className="gap-2"
+                  >
+                    <Folder className="h-3 w-3" />
+                    Upload Folder
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ) : (
+            availableFolders.map((folder) => {
+              const isSelected = state.selectedFolders.includes(folder.id);
+              return (
+                <div
+                  key={folder.id}
+                  className={cn(
+                    "flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors",
+                    isSelected
+                      ? "border-primary bg-primary/5 text-primary"
+                      : "border-border/60 bg-muted/30 hover:bg-muted/50"
+                  )}
+                >
+                  <Button
+                    onClick={() => {
+                      const buttonId = `add-${folder.id}`;
+                      setState(prev => ({
+                        ...prev,
+                        selectedFolders: isSelected
+                          ? prev.selectedFolders.filter(id => id !== folder.id)
+                          : [...prev.selectedFolders, folder.id],
+                        clickedButton: buttonId
+                      }));
+                    }}
+                    size="sm"
+                    variant="ghost"
+                    className={cn(
+                      "h-4 w-4 p-0 transition-all duration-300",
+                      isSelected
+                        ? "text-green-600 hover:text-green-700"
+                        : "text-muted-foreground hover:text-foreground",
+                      state.clickedButton === `add-${folder.id}` && "animate-pulse scale-110 text-green-500"
+                    )}
+                    title={isSelected ? "Remove from context" : "Add to context"}
+                  >
+                    {isSelected ? (
+                      <CheckCircle className="h-3 w-3" />
+                    ) : (
+                      <Plus className="h-3 w-3" />
+                    )}
+                  </Button>
+                  <span className="font-medium">{folder.name}</span>
+                  <Button
+                    onClick={() => openDatasetDetails(folder.id)}
+                    size="sm"
+                    variant="ghost"
+                    className="h-4 w-4 p-0 text-muted-foreground hover:text-foreground ml-1"
+                    title={`View dataset details: ${folder.name}`}
+                  >
+                    <ChevronRight className="h-3 w-3" />
+                  </Button>
+                </div>
+              );
+            })
+          )}
+        </div>
+        {state.selectedFolders.length > 0 && (
+          <p className="text-xs text-muted-foreground">
+            AI will analyze documents from the selected datasets to provide more relevant insights.
+          </p>
+        )}
+        {state.selectedFolders.length === 0 && (
+          <p className="text-xs text-muted-foreground">
+            Select datasets above to give the AI context from your uploaded documents.
+          </p>
+        )}
+      </div>
+
+      {/* Input Area */}
+      <div className="flex gap-2">
+        <div className="flex gap-1">
+          <Button
+            onClick={() => fileInputRef.current?.click()}
+            size="icon"
+            variant="outline"
+            className="shrink-0"
+            title="Upload files"
+          >
+            <Upload className="h-4 w-4" />
+          </Button>
+          <Button
+            onClick={() => folderInputRef.current?.click()}
+            size="icon"
+            variant="outline"
+            className="shrink-0"
+            title="Upload folder"
+          >
+            <Folder className="h-4 w-4" />
+          </Button>
+        </div>
+        <input
+          ref={fileInputRef}
+          type="file"
+          multiple
+          onChange={handleFileUpload}
+          className="hidden"
+        />
+        <input
+          ref={folderInputRef}
+          type="file"
+          multiple
+          {...({ webkitdirectory: "" } as any)}
+          onChange={handleFolderUpload}
+          className="hidden"
+        />
+        <Input
+          value={state.currentMessage}
+          onChange={(e) => setState(prev => ({ ...prev, currentMessage: e.target.value }))}
+          onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+          placeholder="Ask about your real estate data..."
+          className="flex-1"
+        />
+        <Button onClick={sendMessage} disabled={state.isStreaming}>
+          Send
+        </Button>
+      </div>
+
+      {/* Visualization Popup */}
+      {state.showVisualization && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="max-w-4xl max-h-[80vh] w-full mx-4 overflow-hidden rounded-lg bg-background p-6 shadow-lg">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-lg">{state.showVisualization.title}</h3>
+              <Button onClick={closeVisualization} size="icon" variant="ghost">
+                ×
+              </Button>
+            </div>
+            <div className="h-96 overflow-auto">
+              {state.showVisualization.type === "chart" && (
+                <div className="flex items-center justify-center h-full text-muted-foreground">
+                  📊 Chart visualization would render here
+                  <pre className="mt-4 text-xs">
+                    {JSON.stringify(state.showVisualization.data, null, 2)}
+                  </pre>
+                </div>
+              )}
+              {state.showVisualization.type === "spreadsheet" && (
+                <SpreadsheetEditor />
+              )}
+              {state.showVisualization.type === "map" && (
+                <div className="flex items-center justify-center h-full text-muted-foreground">
+                  🗺️ Map visualization would render here
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Dataset Details Sidebar */}
+      {state.showDatasetDetails && (
+        <div className="fixed inset-y-0 right-0 z-50 w-80 bg-background border-l border-border/60 shadow-xl">
+          <div className="flex flex-col h-full">
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-border/60">
+              <h3 className="font-semibold text-lg">Dataset Details</h3>
+              <Button onClick={closeDatasetDetails} size="icon" variant="ghost">
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto p-4">
+              <div className="space-y-6">
+                {(() => {
+                  const dataset = availableFolders.find(f => f.id === state.showDatasetDetails);
+                  if (!dataset) return null;
+
+                  const stats = collectFolderStats(
+                    FILE_LIBRARY_ROOT.children?.find(c => c.id === dataset.id) || 
+                    FILE_LIBRARY_ROOT.children?.find(c => c.children?.some(sc => sc.id === dataset.id))?.children?.find(sc => sc.id === dataset.id) ||
+                    FILE_LIBRARY_ROOT
+                  );
+
+                  return (
+                    <>
+                      {/* Dataset Header */}
+                      <div className="space-y-3 relative group">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                            <Folder className="h-5 w-5" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-lg">{dataset.name}</h4>
+                            <p className="text-sm text-muted-foreground">
+                              Dataset • {stats.total} files
+                            </p>
+                          </div>
+                        </div>
+
+                        {dataset.description && (
+                          <p className="text-sm text-muted-foreground leading-relaxed">
+                            {dataset.description}
+                          </p>
+                        )}
+
+                        {/* Hover Statistics Tooltip */}
+                        <div className="absolute top-0 right-0 translate-x-full ml-4 bg-background border border-border/60 rounded-lg p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-20 shadow-lg w-80">
+                          <div className="space-y-3">
+                            <h5 className="font-medium text-sm text-foreground">File Statistics</h5>
+                            <div className="grid grid-cols-2 gap-3">
+                              <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+                                <p className="text-2xl font-bold text-primary">{stats.total}</p>
+                                <p className="text-xs text-muted-foreground">Total Files</p>
+                              </div>
+                              <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+                                <p className="text-2xl font-bold text-green-600">{stats.indexed}</p>
+                                <p className="text-xs text-muted-foreground">Ready</p>
+                              </div>
+                              <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+                                <p className="text-2xl font-bold text-blue-600">{stats.indexing}</p>
+                                <p className="text-xs text-muted-foreground">Indexing</p>
+                              </div>
+                              <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+                                <p className="text-2xl font-bold text-amber-600">{stats.queued}</p>
+                                <p className="text-xs text-muted-foreground">Queued</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Recent Files */}
+                      <div className="space-y-3">
+                        <h5 className="font-medium text-sm">Recent Files</h5>
+                        <div className="space-y-2">
+                          {(() => {
+                            const folder = FILE_LIBRARY_ROOT.children?.find(c => c.id === dataset.id) || 
+                                          FILE_LIBRARY_ROOT.children?.find(c => c.children?.some(sc => sc.id === dataset.id))?.children?.find(sc => sc.id === dataset.id);
+                            
+                            if (!folder?.files?.length) {
+                              return (
+                                <p className="text-sm text-muted-foreground">No files in this dataset yet.</p>
+                              );
+                            }
+
+                            return folder.files
+                              .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+                              .slice(0, 5)
+                              .map((file) => (
+                                <div key={file.id} className="flex items-center gap-3 rounded-lg border border-border/60 bg-muted/30 p-3">
+                                  <FileTypeBadge type={file.type} />
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium truncate">{file.name}</p>
+                                    <p className="text-xs text-muted-foreground">
+                                      {file.size} • {relativeTime(file.updatedAt)}
+                                    </p>
+                                  </div>
+                                  <Badge 
+                                    variant="outline" 
+                                    className={cn(
+                                      "text-xs",
+                                      file.status === "indexed" && "text-green-600",
+                                      file.status === "indexing" && "text-blue-600",
+                                      file.status === "queued" && "text-amber-600"
+                                    )}
+                                  >
+                                    {file.status}
+                                  </Badge>
+                                </div>
+                              ));
+                          })()}
+                        </div>
+                      </div>
+
+                      {/* Database JSON Data */}
+                      <div className="space-y-3">
+                        <h5 className="font-medium text-sm">Database Data</h5>
+                        {(() => {
+                          const jsonInfo = state.datasetJsonData[dataset.id];
+                          
+                          if (jsonInfo?.loading) {
+                            return (
+                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                <span>Loading data...</span>
+                              </div>
+                            );
+                          }
+                          
+                          if (jsonInfo?.error) {
+                            return (
+                              <div className="rounded-lg border border-red-200 bg-red-50 p-3">
+                                <p className="text-sm text-red-600">
+                                  Failed to load data: {jsonInfo.error}
+                                </p>
+                              </div>
+                            );
+                          }
+                          
+                          if (jsonInfo?.data) {
+                            return (
+                              <div className="space-y-2">
+                                <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                                      Live Database Data
+                                    </span>
+                                    <span className="text-xs text-muted-foreground">
+                                      Updated {jsonInfo.lastFetched ? new Date(jsonInfo.lastFetched).toLocaleTimeString() : 'just now'}
+                                    </span>
+                                  </div>
+                                  <ScrollArea className="h-48 w-full">
+                                    <pre className="text-xs text-foreground whitespace-pre-wrap">
+                                      {JSON.stringify(jsonInfo.data, null, 2)}
+                                    </pre>
+                                  </ScrollArea>
+                                </div>
+                              </div>
+                            );
+                          }
+                          
+                          return (
+                            <div className="rounded-lg border border-dashed border-border/60 bg-muted/20 p-4 text-center">
+                              <p className="text-sm text-muted-foreground">
+                                No database data available yet.
+                              </p>
+                              <p className="text-xs text-muted-foreground/80 mt-1">
+                                Data will appear here when the backend provides it.
+                              </p>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
+}
+
+function SidebarSummary() {
+  return null;
 }
 
 // ---------------------------------------------------------------------------
@@ -1940,16 +3606,24 @@ function SidebarSummary() {
 
 type FileCardProps = {
   file: RealEstateFile;
+  onOpenInSpreadsheet?: (file: RealEstateFile) => void;
 };
 
-function FileCard({ file }: FileCardProps) {
+function FileCard({ file, onOpenInSpreadsheet }: FileCardProps) {
+  const handleOpenInSpreadsheet = () => {
+    if (onOpenInSpreadsheet) {
+      onOpenInSpreadsheet(file);
+    }
+  };
+
+  const canOpenInSpreadsheet = file.type === 'csv' || file.type === 'xlsx';
+
   return (
     <div className="flex flex-col gap-3 rounded-3xl border border-border/60 bg-background/95 p-5 shadow-sm">
       <div className="flex items-start justify-between gap-3">
         <div>
           <div className="flex items-center gap-2 text-muted-foreground">
             <FileTypeBadge type={file.type} />
-            <span className="text-xs">{file.size}</span>
           </div>
           <p className="mt-2 line-clamp-2 font-semibold text-foreground text-sm">
             {file.name}
@@ -1964,15 +3638,38 @@ function FileCard({ file }: FileCardProps) {
         {file.status === "indexing" ? (
           <div>
             <div className="flex items-center justify-between text-xs">
-              <span className="font-medium text-foreground">Indexing</span>
+              <span className="font-medium text-foreground flex items-center gap-1">
+                <Loader2 className="h-3 w-3 animate-spin" />
+                Indexing
+              </span>
               <span>{file.progress}%</span>
             </div>
             <Progress className="mt-2 h-1.5" value={file.progress} />
+            <p className="text-muted-foreground/70 text-[10px] mt-1">
+              Processing for AI analysis
+            </p>
+          </div>
+        ) : file.status === "queued" ? (
+          <div className="flex items-center gap-1">
+            <RotateCcw className="h-3 w-3" />
+            <Badge className="text-[11px] text-amber-600" variant="outline">
+              Queued for processing
+            </Badge>
           </div>
         ) : (
           <Badge className="text-[11px] text-emerald-600" variant="outline">
             Ready for analysis
           </Badge>
+        )}
+        {canOpenInSpreadsheet && file.status === "indexed" && (
+          <Button
+            onClick={handleOpenInSpreadsheet}
+            size="sm"
+            variant="outline"
+            className="w-full mt-2"
+          >
+            Open in Spreadsheet
+          </Button>
         )}
       </div>
     </div>
@@ -1981,9 +3678,18 @@ function FileCard({ file }: FileCardProps) {
 
 type FileRowProps = {
   file: RealEstateFile;
+  onOpenInSpreadsheet?: (file: RealEstateFile) => void;
 };
 
-function FileRow({ file }: FileRowProps) {
+function FileRow({ file, onOpenInSpreadsheet }: FileRowProps) {
+  const handleOpenInSpreadsheet = () => {
+    if (onOpenInSpreadsheet) {
+      onOpenInSpreadsheet(file);
+    }
+  };
+
+  const canOpenInSpreadsheet = file.type === 'csv' || file.type === 'xlsx';
+
   return (
     <div className="flex items-center justify-between rounded-2xl border border-border/60 bg-background/95 px-4 py-4 shadow-sm">
       <div className="flex items-center gap-3">
@@ -1991,20 +3697,35 @@ function FileRow({ file }: FileRowProps) {
         <div>
           <p className="font-semibold text-foreground text-sm">{file.name}</p>
           <p className="text-muted-foreground text-xs">
-            {file.size} · Updated {relativeTime(file.updatedAt)}
+            Updated {relativeTime(file.updatedAt)}
           </p>
         </div>
       </div>
       <div className="flex items-center gap-3 text-muted-foreground text-xs">
         {file.status === "indexing" ? (
           <div className="flex items-center gap-2">
+            <Loader2 className="h-3 w-3 animate-spin" />
             <span>Indexing {file.progress}%</span>
             <Progress className="h-1.5 w-24" value={file.progress} />
+          </div>
+        ) : file.status === "queued" ? (
+          <div className="flex items-center gap-1">
+            <RotateCcw className="h-3 w-3" />
+            <span className="text-amber-600">Queued</span>
           </div>
         ) : (
           <Badge className="text-[11px] text-emerald-600" variant="outline">
             Ready
           </Badge>
+        )}
+        {canOpenInSpreadsheet && file.status === "indexed" && (
+          <Button
+            onClick={handleOpenInSpreadsheet}
+            size="sm"
+            variant="outline"
+          >
+            Open in Spreadsheet
+          </Button>
         )}
         <Button className="text-muted-foreground" size="icon" variant="ghost">
           ...
@@ -2015,7 +3736,7 @@ function FileRow({ file }: FileRowProps) {
 }
 
 function FileTypeBadge({ type }: { type: RealEstateFile["type"] }) {
-  const label = type === "pdf" ? "PDF" : type === "xlsx" ? "XLSX" : "DOC";
+  const label = type === "pdf" ? "PDF" : type === "xlsx" ? "XLSX" : type === "csv" ? "CSV" : "DOC";
   return (
     <Badge className="text-[11px] uppercase tracking-wide" variant="outline">
       {label}
