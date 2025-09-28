@@ -1,0 +1,807 @@
+{
+  "success": false,
+  "status": "failed",
+  "error_message": "Memory storage failed: Error embedding content: 400 API key not valid. Please pass a valid API key. [reason: \"API_KEY_INVALID\"\ndomain: \"googleapis.com\"\nmetadata {\n  key: \"service\"\n  value: \"generativelanguage.googleapis.com\"\n}\n, locale: \"en-US\"\nmessage: \"API key not valid. Please pass a valid API key.\"\n]",
+  "file_info": {
+    "filename": "How To Create An Account.pptx",
+    "file_type": "powerpoint",
+    "file_size": 2566915,
+    "supported": true
+  },
+  "parsed_content": {
+    "file_path": "/var/folders/t7/kq6x_29n33q1gyvcntkp3dv40000gn/T/tmpef_a_hpu.pptx",
+    "file_name": "How To Create An Account.pptx",
+    "total_slides": 7,
+    "slides": [
+      {
+        "slide_number": 1,
+        "slide_text": "Create An OpenCCC Account\nFirst-Time UserCalifornia Community Colleges\nHow To…",
+        "text_boxes": [
+          {
+            "type": "text",
+            "text": "Create An OpenCCC Account",
+            "ocr_text": "",
+            "position": {
+              "left": 390525,
+              "top": 1819275,
+              "width": 8222100,
+              "height": 933600
+            }
+          },
+          {
+            "type": "text",
+            "text": "First-Time UserCalifornia Community Colleges",
+            "ocr_text": "",
+            "position": {
+              "left": 390525,
+              "top": 2789125,
+              "width": 8394600,
+              "height": 432900
+            }
+          },
+          {
+            "type": "text",
+            "text": "How To…",
+            "ocr_text": "",
+            "position": {
+              "left": 291862,
+              "top": 868665,
+              "width": 3305711,
+              "height": 1062023
+            }
+          }
+        ],
+        "images": [],
+        "tables": [],
+        "shapes": [],
+        "text_box_count": 3,
+        "images_processed": 0,
+        "tables_processed": 0,
+        "shapes_processed": 0,
+        "ocr_used": false
+      },
+      {
+        "slide_number": 2,
+        "slide_text": "Why do you need an OpenCCC Account?\nOpenCCC is the student account system for all 116 California Community Colleges.\nRegardless of which college you are attending, OpenCCC generates a one-time CCC-ID for every student across the system. \nThe CCCID ensures all your applications and records are consolidated in one place throughout your college journey in the CCC system.\n[OCR Error: Tesseract language data not found. Please install tesseract-data-eng package or download eng.traineddata]\nStep 1: Get Started\n\nReminder: If you already have an OpenCCC account, Sign In using your email address, or click the Recover Account link to reset your password.\n1. Click the Create An Account link on Sign In page",
+        "text_boxes": [
+          {
+            "type": "text",
+            "text": "Why do you need an OpenCCC Account?",
+            "ocr_text": "",
+            "position": {
+              "left": 226078,
+              "top": 662600,
+              "width": 2808000,
+              "height": 953400
+            }
+          },
+          {
+            "type": "text",
+            "text": "OpenCCC is the student account system for all 116 California Community Colleges.\nRegardless of which college you are attending, OpenCCC generates a one-time CCC-ID for every student across the system. \nThe CCCID ensures all your applications and records are consolidated in one place throughout your college journey in the CCC system.",
+            "ocr_text": "",
+            "position": {
+              "left": 226075,
+              "top": 1618200,
+              "width": 2808000,
+              "height": 3163500
+            }
+          },
+          {
+            "type": "text",
+            "text": "Step 1: Get Started",
+            "ocr_text": "",
+            "position": {
+              "left": 3881111,
+              "top": 260075,
+              "width": 4710900,
+              "height": 523200
+            }
+          },
+          {
+            "type": "text",
+            "text": "",
+            "ocr_text": "",
+            "position": {
+              "left": 5418675,
+              "top": 3333912,
+              "width": 664200,
+              "height": 243900
+            }
+          },
+          {
+            "type": "text",
+            "text": "Reminder: If you already have an OpenCCC account, Sign In using your email address, or click the Recover Account link to reset your password.",
+            "ocr_text": "",
+            "position": {
+              "left": 3990100,
+              "top": 4222475,
+              "width": 4908900,
+              "height": 523200
+            }
+          },
+          {
+            "type": "text",
+            "text": "1. Click the Create An Account link on Sign In page",
+            "ocr_text": "",
+            "position": {
+              "left": 3881100,
+              "top": 717275,
+              "width": 4865400,
+              "height": 431100
+            }
+          },
+          {
+            "type": "text",
+            "text": "",
+            "ocr_text": "",
+            "position": {
+              "left": 5327475,
+              "top": 2930775,
+              "width": 1550100,
+              "height": 103800
+            }
+          }
+        ],
+        "images": [
+          {
+            "type": "image",
+            "text": "",
+            "ocr_text": "[OCR Error: Tesseract language data not found. Please install tesseract-data-eng package or download eng.traineddata]",
+            "position": {
+              "left": 3989875,
+              "top": 1275849,
+              "width": 4251974,
+              "height": 2388126
+            }
+          }
+        ],
+        "tables": [],
+        "shapes": [
+          {
+            "type": "shape",
+            "text": "",
+            "ocr_text": "",
+            "position": {
+              "left": 5750700,
+              "top": 932825,
+              "width": 2995800,
+              "height": 2401200
+            }
+          }
+        ],
+        "text_box_count": 7,
+        "images_processed": 1,
+        "tables_processed": 0,
+        "shapes_processed": 1,
+        "ocr_used": true
+      },
+      {
+        "slide_number": 3,
+        "slide_text": "Here’s what you need to create your account\nA unique email address\nAccess to your email account\nChrome or Safari browser recommended\n\nIf you’re using a mobile device…\nA unique, mobile phone number\nAccess to your mobile device\nEmail address to complete setting up your account\n[OCR Error: Tesseract language data not found. Please install tesseract-data-eng package or download eng.traineddata]\nStep 2:  Create Your Account\n\n2. Click Email My Verification Code button\n\n1. Enter your unique email address in Email field\n1\n2",
+        "text_boxes": [
+          {
+            "type": "text",
+            "text": "Here’s what you need to create your account",
+            "ocr_text": "",
+            "position": {
+              "left": 226078,
+              "top": 662600,
+              "width": 2808000,
+              "height": 953400
+            }
+          },
+          {
+            "type": "text",
+            "text": "A unique email address\nAccess to your email account\nChrome or Safari browser recommended\n\nIf you’re using a mobile device…\nA unique, mobile phone number\nAccess to your mobile device\nEmail address to complete setting up your account",
+            "ocr_text": "",
+            "position": {
+              "left": 226075,
+              "top": 1618200,
+              "width": 2949300,
+              "height": 3163500
+            }
+          },
+          {
+            "type": "text",
+            "text": "Step 2:  Create Your Account",
+            "ocr_text": "",
+            "position": {
+              "left": 3881111,
+              "top": 260075,
+              "width": 4710900,
+              "height": 523200
+            }
+          },
+          {
+            "type": "text",
+            "text": "",
+            "ocr_text": "",
+            "position": {
+              "left": 5284300,
+              "top": 2642150,
+              "width": 1565700,
+              "height": 289800
+            }
+          },
+          {
+            "type": "text",
+            "text": "2. Click Email My Verification Code button",
+            "ocr_text": "",
+            "position": {
+              "left": 3837700,
+              "top": 4222475,
+              "width": 4323000,
+              "height": 446400
+            }
+          },
+          {
+            "type": "text",
+            "text": "",
+            "ocr_text": "",
+            "position": {
+              "left": 5373075,
+              "top": 3087075,
+              "width": 1400400,
+              "height": 136800
+            }
+          },
+          {
+            "type": "text",
+            "text": "1. Enter your unique email address in Email field",
+            "ocr_text": "",
+            "position": {
+              "left": 3881100,
+              "top": 717275,
+              "width": 4761300,
+              "height": 431100
+            }
+          },
+          {
+            "type": "text",
+            "text": "1",
+            "ocr_text": "",
+            "position": {
+              "left": 4917175,
+              "top": 2646950,
+              "width": 273600,
+              "height": 280200
+            }
+          },
+          {
+            "type": "text",
+            "text": "2",
+            "ocr_text": "",
+            "position": {
+              "left": 4923688,
+              "top": 3027950,
+              "width": 273600,
+              "height": 280200
+            }
+          }
+        ],
+        "images": [
+          {
+            "type": "image",
+            "text": "",
+            "ocr_text": "[OCR Error: Tesseract language data not found. Please install tesseract-data-eng package or download eng.traineddata]",
+            "position": {
+              "left": 3989878,
+              "top": 1278850,
+              "width": 4251960,
+              "height": 2755271
+            }
+          }
+        ],
+        "tables": [],
+        "shapes": [
+          {
+            "type": "shape",
+            "text": "",
+            "ocr_text": "",
+            "position": {
+              "left": 6849900,
+              "top": 932825,
+              "width": 1792500,
+              "height": 1854300
+            }
+          },
+          {
+            "type": "shape",
+            "text": "",
+            "ocr_text": "",
+            "position": {
+              "left": 6773500,
+              "top": 3155375,
+              "width": 1387200,
+              "height": 1290300
+            }
+          }
+        ],
+        "text_box_count": 9,
+        "images_processed": 1,
+        "tables_processed": 0,
+        "shapes_processed": 2,
+        "ocr_used": true
+      },
+      {
+        "slide_number": 4,
+        "slide_text": "[OCR Error: Tesseract language data not found. Please install tesseract-data-eng package or download eng.traineddata]\nRetrieve your  security code to verify your identity\nAccess your email account and find the email from California Community Colleges\nCopy the six-digit security code\nReturn to the Verify Your Account page and enter the code in the Verification Code field\nImportant Notes:\nThe security code is time-sensitive\nEnter your code within 10 minutes\nThree retries are allowed\nRequest a new code at any time\n\n4. Click Verify Email button to verify your identity\n\nStep 3:  Verify Your Account\n3. Enter security code in the Verification Code field\n3\n4",
+        "text_boxes": [
+          {
+            "type": "text",
+            "text": "Retrieve your  security code to verify your identity",
+            "ocr_text": "",
+            "position": {
+              "left": 226078,
+              "top": 662600,
+              "width": 2808000,
+              "height": 953400
+            }
+          },
+          {
+            "type": "text",
+            "text": "Access your email account and find the email from California Community Colleges\nCopy the six-digit security code\nReturn to the Verify Your Account page and enter the code in the Verification Code field\nImportant Notes:\nThe security code is time-sensitive\nEnter your code within 10 minutes\nThree retries are allowed\nRequest a new code at any time",
+            "ocr_text": "",
+            "position": {
+              "left": 226075,
+              "top": 1618200,
+              "width": 2763900,
+              "height": 3163500
+            }
+          },
+          {
+            "type": "text",
+            "text": "",
+            "ocr_text": "",
+            "position": {
+              "left": 5284300,
+              "top": 2642150,
+              "width": 1565700,
+              "height": 289800
+            }
+          },
+          {
+            "type": "text",
+            "text": "4. Click Verify Email button to verify your identity",
+            "ocr_text": "",
+            "position": {
+              "left": 3881100,
+              "top": 4222475,
+              "width": 4820100,
+              "height": 446400
+            }
+          },
+          {
+            "type": "text",
+            "text": "",
+            "ocr_text": "",
+            "position": {
+              "left": 5373075,
+              "top": 3010875,
+              "width": 1400400,
+              "height": 136800
+            }
+          },
+          {
+            "type": "text",
+            "text": "Step 3:  Verify Your Account",
+            "ocr_text": "",
+            "position": {
+              "left": 3881111,
+              "top": 260075,
+              "width": 4710900,
+              "height": 523200
+            }
+          },
+          {
+            "type": "text",
+            "text": "3. Enter security code in the Verification Code field",
+            "ocr_text": "",
+            "position": {
+              "left": 3881100,
+              "top": 717275,
+              "width": 4969800,
+              "height": 431100
+            }
+          },
+          {
+            "type": "text",
+            "text": "3",
+            "ocr_text": "",
+            "position": {
+              "left": 4917175,
+              "top": 2646950,
+              "width": 273600,
+              "height": 280200
+            }
+          },
+          {
+            "type": "text",
+            "text": "4",
+            "ocr_text": "",
+            "position": {
+              "left": 4923688,
+              "top": 3027950,
+              "width": 273600,
+              "height": 280200
+            }
+          }
+        ],
+        "images": [
+          {
+            "type": "image",
+            "text": "",
+            "ocr_text": "[OCR Error: Tesseract language data not found. Please install tesseract-data-eng package or download eng.traineddata]",
+            "position": {
+              "left": 3989878,
+              "top": 1278850,
+              "width": 4251960,
+              "height": 2755271
+            }
+          }
+        ],
+        "tables": [],
+        "shapes": [
+          {
+            "type": "shape",
+            "text": "",
+            "ocr_text": "",
+            "position": {
+              "left": 6849900,
+              "top": 932825,
+              "width": 2001000,
+              "height": 1854300
+            }
+          },
+          {
+            "type": "shape",
+            "text": "",
+            "ocr_text": "",
+            "position": {
+              "left": 6773400,
+              "top": 3079175,
+              "width": 1927800,
+              "height": 1366500
+            }
+          }
+        ],
+        "text_box_count": 9,
+        "images_processed": 1,
+        "tables_processed": 0,
+        "shapes_processed": 2,
+        "ocr_used": true
+      },
+      {
+        "slide_number": 5,
+        "slide_text": "Basic Profile Information\nProvide a phone number and indicate the type (mobile or landline)\nProvide your permanent home address\nProvide your full legal name\nEnter and confirm your date of birth\n[OCR Error: Tesseract language data not found. Please install tesseract-data-eng package or download eng.traineddata]\n\nStep 4:  Complete Profile\n5. Provide your Personal & Contact Information\n5\n6\n6. Continue to Credentials screen to create password\n[OCR Error: Tesseract language data not found. Please install tesseract-data-eng package or download eng.traineddata]",
+        "text_boxes": [
+          {
+            "type": "text",
+            "text": "Basic Profile Information",
+            "ocr_text": "",
+            "position": {
+              "left": 226078,
+              "top": 662600,
+              "width": 2808000,
+              "height": 953400
+            }
+          },
+          {
+            "type": "text",
+            "text": "Provide a phone number and indicate the type (mobile or landline)\nProvide your permanent home address\nProvide your full legal name\nEnter and confirm your date of birth",
+            "ocr_text": "",
+            "position": {
+              "left": 226075,
+              "top": 1618200,
+              "width": 2808000,
+              "height": 3163500
+            }
+          },
+          {
+            "type": "text",
+            "text": "",
+            "ocr_text": "",
+            "position": {
+              "left": 3881100,
+              "top": 4222475,
+              "width": 4820100,
+              "height": 461700
+            }
+          },
+          {
+            "type": "text",
+            "text": "Step 4:  Complete Profile",
+            "ocr_text": "",
+            "position": {
+              "left": 3881111,
+              "top": 260075,
+              "width": 4710900,
+              "height": 523200
+            }
+          },
+          {
+            "type": "text",
+            "text": "5. Provide your Personal & Contact Information",
+            "ocr_text": "",
+            "position": {
+              "left": 3881100,
+              "top": 717275,
+              "width": 5126100,
+              "height": 446400
+            }
+          },
+          {
+            "type": "text",
+            "text": "5",
+            "ocr_text": "",
+            "position": {
+              "left": 4265900,
+              "top": 1513725,
+              "width": 273600,
+              "height": 280200
+            }
+          },
+          {
+            "type": "text",
+            "text": "6",
+            "ocr_text": "",
+            "position": {
+              "left": 4265888,
+              "top": 3059850,
+              "width": 273600,
+              "height": 280200
+            }
+          },
+          {
+            "type": "text",
+            "text": "6. Continue to Credentials screen to create password",
+            "ocr_text": "",
+            "position": {
+              "left": 3881100,
+              "top": 4222475,
+              "width": 5197800,
+              "height": 446400
+            }
+          }
+        ],
+        "images": [
+          {
+            "type": "image",
+            "text": "",
+            "ocr_text": "[OCR Error: Tesseract language data not found. Please install tesseract-data-eng package or download eng.traineddata]",
+            "position": {
+              "left": 3989878,
+              "top": 1278850,
+              "width": 4251960,
+              "height": 2755271
+            }
+          },
+          {
+            "type": "image",
+            "text": "",
+            "ocr_text": "[OCR Error: Tesseract language data not found. Please install tesseract-data-eng package or download eng.traineddata]",
+            "position": {
+              "left": 3989875,
+              "top": 1268450,
+              "width": 4251974,
+              "height": 2740676
+            }
+          }
+        ],
+        "tables": [],
+        "shapes": [],
+        "text_box_count": 8,
+        "images_processed": 2,
+        "tables_processed": 0,
+        "shapes_processed": 0,
+        "ocr_used": true
+      },
+      {
+        "slide_number": 6,
+        "slide_text": "[OCR Error: Tesseract language data not found. Please install tesseract-data-eng package or download eng.traineddata]\nOur Commitment to Security & Privacy\nOpenCCC uses two-factor (2FA) authentication for identity security \nYour personal information is secure\nYour information is never sold or shared with third parties\nYour data is encrypted in transit and at rest\n\n8. Click Create Account button to finish\nStep 5:  Create Password & Finish\n7. Create and confirm your secure password\n7\n8",
+        "text_boxes": [
+          {
+            "type": "text",
+            "text": "Our Commitment to Security & Privacy",
+            "ocr_text": "",
+            "position": {
+              "left": 226078,
+              "top": 662600,
+              "width": 2808000,
+              "height": 953400
+            }
+          },
+          {
+            "type": "text",
+            "text": "OpenCCC uses two-factor (2FA) authentication for identity security \nYour personal information is secure\nYour information is never sold or shared with third parties\nYour data is encrypted in transit and at rest",
+            "ocr_text": "",
+            "position": {
+              "left": 226075,
+              "top": 1618200,
+              "width": 2808000,
+              "height": 3163500
+            }
+          },
+          {
+            "type": "text",
+            "text": "",
+            "ocr_text": "",
+            "position": {
+              "left": 6072350,
+              "top": 2646950,
+              "width": 1565700,
+              "height": 523200
+            }
+          },
+          {
+            "type": "text",
+            "text": "8. Click Create Account button to finish",
+            "ocr_text": "",
+            "position": {
+              "left": 3881100,
+              "top": 4222475,
+              "width": 3615300,
+              "height": 446400
+            }
+          },
+          {
+            "type": "text",
+            "text": "Step 5:  Create Password & Finish",
+            "ocr_text": "",
+            "position": {
+              "left": 3881111,
+              "top": 260075,
+              "width": 4710900,
+              "height": 523200
+            }
+          },
+          {
+            "type": "text",
+            "text": "7. Create and confirm your secure password",
+            "ocr_text": "",
+            "position": {
+              "left": 3881100,
+              "top": 717275,
+              "width": 4201200,
+              "height": 446400
+            }
+          },
+          {
+            "type": "text",
+            "text": "7",
+            "ocr_text": "",
+            "position": {
+              "left": 5679175,
+              "top": 2646950,
+              "width": 273600,
+              "height": 280200
+            }
+          },
+          {
+            "type": "text",
+            "text": "8",
+            "ocr_text": "",
+            "position": {
+              "left": 5705238,
+              "top": 3123050,
+              "width": 273600,
+              "height": 280200
+            }
+          }
+        ],
+        "images": [
+          {
+            "type": "image",
+            "text": "",
+            "ocr_text": "[OCR Error: Tesseract language data not found. Please install tesseract-data-eng package or download eng.traineddata]",
+            "position": {
+              "left": 3989875,
+              "top": 1384400,
+              "width": 4251974,
+              "height": 2468875
+            }
+          }
+        ],
+        "tables": [],
+        "shapes": [
+          {
+            "type": "shape",
+            "text": "",
+            "ocr_text": "",
+            "position": {
+              "left": 7638000,
+              "top": 940475,
+              "width": 444300,
+              "height": 1968000
+            }
+          },
+          {
+            "type": "shape",
+            "text": "",
+            "ocr_text": "",
+            "position": {
+              "left": 6831900,
+              "top": 3399575,
+              "width": 664500,
+              "height": 1046100
+            }
+          }
+        ],
+        "text_box_count": 8,
+        "images_processed": 1,
+        "tables_processed": 0,
+        "shapes_processed": 2,
+        "ocr_used": true
+      },
+      {
+        "slide_number": 7,
+        "slide_text": "Congratulations!\nYour account has been created and you’re on your way!\n[OCR Error: Tesseract language data not found. Please install tesseract-data-eng package or download eng.traineddata]",
+        "text_boxes": [
+          {
+            "type": "text",
+            "text": "Congratulations!",
+            "ocr_text": "",
+            "position": {
+              "left": 265500,
+              "top": 1233175,
+              "width": 4045200,
+              "height": 812700
+            }
+          },
+          {
+            "type": "text",
+            "text": "Your account has been created and you’re on your way!",
+            "ocr_text": "",
+            "position": {
+              "left": 265500,
+              "top": 2017472,
+              "width": 4045200,
+              "height": 812700
+            }
+          }
+        ],
+        "images": [
+          {
+            "type": "image",
+            "text": "",
+            "ocr_text": "[OCR Error: Tesseract language data not found. Please install tesseract-data-eng package or download eng.traineddata]",
+            "position": {
+              "left": 5393310,
+              "top": 959395,
+              "width": 3008400,
+              "height": 3224700
+            }
+          }
+        ],
+        "tables": [],
+        "shapes": [],
+        "text_box_count": 2,
+        "images_processed": 1,
+        "tables_processed": 0,
+        "shapes_processed": 0,
+        "ocr_used": true
+      }
+    ],
+    "extracted_text": "Create An OpenCCC Account\nFirst-Time UserCalifornia Community Colleges\nHow To…\nWhy do you need an OpenCCC Account?\nOpenCCC is the student account system for all 116 California Community Colleges.\nRegardless of which college you are attending, OpenCCC generates a one-time CCC-ID for every student across the system. \nThe CCCID ensures all your applications and records are consolidated in one place throughout your college journey in the CCC system.\n[OCR Error: Tesseract language data not found. Please install tesseract-data-eng package or download eng.traineddata]\nStep 1: Get Started\n\nReminder: If you already have an OpenCCC account, Sign In using your email address, or click the Recover Account link to reset your password.\n1. Click the Create An Account link on Sign In page\nHere’s what you need to create your account\nA unique email address\nAccess to your email account\nChrome or Safari browser recommended\n\nIf you’re using a mobile device…\nA unique, mobile phone number\nAccess to your mobile device\nEmail address to complete setting up your account\n[OCR Error: Tesseract language data not found. Please install tesseract-data-eng package or download eng.traineddata]\nStep 2:  Create Your Account\n\n2. Click Email My Verification Code button\n\n1. Enter your unique email address in Email field\n1\n2\n[OCR Error: Tesseract language data not found. Please install tesseract-data-eng package or download eng.traineddata]\nRetrieve your  security code to verify your identity\nAccess your email account and find the email from California Community Colleges\nCopy the six-digit security code\nReturn to the Verify Your Account page and enter the code in the Verification Code field\nImportant Notes:\nThe security code is time-sensitive\nEnter your code within 10 minutes\nThree retries are allowed\nRequest a new code at any time\n\n4. Click Verify Email button to verify your identity\n\nStep 3:  Verify Your Account\n3. Enter security code in the Verification Code field\n3\n4\nBasic Profile Information\nProvide a phone number and indicate the type (mobile or landline)\nProvide your permanent home address\nProvide your full legal name\nEnter and confirm your date of birth\n[OCR Error: Tesseract language data not found. Please install tesseract-data-eng package or download eng.traineddata]\n\nStep 4:  Complete Profile\n5. Provide your Personal & Contact Information\n5\n6\n6. Continue to Credentials screen to create password\n[OCR Error: Tesseract language data not found. Please install tesseract-data-eng package or download eng.traineddata]\n[OCR Error: Tesseract language data not found. Please install tesseract-data-eng package or download eng.traineddata]\nOur Commitment to Security & Privacy\nOpenCCC uses two-factor (2FA) authentication for identity security \nYour personal information is secure\nYour information is never sold or shared with third parties\nYour data is encrypted in transit and at rest\n\n8. Click Create Account button to finish\nStep 5:  Create Password & Finish\n7. Create and confirm your secure password\n7\n8\nCongratulations!\nYour account has been created and you’re on your way!\n[OCR Error: Tesseract language data not found. Please install tesseract-data-eng package or download eng.traineddata]",
+    "ocr_used": false,
+    "processing_summary": {
+      "text_boxes": 46,
+      "images_processed": 7,
+      "tables_processed": 0,
+      "shapes_processed": 7
+    }
+  },
+  "extracted_property_data": {
+    "error": "Failed to extract property data: Invalid argument provided to Gemini: 400 API key not valid. Please pass a valid API key. [reason: \"API_KEY_INVALID\"\ndomain: \"googleapis.com\"\nmetadata {\n  key: \"service\"\n  value: \"generativelanguage.googleapis.com\"\n}\n, locale: \"en-US\"\nmessage: \"API key not valid. Please pass a valid API key.\"\n]",
+    "raw_text": "Create An OpenCCC Account\nFirst-Time UserCalifornia Community Colleges\nHow To…\nWhy do you need an OpenCCC Account?\nOpenCCC is the student account system for all 116 California Community Colleges.\nRegardless of which college you are attending, OpenCCC generates a one-time CCC-ID for every student across the system. \nThe CCCID ensures all your applications and records are consolidated in one place throughout your college journey in the CCC system.\n[OCR Error: Tesseract language data not found. Ple..."
+  },
+  "memory_storage": {
+    "document_id": null,
+    "stored_successfully": false
+  },
+  "processing_info": {
+    "start_time": "2025-09-28T05:58:35.407606",
+    "end_time": null,
+    "duration_seconds": null
+  }
+}
