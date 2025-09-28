@@ -8,25 +8,28 @@ from pydantic import BaseModel, Field
 from typing import List, Dict, Any, Optional
 import os
 import asyncio
-from datetime import datetime
+import json
+from datetime import datetime, timedelta
 
-from app.core.langchain.memory.document_memory import DocumentMemory
+from app.core.langchain.memory.shared_memory import get_document_memory
 from app.services.memory_screening_service import MemoryScreeningService
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
+from langchain.memory import ConversationBufferWindowMemory
 
 router = APIRouter(prefix="/ai-agent", tags=["AI Agent"])
 
-# Initialize services
-document_memory = DocumentMemory()
+# Initialize services with shared instance
+document_memory = get_document_memory()
 screening_service = MemoryScreeningService()
 screening_service.document_memory = document_memory
 
 # Initialize LLM with optimized settings for faster responses
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.5-pro",
-    temperature=0.1,  # Lower temperature for faster, more focused responses
+    temperature=0.3,  # Lower temperature for faster, more focused responses
     google_api_key=os.getenv("GEMINI_API_KEY")
 )
 
@@ -43,6 +46,101 @@ _document_cache = {
     "last_updated": None,
     "cache_duration": 300  # 5 minutes
 }
+
+# Conversation context management
+class ConversationContext:
+    """Manages conversation history and context for AI agent"""
+    
+    def __init__(self):
+        # In-memory storage for conversation histories
+        # In production, this should be stored in a database
+        self.conversations: Dict[str, ConversationBufferWindowMemory] = {}
+        self.conversation_metadata: Dict[str, Dict[str, Any]] = {}
+        
+        # Configuration
+        self.max_messages = 12  # Keep last 12 message pairs (24 total messages)
+        self.max_age_hours = 2  # Keep conversations for 2 hours
+        self.max_tokens = 5000  # Approximate token limit
+    
+    def get_or_create_memory(self, conversation_id: str) -> ConversationBufferWindowMemory:
+        """Get or create conversation memory for a conversation ID"""
+        if conversation_id not in self.conversations:
+            self.conversations[conversation_id] = ConversationBufferWindowMemory(
+                k=self.max_messages,  # Keep last k message pairs
+                return_messages=True,
+                memory_key="chat_history"
+            )
+            self.conversation_metadata[conversation_id] = {
+                "created_at": datetime.now(),
+                "last_activity": datetime.now(),
+                "message_count": 0
+            }
+        
+        # Update last activity
+        self.conversation_metadata[conversation_id]["last_activity"] = datetime.now()
+        return self.conversations[conversation_id]
+    
+    def add_message_pair(self, conversation_id: str, user_message: str, ai_response: str):
+        """Add a user message and AI response to conversation history"""
+        memory = self.get_or_create_memory(conversation_id)
+        
+        # Add messages to memory
+        memory.chat_memory.add_user_message(user_message)
+        memory.chat_memory.add_ai_message(ai_response)
+        
+        # Update metadata
+        self.conversation_metadata[conversation_id]["message_count"] += 1
+    
+    def get_conversation_context(self, conversation_id: str) -> str:
+        """Get formatted conversation context for prompts"""
+        if conversation_id not in self.conversations:
+            return ""
+        
+        memory = self.conversations[conversation_id]
+        messages = memory.chat_memory.messages
+        
+        if not messages:
+            return ""
+        
+        # Format conversation history
+        context_parts = []
+        for i in range(0, len(messages), 2):
+            if i + 1 < len(messages):
+                user_msg = messages[i].content if hasattr(messages[i], 'content') else str(messages[i])
+                ai_msg = messages[i + 1].content if hasattr(messages[i + 1], 'content') else str(messages[i + 1])
+                
+                context_parts.append(f"**Previous Exchange:**")
+                context_parts.append(f"User: {user_msg}")
+                context_parts.append(f"AI: {ai_msg}")
+                context_parts.append("")
+        
+        return "\n".join(context_parts)
+    
+    def cleanup_old_conversations(self):
+        """Remove old conversations to prevent memory leaks"""
+        cutoff_time = datetime.now() - timedelta(hours=self.max_age_hours)
+        
+        conversations_to_remove = []
+        for conv_id, metadata in self.conversation_metadata.items():
+            if metadata["last_activity"] < cutoff_time:
+                conversations_to_remove.append(conv_id)
+        
+        for conv_id in conversations_to_remove:
+            del self.conversations[conv_id]
+            del self.conversation_metadata[conv_id]
+    
+    def get_conversation_stats(self) -> Dict[str, Any]:
+        """Get statistics about active conversations"""
+        self.cleanup_old_conversations()
+        
+        return {
+            "active_conversations": len(self.conversations),
+            "total_messages": sum(meta["message_count"] for meta in self.conversation_metadata.values()),
+            "oldest_conversation": min(meta["created_at"] for meta in self.conversation_metadata.values()) if self.conversation_metadata else None
+        }
+
+# Initialize conversation context manager
+conversation_context = ConversationContext()
 
 async def get_cached_document_metadata():
     """Get document metadata with caching to avoid repeated expensive operations"""
@@ -247,7 +345,7 @@ class MemorySearchResponse(BaseModel):
 @router.post("/chat", response_model=ChatResponse)
 async def chat_with_agent(request: ChatRequest):
     """
-    Main chat endpoint for AI agent
+    Main chat endpoint for AI agent with conversation context
     Detects special commands and triggers appropriate functions
     """
     try:
@@ -258,23 +356,29 @@ async def chat_with_agent(request: ChatRequest):
         
         # Handle @screener command
         if "@screener" in message_lower:
-            return await handle_screener_command(request, conversation_id)
-        
+            response = await handle_screener_command(request, conversation_id)
         # Handle @memory command
         elif "@memory" in message_lower:
-            return await handle_memory_command(request, conversation_id)
-        
+            response = await handle_memory_command(request, conversation_id)
         # Handle @help command
         elif "@help" in message_lower:
-            return await handle_help_command(request, conversation_id)
-        
+            response = await handle_help_command(request, conversation_id)
         # Handle @stats command
         elif "@stats" in message_lower:
-            return await handle_stats_command(request, conversation_id)
-        
+            response = await handle_stats_command(request, conversation_id)
         # Handle regular chat
         else:
-            return await handle_regular_chat(request, conversation_id)
+            response = await handle_regular_chat(request, conversation_id)
+        
+        # Add conversation context (except for help commands)
+        if "@help" not in message_lower:
+            conversation_context.add_message_pair(
+                conversation_id, 
+                request.message, 
+                response.response
+            )
+        
+        return response
             
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"AI agent error: {str(e)}")
@@ -476,10 +580,13 @@ async def handle_stats_command(request: ChatRequest, conversation_id: str) -> Ch
         )
 
 async def handle_regular_chat(request: ChatRequest, conversation_id: str) -> ChatResponse:
-    """Handle regular chat - provide AI assistance with memory context"""
+    """Handle regular chat - provide AI assistance with memory and conversation context"""
     try:
         # Get cached document metadata (much faster than full documents)
         doc_metadata = await get_cached_document_metadata()
+        
+        # Get conversation context
+        conversation_history = conversation_context.get_conversation_context(conversation_id)
         
         # Analyze the user's message to determine if we should search memory
         message_lower = request.message.lower()
@@ -504,7 +611,7 @@ async def handle_regular_chat(request: ChatRequest, conversation_id: str) -> Cha
                     content_preview = doc.get('content', '')[:500] + "..." if len(doc.get('content', '')) > 500 else doc.get('content', '')
                     memory_context += f"\n**{filename}** ({doc_type}):\n{content_preview}\n"
                 
-                # Create prompt for direct analysis
+                # Create prompt for direct analysis with conversation context
                 prompt = ChatPromptTemplate.from_messages([
                     ("system", """You are a helpful real estate investment AI assistant. You have direct access to the user's documents and can analyze them directly.
 
@@ -514,8 +621,11 @@ Your role is to:
 3. Provide concrete data, numbers, and specific findings from the documents
 4. Link related information across documents
 5. Give actionable insights based on the actual data
+6. Reference previous conversation context when relevant
 
 Be specific, data-driven, and reference the actual content from the documents. Don't just suggest using commands - provide the analysis directly.
+
+{conversation_context}
 
 {memory_context}"""),
                     ("human", "{message}")
@@ -530,6 +640,7 @@ Be specific, data-driven, and reference the actual content from the documents. D
                 # Generate response
                 response = await chain.ainvoke({
                     "message": request.message,
+                    "conversation_context": conversation_history,
                     "memory_context": memory_context
                 })
                 
@@ -543,22 +654,30 @@ Be specific, data-driven, and reference the actual content from the documents. D
         
         # Fallback to regular chat with basic memory context
         memory_context = ""
-        if request.include_memory and doc_metadata:
-            memory_context = f"\n\n**Available Documents in Memory ({len(doc_metadata)} documents):**\n"
-            for doc in doc_metadata[:5]:  # Show first 5 documents
-                filename = doc.get('filename', 'Unknown')
-                doc_type = doc.get('document_type', 'Unknown')
-                memory_context += f"- {filename} ({doc_type})\n"
-            if len(doc_metadata) > 5:
-                memory_context += f"- ... and {len(doc_metadata) - 5} more documents\n"
+        if request.include_memory:
+            if doc_metadata:
+                memory_context = f"\n\n**Available Documents in Memory ({len(doc_metadata)} documents):**\n"
+                for doc in doc_metadata[:5]:  # Show first 5 documents
+                    filename = doc.get('filename', 'Unknown')
+                    doc_type = doc.get('document_type', 'Unknown')
+                    memory_context += f"- {filename} ({doc_type})\n"
+                if len(doc_metadata) > 5:
+                    memory_context += f"- ... and {len(doc_metadata) - 5} more documents\n"
+            else:
+                memory_context = "\n\n**Available Documents in Memory: NONE - No documents are currently stored.**"
         
-        # Create optimized prompt for regular chat
+        # Create optimized prompt for regular chat with conversation context
         prompt = ChatPromptTemplate.from_messages([
             ("system", """You are a real estate investment AI assistant with access to user documents.
 
+IMPORTANT: Only mention documents that are explicitly listed in the memory context below. If no documents are listed, you have NO documents available and should clearly state this.
+
 Provide helpful, concise advice. For specific data questions, analyze directly rather than suggesting commands.
+Reference previous conversation context when relevant to provide better continuity.
 
 Commands: @screener, @memory, @stats, @help
+
+{conversation_context}
 
 {memory_context}"""),
             ("human", "{message}")
@@ -573,6 +692,7 @@ Commands: @screener, @memory, @stats, @help
         # Generate response
         response = await chain.ainvoke({
             "message": request.message,
+            "conversation_context": conversation_history,
             "memory_context": memory_context
         })
         
@@ -610,12 +730,32 @@ async def search_memory(request: MemorySearchRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Memory search error: {str(e)}")
 
+@router.get("/conversation-stats")
+async def get_conversation_stats():
+    """Get conversation context statistics"""
+    try:
+        stats = conversation_context.get_conversation_stats()
+        return {
+            "success": True,
+            "conversation_stats": stats,
+            "configuration": {
+                "max_messages_per_conversation": conversation_context.max_messages,
+                "max_age_hours": conversation_context.max_age_hours,
+                "max_tokens": conversation_context.max_tokens
+            }
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get conversation stats: {str(e)}")
+
 @router.get("/health")
 async def health_check():
     """Health check for AI agent service"""
     try:
         # Check memory system
         memory_stats = await document_memory.get_document_stats()
+        
+        # Get conversation stats
+        conv_stats = conversation_context.get_conversation_stats()
         
         return {
             "status": "healthy",
@@ -624,6 +764,13 @@ async def health_check():
                 "available": True,
                 "total_documents": memory_stats.get("total_documents", 0),
                 "total_size_bytes": memory_stats.get("total_size_bytes", 0)
+            },
+            "conversation_context": {
+                "enabled": True,
+                "active_conversations": conv_stats["active_conversations"],
+                "total_messages": conv_stats["total_messages"],
+                "max_messages_per_conversation": conversation_context.max_messages,
+                "max_age_hours": conversation_context.max_age_hours
             },
             "ai_model": "gemini-2.5-pro",
             "available_commands": ["@screener", "@memory", "@stats", "@help"]

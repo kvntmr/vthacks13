@@ -91,10 +91,77 @@ class DocumentMemory:
             length_function=len,
         )
         
-        # In-memory storage for document metadata
+        # In-memory storage for document metadata (used for both vector and in-memory modes)
         self.document_metadata: Dict[str, DocumentMetadata] = {}
         self.chunk_store: Dict[str, List[str]] = {}
 
+        # Rebuild metadata from persistent store when available
+        if self.vectorstore:
+            self._rebuild_metadata_from_chromadb()
+
+    def _rebuild_metadata_from_chromadb(self):
+        """Rebuild in-memory metadata from ChromaDB on initialization."""
+        if not self.vectorstore:
+            return
+
+        try:
+            collection = getattr(self.vectorstore, "_collection", None)
+            if not collection:
+                return
+
+            all_docs = collection.get()
+            if not all_docs or "metadatas" not in all_docs:
+                return
+
+            unique_doc_ids = {
+                metadata["document_id"]
+                for metadata in all_docs["metadatas"]
+                if metadata and "document_id" in metadata
+            }
+
+            for document_id in unique_doc_ids:
+                filter_dict = {"document_id": document_id}
+                results = self.vectorstore.similarity_search(
+                    "document",
+                    k=1,
+                    filter=filter_dict,
+                )
+
+                if not results:
+                    continue
+
+                chunk_metadata = results[0].metadata
+                upload_ts = chunk_metadata.get("upload_timestamp")
+                try:
+                    upload_dt = (
+                        datetime.fromisoformat(upload_ts)
+                        if upload_ts
+                        else datetime.now()
+                    )
+                except ValueError:
+                    upload_dt = datetime.now()
+
+                tags_value = chunk_metadata.get("tags", [])
+                if isinstance(tags_value, str):
+                    try:
+                        tags_value = json.loads(tags_value)
+                    except json.JSONDecodeError:
+                        tags_value = []
+
+                doc_metadata = DocumentMetadata(
+                    document_id=document_id,
+                    filename=chunk_metadata.get("filename", "Unknown"),
+                    document_type=DocumentType(chunk_metadata.get("document_type", "txt")),
+                    upload_timestamp=upload_dt,
+                    file_size=chunk_metadata.get("file_size", 0),
+                    source=chunk_metadata.get("source", "unknown"),
+                    tags=tags_value if isinstance(tags_value, list) else [],
+                )
+
+                self.document_metadata[document_id] = doc_metadata
+
+        except Exception as error:
+            print(f"Warning: Failed to rebuild metadata from ChromaDB: {error}")
     async def store_document(
         self,
         content: str,

@@ -6,13 +6,14 @@ python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
 python-multipart==0.0.6
 langchain==0.3.27
+langchain-core>=0.3.72
 langchain-community==0.3.27
-langchain-openai==0.2.5
+langchain-openai==0.2.8
 langchain-anthropic==0.3.20
 langchain-google-genai==2.1.12
+langchain-chroma==0.1.4
 langgraph==0.2.45
 chromadb==0.4.24
-# tiktoken requires Rust when building from source on Python 3.13; install separately if needed
 python-dotenv==1.1.1
 
 # PowerPoint and OCR processing
@@ -38,3 +39,6 @@ nest-asyncio==1.6.0
 mypy==1.18.2
 pytest==8.4.2
 pytest-asyncio==1.2.0
+
+# Optional: tiktoken requires a Rust toolchain on Python 3.13
+# tiktoken==0.7.0

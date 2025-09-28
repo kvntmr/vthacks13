@@ -20,7 +20,8 @@ class MemoryScreeningService:
     
     def __init__(self):
         """Initialize the memory screening service"""
-        self.document_memory = DocumentMemory()
+        from app.core.langchain.memory.shared_memory import get_document_memory
+        self.document_memory = get_document_memory()
         
         # Initialize AI model for screening
         self.llm = ChatGoogleGenerativeAI(
