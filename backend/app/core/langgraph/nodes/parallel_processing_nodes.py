@@ -396,22 +396,44 @@ async def _process_single_file(task: FileProcessingTask, agent_type: AgentType) 
             "agent_name": agent_config.get("name", "Unknown")
         }
 
-def _determine_agent_type(file_type: str) -> AgentType:
+def _determine_agent_type(file_type) -> AgentType:
     """
     Determine the appropriate agent type for a file type
     
     Args:
-        file_type: File type string
+        file_type: File type (string or FileType enum)
         
     Returns:
         Appropriate agent type
     """
-    file_type_lower = file_type.lower()
+    # Handle both string and FileType enum
+    if hasattr(file_type, 'value'):
+        file_type_str = file_type.value.lower()
+    else:
+        file_type_str = str(file_type).lower()
+    
+    # Map FileType enum values to file extensions for agent matching
+    file_type_to_extensions = {
+        'powerpoint': ['pptx', 'ppt'],
+        'pdf': ['pdf'],
+        'word': ['docx', 'doc'],
+        'excel': ['xlsx', 'xls'],
+        'csv': ['csv'],
+        'text': ['txt', 'md'],
+        'rtf': ['rtf'],
+        'odt': ['odt', 'ods', 'odp']
+    }
+    
+    # Get the extensions for this file type
+    extensions = file_type_to_extensions.get(file_type_str, [])
     
     # Check each agent type's supported types
     for agent_type, config in AGENT_CONFIGS.items():
         supported_types = config["supported_types"]
-        if "*" in supported_types or file_type_lower in supported_types:
+        if "*" in supported_types:
+            return agent_type
+        # Check if any of the file type's extensions match the agent's supported types
+        if any(ext in supported_types for ext in extensions):
             return agent_type
     
     # Fallback to general agent

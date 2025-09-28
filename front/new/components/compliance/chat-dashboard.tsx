@@ -29,6 +29,7 @@ import {
   Plus,
   RefreshCw,
   Trash2,
+  Download,
 } from "lucide-react";
 import { type ElementType, Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 
@@ -327,19 +328,7 @@ const HOME_DEALS: DealSummary[] = [
 const NAV_ITEMS: NavItem[] = [
   { id: "home", label: "Overview", icon: Home },
   { id: "chat", label: "Chat", icon: MessageSquare },
-  {
-    id: "reports",
-    label: "Reports",
-    icon: ClipboardList,
-    children: [
-      ...HOME_DEALS.map(deal => ({
-        id: `memo-${deal.id}`,
-        label: `${deal.name} Memo`,
-        icon: FileText,
-      })),
-      { id: "history-settings", label: "Memo controls", icon: Settings },
-    ],
-  },
+  { id: "reports", label: "Reports", icon: ClipboardList },
   { id: "file-library", label: "Deal files", icon: FileStack },
   { id: "sheets", label: "Sheets sync", icon: Building2 },
 ];
@@ -878,6 +867,13 @@ export function ChatDashboard() {
     name: string;
     type: string;
   } | undefined>(undefined);
+  const [reports, setReports] = useState<Array<{
+    filename: string;
+    path: string;
+    created: string;
+    size: number;
+  }>>([]);
+  const [isLoadingReports, setIsLoadingReports] = useState(false);
 
   const loadFileLibrary = useCallback(async () => {
     try {
@@ -894,9 +890,52 @@ export function ChatDashboard() {
     }
   }, []);
 
+  const loadReports = useCallback(async () => {
+    setIsLoadingReports(true);
+    try {
+      const response = await fetch("/api/reports", { cache: "no-store" });
+      if (!response.ok) {
+        throw new Error(`Failed to load reports (${response.status})`);
+      }
+      const data = await response.json();
+      if (data?.reports) {
+        setReports(data.reports);
+      }
+    } catch (error) {
+      console.error("Failed to load reports:", error);
+    } finally {
+      setIsLoadingReports(false);
+    }
+  }, []);
+
+  const handleDownloadReport = useCallback(async (filename: string) => {
+    try {
+      const response = await fetch(`/api/reports/${filename}`);
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }
+    } catch (error) {
+      console.error('Failed to download report:', error);
+    }
+  }, []);
+
   useEffect(() => {
     loadFileLibrary();
   }, [loadFileLibrary]);
+
+  useEffect(() => {
+    if (activeNavId === "reports") {
+      loadReports();
+    }
+  }, [activeNavId, loadReports]);
 
   // Update folder index when data changes
   useEffect(() => {
@@ -1414,6 +1453,14 @@ export function ChatDashboard() {
             onFolderUpload={startFolderUpload}
           />
         );
+      case "reports":
+        return (
+          <ReportsView
+            reports={reports}
+            isLoading={isLoadingReports}
+            onDownload={handleDownloadReport}
+          />
+        );
       case "history":
         return (
           <HistoryOverviewView
@@ -1430,38 +1477,9 @@ export function ChatDashboard() {
             sections={REPORT_SECTIONS}
           />
         );
-      case "history-settings":
-        return <ReportSettingsView preferences={REPORT_SETTINGS} />;
       case "sheets":
         return (
           <SpreadsheetEditor fileToLoad={fileToLoad} />
-        );
-      case "memo-deal-horizon":
-        return (
-          <ReportWorkspaceView
-            onNavigate={navigateTo}
-            onOpenFolder={openFolderInLibrary}
-            sections={REPORT_SECTIONS}
-            dealSummary={HOME_DEALS[0]}
-          />
-        );
-      case "memo-deal-suncrest":
-        return (
-          <ReportWorkspaceView
-            onNavigate={navigateTo}
-            onOpenFolder={openFolderInLibrary}
-            sections={SUNCREST_REPORT_SECTIONS}
-            dealSummary={HOME_DEALS[1]}
-          />
-        );
-      case "memo-deal-seaside":
-        return (
-          <ReportWorkspaceView
-            onNavigate={navigateTo}
-            onOpenFolder={openFolderInLibrary}
-            sections={SEASIDE_REPORT_SECTIONS}
-            dealSummary={HOME_DEALS[2]}
-          />
         );
       default:
         return (
@@ -1548,18 +1566,6 @@ export function ChatDashboard() {
               // Handle child navigation items
               if (value === "history-reports") {
                 setActiveNavId("history-reports");
-              }
-              if (value === "history-settings") {
-                setActiveNavId("history-settings");
-              }
-              if (value === "memo-deal-horizon") {
-                setActiveNavId("memo-deal-horizon");
-              }
-              if (value === "memo-deal-suncrest") {
-                setActiveNavId("memo-deal-suncrest");
-              }
-              if (value === "memo-deal-seaside") {
-                setActiveNavId("memo-deal-seaside");
               }
             }}
             value={activeNavId}
@@ -4142,5 +4148,104 @@ function relativeTime(timestamp: string) {
   } catch (_error) {
     return "just now";
   }
+}
+
+// ---------------------------------------------------------------------------
+// Reports View Component
+// ---------------------------------------------------------------------------
+
+type ReportsViewProps = {
+  reports: Array<{
+    filename: string;
+    path: string;
+    created: string;
+    size: number;
+  }>;
+  isLoading: boolean;
+  onDownload: (filename: string) => void;
+};
+
+function ReportsView({ reports, isLoading, onDownload }: ReportsViewProps) {
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const formatFileSize = (bytes: number) => {
+    if (bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+  };
+
+  return (
+    <div className="flex h-full flex-col">
+      <div className="border-b border-border/60 bg-background/95 px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-semibold text-foreground">Reports</h1>
+            <p className="text-muted-foreground text-sm">
+              Generated analysis reports from the @screener command
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex-1 overflow-auto p-6">
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>Loading reports...</span>
+            </div>
+          </div>
+        ) : reports.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <FileText className="h-12 w-12 text-muted-foreground/50 mb-4" />
+            <h3 className="text-lg font-semibold text-foreground mb-2">No reports yet</h3>
+            <p className="text-muted-foreground text-sm max-w-md">
+              Reports will appear here when you use the @screener command in the chat interface.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {reports.map((report) => (
+              <div
+                key={report.filename}
+                className="flex items-center justify-between rounded-lg border border-border/60 bg-background/95 p-4 hover:bg-muted/50 transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <FileText className="h-5 w-5 text-muted-foreground" />
+                  <div>
+                    <h3 className="font-medium text-foreground">
+                      {report.filename.replace('.md', '')}
+                    </h3>
+                    <p className="text-muted-foreground text-sm">
+                      {formatDate(report.created)} • {formatFileSize(report.size)}
+                    </p>
+                  </div>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => onDownload(report.filename)}
+                  className="flex items-center gap-2"
+                >
+                  <Download className="h-4 w-4" />
+                  Download
+                </Button>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
 }
 
