@@ -38,6 +38,9 @@ importers:
       '@handsontable/react':
         specifier: ^16.1.1
         version: 16.1.1(handsontable@16.1.1)
+      '@handsontable/react-wrapper':
+        specifier: ^16.1.1
+        version: 16.1.1(handsontable@16.1.1)
       '@icons-pack/react-simple-icons':
         specifier: ^13.7.0
         version: 13.7.0(react@19.0.0-rc-45804af1-20241021)
@@ -940,6 +943,11 @@ packages:
 
   '@handsontable/pikaday@1.0.0':
     resolution: {integrity: sha512-1VN6N38t5/DcjJ7y7XUYrDx1LuzvvzlrFdBdMG90Qo1xc8+LXHqbWbsTEm5Ec5gXTEbDEO53vUT35R+2COmOyg==}
+
+  '@handsontable/react-wrapper@16.1.1':
+    resolution: {integrity: sha512-OPYuvXjVpQlNfGdR9iUjOttZrtRh6j6wQLlEE8wswj/hvqA8PbMhRxAbd+4cgPoAlHPalU2TfpWXgj/NBHRYZQ==}
+    peerDependencies:
+      handsontable: '>=16.0.0'
 
   '@handsontable/react@16.1.1':
     resolution: {integrity: sha512-PexesDmY1Ikuf+aT8WssmakEVyF/ZVyqF7cZdj8cH8ghgln2OmYY7Y1XuJjK2YGKigOBDTm8Fx+ZdG3w2gHfDQ==}
@@ -5343,6 +5351,10 @@ snapshots:
   '@floating-ui/utils@0.2.9': {}
 
   '@handsontable/pikaday@1.0.0': {}
+
+  '@handsontable/react-wrapper@16.1.1(handsontable@16.1.1)':
+    dependencies:
+      handsontable: 16.1.1
 
   '@handsontable/react@16.1.1(handsontable@16.1.1)':
     dependencies:

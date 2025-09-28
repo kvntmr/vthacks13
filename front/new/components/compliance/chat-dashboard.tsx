@@ -46,6 +46,11 @@ import { cn } from "@/lib/utils";
 import SpreadsheetEditor from "@/components/spreadsheet";
 import React from "react";
 
+import { Spreadsheet, Worksheet, jspreadsheet } from "@jspreadsheet-ce/react";
+import "jsuites/dist/jsuites.css";
+import "jspreadsheet-ce/dist/jspreadsheet.css";
+import "handsontable/dist/handsontable.full.min.css";
+
 // ---------------------------------------------------------------------------
 // Types & mock data for the real estate file library
 // ---------------------------------------------------------------------------
