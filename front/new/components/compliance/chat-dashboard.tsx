@@ -22,6 +22,7 @@ import {
   Loader2,
   Minimize2,
   Maximize2,
+  ChevronDown,
 } from "lucide-react";
 import { type ElementType, Fragment, useEffect, useMemo, useRef, useState } from "react";
 
@@ -36,6 +37,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
@@ -921,8 +928,6 @@ export function ChatDashboard() {
   const [activeFolderId, setActiveFolderId] = useState<string>(
     FILE_LIBRARY_ROOT.id
   );
-  const [showNewFolderDialog, setShowNewFolderDialog] = useState(false);
-  const [newFolderName, setNewFolderName] = useState("");
   const [fileLibraryData, setFileLibraryData] = useState<RealEstateFolder>(FILE_LIBRARY_ROOT);
   const [folderIndex, setFolderIndex] = useState<Record<string, FolderIndexEntry>>(() => buildFolderIndex(FILE_LIBRARY_ROOT));
   const [uploadManager, setUploadManager] = useState<UploadManagerState>({
@@ -980,40 +985,6 @@ export function ChatDashboard() {
         ? prev.filter((section) => section !== id)
         : [...prev, id]
     );
-  };
-
-  const handleCreateNewFolder = () => {
-    if (newFolderName.trim()) {
-      const newFolder: RealEstateFolder = {
-        id: `folder-${Date.now()}`,
-        name: newFolderName.trim(),
-        files: [],
-        children: [],
-      };
-
-      // Add the new folder to the current folder's children
-      setFileLibraryData(prevData => {
-        const updateFolder = (folder: RealEstateFolder): RealEstateFolder => {
-          if (folder.id === activeFolderId) {
-            return {
-              ...folder,
-              children: [...(folder.children || []), newFolder],
-            };
-          }
-          if (folder.children) {
-            return {
-              ...folder,
-              children: folder.children.map(updateFolder),
-            };
-          }
-          return folder;
-        };
-        return updateFolder(prevData);
-      });
-
-      setNewFolderName("");
-      setShowNewFolderDialog(false);
-    }
   };
 
   // Upload Manager Functions
@@ -1204,17 +1175,12 @@ export function ChatDashboard() {
             folderStats={folderStats}
             folders={childFolders}
             isSearching={isSearching}
-            newFolderName={newFolderName}
             onBreadcrumbSelect={handleOpenFolder}
-            onCreateNewFolder={handleCreateNewFolder}
             onFileUpload={startUploads}
             onFolderOpen={handleOpenFolder}
-            onNewFolderNameChange={setNewFolderName}
             onSearchChange={setSearchQuery}
             onViewModeChange={setViewMode}
             searchQuery={searchQuery}
-            setShowNewFolderDialog={setShowNewFolderDialog}
-            showNewFolderDialog={showNewFolderDialog}
             viewMode={viewMode}
           />
         );
@@ -1384,17 +1350,12 @@ type FileLibraryViewProps = {
   folderStats: FolderStats;
   folders: RealEstateFolder[];
   isSearching: boolean;
-  newFolderName: string;
   onBreadcrumbSelect: (id: string) => void;
-  onCreateNewFolder: () => void;
   onFileUpload: (files: File[]) => void;
   onFolderOpen: (id: string) => void;
-  onNewFolderNameChange: (name: string) => void;
   onSearchChange: (value: string) => void;
   onViewModeChange: (mode: "grid" | "list") => void;
   searchQuery: string;
-  setShowNewFolderDialog: (show: boolean) => void;
-  showNewFolderDialog: boolean;
   viewMode: "grid" | "list";
 };
 
@@ -1406,39 +1367,34 @@ function FileLibraryView({
   folderStats,
   folders,
   isSearching,
-  newFolderName,
   onBreadcrumbSelect,
-  onCreateNewFolder,
   onFileUpload,
   onFolderOpen,
-  onNewFolderNameChange,
   onSearchChange,
   onViewModeChange,
   searchQuery,
-  setShowNewFolderDialog,
-  showNewFolderDialog,
   viewMode,
 }: FileLibraryViewProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const folderInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = Array.from(event.target.files || []);
-    if (selectedFiles.length === 0) return;
+    const files = Array.from(event.target.files || []);
+    if (files.length === 0) return;
 
     // Start uploads using the upload manager
-    onFileUpload(selectedFiles);
+    onFileUpload(files);
 
     // Clear the input
     event.target.value = '';
   };
 
   const handleFolderUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = Array.from(event.target.files || []);
-    if (selectedFiles.length === 0) return;
+    const files = Array.from(event.target.files || []);
+    if (files.length === 0) return;
 
     // Start uploads using the upload manager
-    onFileUpload(selectedFiles);
+    onFileUpload(files);
 
     // Clear the input
     event.target.value = '';
@@ -1535,18 +1491,25 @@ function FileLibraryView({
           <Button className="h-9 w-9" size="icon" variant="outline">
             <RotateCcw className="h-4 w-4" />
           </Button>
-          <Button className="gap-2" variant="outline" onClick={() => setShowNewFolderDialog(true)}>
-            <Folder className="h-4 w-4" />
-            New Folder
-          </Button>
-          <Button className="gap-2" onClick={() => fileInputRef.current?.click()}>
-            <Upload className="h-4 w-4" />
-            Upload Files
-          </Button>
-          <Button className="gap-2" variant="outline" onClick={() => folderInputRef.current?.click()}>
-            <Folder className="h-4 w-4" />
-            Upload Folder
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button className="gap-2">
+                <Upload className="h-4 w-4" />
+                Upload
+                <ChevronDown className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => fileInputRef.current?.click()}>
+                <Upload className="h-4 w-4 mr-2" />
+                Upload Files
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => folderInputRef.current?.click()}>
+                <Folder className="h-4 w-4 mr-2" />
+                Upload Folder
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </div>
 
@@ -1606,60 +1569,16 @@ function FileLibraryView({
         </ScrollArea>
       </div>
 
-      {/* New Folder Dialog */}
-      <Dialog open={showNewFolderDialog} onOpenChange={setShowNewFolderDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Create New Folder</DialogTitle>
-            <DialogDescription>
-              Enter a name for the new folder.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="folder-name" className="text-right">
-                Name
-              </Label>
-              <Input
-                id="folder-name"
-                value={newFolderName}
-                onChange={(e) => onNewFolderNameChange(e.target.value)}
-                className="col-span-3"
-                placeholder="Enter folder name"
-              />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => setShowNewFolderDialog(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="button"
-              onClick={onCreateNewFolder}
-              disabled={!newFolderName.trim()}
-            >
-              Create Folder
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
       {/* Hidden file inputs */}
       <input
         ref={fileInputRef}
         type="file"
-        multiple
         onChange={handleFileUpload}
         className="hidden"
       />
       <input
         ref={folderInputRef}
         type="file"
-        multiple
         {...({ webkitdirectory: "" } as any)}
         onChange={handleFolderUpload}
         className="hidden"
