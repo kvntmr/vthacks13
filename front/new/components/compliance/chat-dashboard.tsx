@@ -16,7 +16,7 @@ import {
   Sparkles,
   Upload,
 } from "lucide-react";
-import { type ElementType, Fragment, useMemo, useRef, useState } from "react";
+import { type ElementType, Fragment, memo, useMemo, useRef, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -180,7 +180,7 @@ const NAV_LABEL_LOOKUP = NAV_ITEMS.reduce<Record<string, string>>(
   {}
 );
 
-const FILE_LIBRARY_ROOT: RealEstateFolder = {
+const INITIAL_LIBRARY_ROOT: RealEstateFolder = {
   id: "library-root",
   name: "All Files",
   description:
@@ -340,7 +340,6 @@ const FILE_LIBRARY_ROOT: RealEstateFolder = {
   ],
 };
 
-const FOLDER_INDEX = buildFolderIndex(FILE_LIBRARY_ROOT);
 
 type PipelineMetric = {
   id: string;
@@ -383,13 +382,7 @@ type MemoSection = {
   bullets: string[];
 };
 
-type SheetsExport = {
-  id: string;
-  name: string;
-  lastSynced: string;
-  status: "synced" | "pending" | "error";
-  owner: string;
-};
+
 
 type ReportPreference = {
   id: string;
@@ -649,29 +642,7 @@ const REPORT_SECTIONS: MemoSection[] = [
   },
 ];
 
-const SHEETS_EXPORTS: SheetsExport[] = [
-  {
-    id: "sheet-memo",
-    name: "Memo Summary (IC)",
-    lastSynced: "Today · 9:25 AM",
-    status: "synced",
-    owner: "Stag",
-  },
-  {
-    id: "sheet-scorecard",
-    name: "Deal Scorecard",
-    lastSynced: "Today · 9:10 AM",
-    status: "synced",
-    owner: "Avery Chen",
-  },
-  {
-    id: "sheet-sensitivity",
-    name: "Sensitivity Tracker",
-    lastSynced: "Today · 9:24 AM",
-    status: "pending",
-    owner: "Priya Patel",
-  },
-];
+
 
 const REPORT_SETTINGS: ReportPreference[] = [
   {
@@ -714,12 +685,30 @@ export function ChatDashboard() {
   const [expandedNav, setExpandedNav] = useState<string[]>(["history"]);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
-  const [activeFolderId, setActiveFolderId] = useState<string>(
-    FILE_LIBRARY_ROOT.id
-  );
 
+  // ✅ State-backed root so we can mutate (uploads, etc.)
+  const [libraryRoot, setLibraryRoot] = useState<RealEstateFolder>(INITIAL_LIBRARY_ROOT);
+
+  // ✅ Build index from state
+  const folderIndex = useMemo(() => buildFolderIndex(libraryRoot), [libraryRoot]);
+
+  // Precompute stats for every folder once per libraryRoot
+  const folderStatsMap = useMemo(() => {
+    const map: Record<string, FolderStats> = {};
+    function walk(node: RealEstateFolder) {
+      map[node.id] = collectFolderStats(node);
+      node.children?.forEach(walk);
+    }
+    walk(libraryRoot);
+    return map;
+  }, [libraryRoot]);
+
+  // ✅ Active folder id derives from the current (stateful) root
+  const [activeFolderId, setActiveFolderId] = useState<string>(libraryRoot.id);
+
+  // Resolve active folder entry using the dynamic index
   const activeFolderEntry =
-    FOLDER_INDEX[activeFolderId] ?? FOLDER_INDEX[FILE_LIBRARY_ROOT.id];
+    folderIndex[activeFolderId] ?? folderIndex[libraryRoot.id];
 
   const breadcrumbs = useMemo(() => {
     return [
@@ -728,25 +717,18 @@ export function ChatDashboard() {
     ];
   }, [activeFolderEntry]);
 
-  const folderStats = useMemo(() => {
-    return collectFolderStats(activeFolderEntry.folder);
-  }, [activeFolderEntry]);
+  const folderStats = folderStatsMap[activeFolderEntry.folder.id];
 
   const filteredFiles = useMemo(() => {
     const normalized = searchQuery.trim().toLowerCase();
     const baseFiles = activeFolderEntry.folder.files;
-    if (!normalized) {
-      return baseFiles;
-    }
-    return baseFiles.filter((file) =>
-      file.name.toLowerCase().includes(normalized)
-    );
+    if (!normalized) return baseFiles;
+    return baseFiles.filter((file) => file.name.toLowerCase().includes(normalized));
   }, [searchQuery, activeFolderEntry]);
 
   const childFolders = searchQuery.trim()
     ? []
     : (activeFolderEntry.folder.children ?? []);
-
 
   const activeFolder = activeFolderEntry.folder;
   const isSearching = searchQuery.trim().length > 0;
@@ -758,9 +740,7 @@ export function ChatDashboard() {
 
   const handleToggleSection = (id: string) => {
     setExpandedNav((prev) =>
-      prev.includes(id)
-        ? prev.filter((section) => section !== id)
-        : [...prev, id]
+      prev.includes(id) ? prev.filter((section) => section !== id) : [...prev, id]
     );
   };
 
@@ -781,22 +761,16 @@ export function ChatDashboard() {
           onClick={() => {
             setActiveNavId(item.id);
             if (item.id === "file-library") {
-              setActiveFolderId(FILE_LIBRARY_ROOT.id);
+              setActiveFolderId(libraryRoot.id);
               setSearchQuery("");
             }
-            if (item.children) {
-              handleToggleSection(item.id);
-            }
+            if (item.children) handleToggleSection(item.id);
           }}
           variant={isActive ? "default" : "ghost"}
         >
           <item.icon className="h-4 w-4" />
-          {isSidebarOpen && (
-            <span className="flex-1 text-left">{item.label}</span>
-          )}
-          {isSidebarOpen && item.children && (
-            <span>{isExpanded ? "−" : "+"}</span>
-          )}
+          {isSidebarOpen && <span className="flex-1 text-left">{item.label}</span>}
+          {isSidebarOpen && item.children && <span>{isExpanded ? "−" : "+"}</span>}
         </Button>
 
         {isSidebarOpen && item.children && isExpanded && (
@@ -822,15 +796,103 @@ export function ChatDashboard() {
 
   const navigateTo = (viewId: string) => {
     setActiveNavId(viewId);
-    if (viewId === "file-library") {
-      handleOpenFolder(FILE_LIBRARY_ROOT.id);
-    }
+    if (viewId === "file-library") handleOpenFolder(libraryRoot.id);
   };
 
   const openFolderInLibrary = (folderId: string) => {
     setActiveNavId("file-library");
     handleOpenFolder(folderId);
   };
+
+  // -----------------------------
+  // Upload plumbing (no child edits)
+  // -----------------------------
+
+  // Hidden input ref
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  // Click the hidden input with robust picker logic
+  const triggerUploadPicker = () => {
+    const el = fileInputRef.current;
+    if (!el) return;
+    // Prefer the native picker when available; fallback to click()
+    try {
+      const anyEl = el as unknown as { showPicker?: () => void; click: () => void };
+      if (typeof anyEl.showPicker === "function") {
+        anyEl.showPicker();
+      } else {
+        anyEl.click();
+      }
+      console.debug("[upload] picker opened");
+    } catch (_e) {
+      el.click();
+    }
+  };
+
+  // Map File -> RealEstateFile (mock status & metadata)
+  function fileToReal(file: File): RealEstateFile {
+    const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
+    const type: RealEstateFile["type"] =
+      ext === "pdf" ? "pdf" : ext === "xlsx" || ext === "xls" ? "xlsx" : "doc";
+
+    const sizeLabel = formatSize(file.size);
+    const nowIso = new Date().toISOString();
+
+    return {
+      id: `upload-${cryptoRandomId()}`,
+      name: file.name,
+      type,
+      size: sizeLabel,
+      status: "indexing",
+      progress: 0,
+      updatedAt: nowIso,
+    };
+  }
+
+  function formatSize(bytes: number) {
+    if (bytes < 1024) return `${bytes} B`;
+    const kb = bytes / 1024;
+    if (kb < 1024) return `${kb.toFixed(1)} KB`;
+    const mb = kb / 1024;
+    return `${mb.toFixed(1)} MB`;
+  }
+
+  function cryptoRandomId() {
+    // Browser-safe small id
+    if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+      return (crypto as any).randomUUID();
+    }
+    return Math.random().toString(36).slice(2);
+  }
+
+  // Insert files into the active folder inside libraryRoot (immutable update)
+  function addFilesToActiveFolder(newFiles: RealEstateFile[]) {
+    function cloneAndInsert(node: RealEstateFolder): RealEstateFolder {
+      if (node.id === activeFolderId) {
+        return {
+          ...node,
+          files: [...newFiles, ...node.files],
+        };
+      }
+      if (!node.children?.length) return node;
+      return {
+        ...node,
+        children: node.children.map(cloneAndInsert),
+      };
+    }
+    setLibraryRoot((prev) => cloneAndInsert(prev));
+  }
+
+  // Handle <input type="file" multiple />
+  const handleFileInputChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    const files = Array.from(e.target.files ?? []);
+    if (!files.length) return;
+    const mapped = files.map(fileToReal);
+    addFilesToActiveFolder(mapped);
+    // Reset input so selecting the same file again still triggers change
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
 
   const renderContent = () => {
     switch (activeNavId) {
@@ -842,13 +904,17 @@ export function ChatDashboard() {
             files={filteredFiles}
             folderStats={folderStats}
             folders={childFolders}
+            folderStatsMap={folderStatsMap}
             isSearching={isSearching}
             onBreadcrumbSelect={handleOpenFolder}
             onFolderOpen={handleOpenFolder}
             onSearchChange={setSearchQuery}
             onViewModeChange={setViewMode}
+            onUploadClick={triggerUploadPicker}
             searchQuery={searchQuery}
             viewMode={viewMode}
+            fileInputRef={fileInputRef}
+            onFileInputChange={handleFileInputChange}
           />
         );
       case "home":
@@ -891,13 +957,10 @@ export function ChatDashboard() {
         return <ReportSettingsView preferences={REPORT_SETTINGS} />;
       case "sheets":
         return (
-          <SpreadsheetEditor />
         );
       default:
         return (
-          <ComingSoonView
-            label={NAV_LABEL_LOOKUP[activeNavId] ?? "Workspace"}
-          />
+          <ComingSoonView label={NAV_LABEL_LOOKUP[activeNavId] ?? "Workspace"} />
         );
     }
   };
@@ -926,11 +989,7 @@ export function ChatDashboard() {
             size="icon"
             variant="ghost"
           >
-            {isSidebarOpen ? (
-              <ChevronLeft className="h-4 w-4" />
-            ) : (
-              <ChevronRight className="h-4 w-4" />
-            )}
+            {isSidebarOpen ? <ChevronLeft className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
           </Button>
         </div>
         {isSidebarOpen && (
@@ -948,14 +1007,12 @@ export function ChatDashboard() {
           {NAV_ITEMS.map((item) => renderNavItem(item))}
         </nav>
 
-        <div className="mt-6 flex-1 space-y-3 overflow-y-auto pr-1">
+        <div className="mt-auto space-y-3 overflow-y-auto pr-1">
           {isSidebarOpen && <SidebarSummary />}
         </div>
 
-        <div className="mt-auto text-muted-foreground/70 text-xs">
-          {isSidebarOpen
-            ? "Select a section to work with real estate data."
-            : ""}
+        <div className="text-muted-foreground/70 text-xs">
+          {isSidebarOpen ? "Select a section to work with real estate data." : ""}
         </div>
       </aside>
 
@@ -973,7 +1030,7 @@ export function ChatDashboard() {
             onValueChange={(value) => {
               setActiveNavId(value);
               if (value === "file-library") {
-                handleOpenFolder(FILE_LIBRARY_ROOT.id);
+                handleOpenFolder(libraryRoot.id);
               }
             }}
             value={activeNavId}
@@ -995,7 +1052,6 @@ export function ChatDashboard() {
           <div className="flex flex-1 flex-col gap-6 overflow-hidden">
             {renderContent()}
           </div>
-
         </div>
       </div>
     </div>
@@ -1012,13 +1068,17 @@ type FileLibraryViewProps = {
   files: RealEstateFile[];
   folderStats: FolderStats;
   folders: RealEstateFolder[];
+  folderStatsMap: Record<string, FolderStats>;
   isSearching: boolean;
   onBreadcrumbSelect: (id: string) => void;
   onFolderOpen: (id: string) => void;
   onSearchChange: (value: string) => void;
   onViewModeChange: (mode: "grid" | "list") => void;
+  onUploadClick: () => void;
   searchQuery: string;
   viewMode: "grid" | "list";
+  fileInputRef: React.RefObject<HTMLInputElement>;
+  onFileInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 function FileLibraryView({
@@ -1027,20 +1087,24 @@ function FileLibraryView({
   files,
   folderStats,
   folders,
+  folderStatsMap,
   isSearching,
   onBreadcrumbSelect,
   onFolderOpen,
   onSearchChange,
   onViewModeChange,
+  onUploadClick,
   searchQuery,
   viewMode,
+  fileInputRef,
+  onFileInputChange,
 }: FileLibraryViewProps) {
   const isGrid = viewMode === "grid";
   const folderSummaries = isSearching
     ? []
     : folders.map((folder) => ({
         folder,
-        stats: collectFolderStats(folder),
+        stats: folderStatsMap[folder.id],
       }));
   const hasFolders = folderSummaries.length > 0;
   const hasFiles = files.length > 0;
@@ -1065,6 +1129,19 @@ function FileLibraryView({
 
   return (
     <div className="flex h-full flex-col gap-6 rounded-3xl border border-border/60 bg-background/95 px-6 py-6 shadow-sm">
+      {/* Hidden native picker */}
+      <input
+        id="stag-file-picker"
+        ref={fileInputRef}
+        type="file"
+        multiple
+        accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.txt,image/*"
+        aria-hidden="true"
+        style={{ position: "absolute", width: 1, height: 1, opacity: 0, pointerEvents: "none" }}
+        onChange={onFileInputChange}
+        tabIndex={-1}
+      />
+
       <div className="flex flex-col gap-3">
         <BreadcrumbTrail items={breadcrumbs} onSelect={onBreadcrumbSelect} />
         <div className="flex flex-col gap-2">
@@ -1134,10 +1211,26 @@ function FileLibraryView({
             <Folder className="h-4 w-4" />
             New Folder
           </Button>
-          <Button className="gap-2">
+          <button
+            className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-primary text-primary-foreground hover:bg-primary/90 h-9 px-3"
+            onClick={() => {
+              if (fileInputRef.current) {
+                try {
+                  if (fileInputRef.current.showPicker) {
+                    fileInputRef.current.showPicker();
+                  } else {
+                    fileInputRef.current.click();
+                  }
+                } catch {
+                  fileInputRef.current.click();
+                }
+              }
+            }}
+            type="button"
+          >
             <Upload className="h-4 w-4" />
             Upload Files
-          </Button>
+          </button>
         </div>
       </div>
 
@@ -1879,10 +1972,6 @@ function ReportSettingsView({ preferences }: ReportSettingsViewProps) {
   );
 }
 
-type SheetsWorkspaceViewProps = {
-  exports: SheetsExport[];
-  onNavigate: (viewId: string) => void;
-};
 
 
 type ComingSoonViewProps = {
@@ -1942,7 +2031,8 @@ type FileCardProps = {
   file: RealEstateFile;
 };
 
-function FileCard({ file }: FileCardProps) {
+const FileCard = memo(function FileCard({ file }: FileCardProps) {
+  const updatedAgo = useMemo(() => relativeTime(file.updatedAt), [file.updatedAt]);
   return (
     <div className="flex flex-col gap-3 rounded-3xl border border-border/60 bg-background/95 p-5 shadow-sm">
       <div className="flex items-start justify-between gap-3">
@@ -1960,7 +2050,7 @@ function FileCard({ file }: FileCardProps) {
         </Button>
       </div>
       <div className="space-y-2 text-muted-foreground text-xs">
-        <p>Updated {relativeTime(file.updatedAt)}</p>
+        <p>Updated {updatedAgo}</p>
         {file.status === "indexing" ? (
           <div>
             <div className="flex items-center justify-between text-xs">
@@ -1977,13 +2067,14 @@ function FileCard({ file }: FileCardProps) {
       </div>
     </div>
   );
-}
+});
 
 type FileRowProps = {
   file: RealEstateFile;
 };
 
-function FileRow({ file }: FileRowProps) {
+const FileRow = memo(function FileRow({ file }: FileRowProps) {
+  const updatedAgo = useMemo(() => relativeTime(file.updatedAt), [file.updatedAt]);
   return (
     <div className="flex items-center justify-between rounded-2xl border border-border/60 bg-background/95 px-4 py-4 shadow-sm">
       <div className="flex items-center gap-3">
@@ -1991,7 +2082,7 @@ function FileRow({ file }: FileRowProps) {
         <div>
           <p className="font-semibold text-foreground text-sm">{file.name}</p>
           <p className="text-muted-foreground text-xs">
-            {file.size} · Updated {relativeTime(file.updatedAt)}
+            {file.size} · Updated {updatedAgo}
           </p>
         </div>
       </div>
@@ -2012,7 +2103,7 @@ function FileRow({ file }: FileRowProps) {
       </div>
     </div>
   );
-}
+});
 
 function FileTypeBadge({ type }: { type: RealEstateFile["type"] }) {
   const label = type === "pdf" ? "PDF" : type === "xlsx" ? "XLSX" : "DOC";
