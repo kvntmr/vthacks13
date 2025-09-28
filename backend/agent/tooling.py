@@ -2152,17 +2152,69 @@ def validate_and_get_resource_info(resource_url: str) -> Dict[str, Any]:
 def download_small_dataset(resource_url: str, format_hint: str = None) -> Dict[str, Any]:
     """
     Download and parse a small dataset (max 10MB) from a resource URL.
+    Also saves the raw CSV file to the AI_FILES directory.
     
     Args:
         resource_url: Direct URL to the data resource
         format_hint: Expected format ('csv', 'json', 'xml') to override detection
         
     Returns:
-        Dictionary with parsed data and metadata
+        Dictionary with parsed data, metadata, and information about saved files
     """
     print("Downloading a section of the database...")
-    # Limit to 10MB for tool usage
-    return fetch_resource_data_sync(resource_url, format_hint, max_size=10*1024*1024)
+    
+    # Get the parsed data and metadata from existing function
+    result = fetch_resource_data_sync(resource_url, format_hint, max_size=10*1024*1024)
+    
+    # If successful and we have CSV data, also save the raw CSV file
+    if result.get('success') and result.get('metadata', {}).get('format') == 'csv':
+        try:
+            import httpx
+            import urllib.parse
+            from datetime import datetime
+            from pathlib import Path
+            
+            # Download the raw CSV content
+            with httpx.Client(timeout=30.0, follow_redirects=True) as client:
+                response = client.get(resource_url)
+                if response.status_code == 200:
+                    # Generate filename for CSV
+                    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                    _file_counter["value"] += 1
+                    
+                    # Extract filename from URL or use generic name
+                    parsed_url = urllib.parse.urlparse(resource_url)
+                    original_filename = Path(parsed_url.path).stem or "dataset"
+                    csv_filename = f"{original_filename}_{timestamp}_{_file_counter['value']:04d}.csv"
+                    
+                    # Save to AI_FILES directory
+                    csv_file_path = Path(AI_FILES_DIR) / csv_filename
+                    csv_file_path.parent.mkdir(parents=True, exist_ok=True)
+                    
+                    with open(csv_file_path, 'wb') as f:
+                        f.write(response.content)
+                    
+                    # Add CSV save information to result
+                    result['csv_saved'] = True
+                    result['csv_file_path'] = str(csv_file_path.absolute())
+                    result['csv_file_size'] = len(response.content)
+                    result['csv_filename'] = csv_filename
+                    
+                    print(f"CSV file saved to: {csv_file_path}")
+                    
+                    csv_status: Dict[str, dict] = {}
+                    csv_status[csv_filename] = {"ready": True, "path": csv_file_path}
+                    with open("csv_status.json", "w") as f:
+                        json.dump(csv_status, f)
+                    
+                
+        except Exception as e:
+            # Don't fail the whole operation if CSV saving fails
+            result['csv_saved'] = False
+            result['csv_error'] = str(e)
+            print(f"Warning: Failed to save CSV file: {e}")
+    
+    return result
 
 
 # ========================
