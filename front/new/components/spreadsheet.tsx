@@ -181,22 +181,7 @@ const generateInitialData = () => {
   for (let i = 0; i < rows; i++) {
     const row = [];
     for (let j = 0; j < cols; j++) {
-      // Add some sample data in first few rows/columns
-      if (i === 0 && j === 0) row.push({ value: "Name" });
-      else if (i === 0 && j === 1) row.push({ value: "Age" });
-      else if (i === 0 && j === 2) row.push({ value: "Department" });
-      else if (i === 0 && j === 3) row.push({ value: "Salary" });
-      else if (i === 1 && j === 0) row.push({ value: "Alice" });
-      else if (i === 1 && j === 1) row.push({ value: "22" });
-      else if (i === 1 && j === 2) row.push({ value: "Engineering" });
-      else if (i === 1 && j === 3) row.push({ value: "75000" });
-      else if (i === 2 && j === 0) row.push({ value: "Bob" });
-      else if (i === 2 && j === 1) row.push({ value: "25" });
-      else if (i === 2 && j === 2) row.push({ value: "Marketing" });
-      else if (i === 2 && j === 3) row.push({ value: "65000" });
-      else {
-        row.push({ value: "" });
-      }
+      row.push({ value: "" });
     }
     data.push(row);
   }

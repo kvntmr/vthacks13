@@ -62,6 +62,8 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import SpreadsheetEditor from "@/components/spreadsheet";
 import React from "react";
+import { backendAPI } from "@/lib/api/backend";
+import { toast } from "sonner";
 
 import { Spreadsheet, Worksheet, jspreadsheet } from "@jspreadsheet-ce/react";
 import "jsuites/dist/jsuites.css";
@@ -2652,6 +2654,7 @@ type ChatInterfaceState = {
   showDatasetDetails: string | null; // ID of dataset to show details for
   clickedButton: string | null; // ID of button that was just clicked for animation
   datasetJsonData: Record<string, { data: any; lastFetched: number; loading: boolean; error: string | null }>; // JSON data for each dataset
+  conversationId: string | null; // Backend conversation ID
 };
 
 function ChatInterface({
@@ -2685,6 +2688,7 @@ function ChatInterface({
     showDatasetDetails: null,
     clickedButton: null,
     datasetJsonData: {},
+    conversationId: null,
   });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -2876,7 +2880,7 @@ function ChatInterface({
     return () => clearInterval(interval);
   }, [state.showDatasetDetails]);
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     // Prevent multiple simultaneous uploads
     if (isProcessingUploadRef.current) return;
     isProcessingUploadRef.current = true;
@@ -2900,13 +2904,30 @@ function ChatInterface({
           ...prev,
           attachedFiles: [...prev.attachedFiles, ...newFiles],
         }));
+
+        // Upload files to backend
+        try {
+          console.log('Uploading files to backend:', newFiles.map(f => f.name));
+          const response = await backendAPI.processUploadParallel(newFiles);
+          console.log('File upload response:', response);
+          
+          if (response.success) {
+            toast.success(`Successfully uploaded ${response.file_ids.length} file(s)`);
+          } else {
+            toast.error(response.message || 'Failed to upload files');
+          }
+        } catch (error) {
+          console.error('Error uploading files:', error);
+          const errorMessage = error instanceof Error ? error.message : 'Failed to upload files';
+          toast.error(`Upload failed: ${errorMessage}`);
+        }
       }
     } finally {
       isProcessingUploadRef.current = false;
     }
   };
 
-  const handleFolderUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFolderUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     // Prevent multiple simultaneous uploads
     if (isProcessingUploadRef.current) return;
     isProcessingUploadRef.current = true;
@@ -2930,6 +2951,24 @@ function ChatInterface({
           ...prev,
           attachedFiles: [...prev.attachedFiles, ...newFiles],
         }));
+
+        // Upload folder to backend
+        try {
+          const folderPath = newFiles[0].webkitRelativePath?.split('/')[0] || 'uploaded-folder';
+          console.log('Processing folder to backend:', folderPath);
+          const response = await backendAPI.processFolder(folderPath);
+          console.log('Folder processing response:', response);
+          
+          if (response.success) {
+            toast.success(`Successfully processed folder with ${response.file_ids.length} file(s)`);
+          } else {
+            toast.error(response.message || 'Failed to process folder');
+          }
+        } catch (error) {
+          console.error('Error processing folder:', error);
+          const errorMessage = error instanceof Error ? error.message : 'Failed to process folder';
+          toast.error(`Folder processing failed: ${errorMessage}`);
+        }
       }
     } finally {
       isProcessingUploadRef.current = false;
@@ -2962,37 +3001,26 @@ function ChatInterface({
       isStreaming: true,
     }));
 
-    // Simulate streaming response with folder context
-    setTimeout(() => {
-      const selectedFolderNames = state.selectedFolders.length > 0
-        ? state.selectedFolders.map(folderId => availableFolders.find(f => f.id === folderId)?.name).filter(Boolean)
-        : [];
-
-      const assistantContent = selectedFolderNames.length > 0
-        ? `I've analyzed your query using documents from the following datasets: ${selectedFolderNames.join(", ")}. Here are some insights based on that context.`
-        : "I've analyzed your data and found some interesting insights.";
+    try {
+      // Make real API call to the backend
+      console.log('Sending message to backend:', state.currentMessage);
+      const response = await backendAPI.chat({
+        message: state.currentMessage,
+        conversation_id: state.conversationId || undefined,
+      });
+      
+      console.log('Received response from backend:', response);
+      
+      // Update conversation ID if we got one back
+      if (response.conversation_id) {
+        setState(prev => ({ ...prev, conversationId: response.conversation_id }));
+      }
 
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: `${assistantContent} Let me show you a visualization of the property values over time.`,
-        timestamp: new Date().toLocaleTimeString(),
-        visualizations: [
-          {
-            id: "chart-1",
-            type: "chart",
-            title: "Property Value Trends",
-            data: {
-              labels: ["2020", "2021", "2022", "2023", "2024"],
-              datasets: [{
-                label: "Average Property Value",
-                data: [250000, 275000, 310000, 345000, 380000],
-                borderColor: "rgb(75, 192, 192)",
-                tension: 0.1
-              }]
-            }
-          }
-        ],
+        content: response.response,
+        timestamp: response.timestamp || new Date().toLocaleTimeString(),
       };
 
       setState(prev => ({
@@ -3000,7 +3028,25 @@ function ChatInterface({
         messages: [...prev.messages, assistantMessage],
         isStreaming: false,
       }));
-    }, 2000);
+    } catch (error) {
+      console.error('Error sending message to backend:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Failed to send message';
+      
+      const errorChatMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: `Error: ${errorMessage}`,
+        timestamp: new Date().toLocaleTimeString(),
+      };
+      
+      setState(prev => ({
+        ...prev,
+        messages: [...prev.messages, errorChatMessage],
+        isStreaming: false,
+      }));
+      
+      toast.error(`Failed to send message: ${errorMessage}`);
+    }
   };
 
   const openVisualization = (viz: VisualizationData) => {
