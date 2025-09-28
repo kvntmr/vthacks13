@@ -69,38 +69,25 @@ const generateInitialData = () => {
   const cols = 50;
   const data = [];
   
-  // Create header row with column letters (A, B, C, etc.)
-  const headerRow = [];
-  for (let j = 0; j < cols; j++) {
-    const columnLetter = String.fromCharCode(65 + j); // A, B, C, etc.
-    headerRow.push({ value: columnLetter });
-  }
-  data.push(headerRow);
-  
-  // Create data rows with row numbers
-  for (let i = 1; i < rows; i++) {
+  // Create data rows
+  for (let i = 0; i < rows; i++) {
     const row = [];
     for (let j = 0; j < cols; j++) {
-      if (j === 0) {
-        // First column shows row numbers
-        row.push({ value: i.toString() });
-      } else {
-        // Add some sample data in first few rows/columns
-        if (i === 1 && j === 1) row.push({ value: "Name" });
-        else if (i === 1 && j === 2) row.push({ value: "Age" });
-        else if (i === 1 && j === 3) row.push({ value: "Department" });
-        else if (i === 1 && j === 4) row.push({ value: "Salary" });
-        else if (i === 2 && j === 1) row.push({ value: "Alice" });
-        else if (i === 2 && j === 2) row.push({ value: "22" });
-        else if (i === 2 && j === 3) row.push({ value: "Engineering" });
-        else if (i === 2 && j === 4) row.push({ value: "75000" });
-        else if (i === 3 && j === 1) row.push({ value: "Bob" });
-        else if (i === 3 && j === 2) row.push({ value: "25" });
-        else if (i === 3 && j === 3) row.push({ value: "Marketing" });
-        else if (i === 3 && j === 4) row.push({ value: "65000" });
-        else {
-          row.push({ value: "" });
-        }
+      // Add some sample data in first few rows/columns
+      if (i === 0 && j === 0) row.push({ value: "Name" });
+      else if (i === 0 && j === 1) row.push({ value: "Age" });
+      else if (i === 0 && j === 2) row.push({ value: "Department" });
+      else if (i === 0 && j === 3) row.push({ value: "Salary" });
+      else if (i === 1 && j === 0) row.push({ value: "Alice" });
+      else if (i === 1 && j === 1) row.push({ value: "22" });
+      else if (i === 1 && j === 2) row.push({ value: "Engineering" });
+      else if (i === 1 && j === 3) row.push({ value: "75000" });
+      else if (i === 2 && j === 0) row.push({ value: "Bob" });
+      else if (i === 2 && j === 1) row.push({ value: "25" });
+      else if (i === 2 && j === 2) row.push({ value: "Marketing" });
+      else if (i === 2 && j === 3) row.push({ value: "65000" });
+      else {
+        row.push({ value: "" });
       }
     }
     data.push(row);
