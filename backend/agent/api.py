@@ -194,6 +194,78 @@ class IntegratedAnalysisResponse(BaseModel):
     metadata: Optional[Dict[str, Any]] = Field(description="Additional metadata if requested")
 
 
+class BatchAnalysisRequest(BaseModel):
+    """Request model for batch analysis of multiple locations."""
+    locations: List[str] = Field(
+        ..., 
+        description="List of locations to analyze",
+        example=["Austin, TX", "Denver, CO", "Portland, OR"]
+    )
+    analysis_focus: str = Field(
+        default="comprehensive",
+        description="Focus area for analysis",
+        example="crime and safety"
+    )
+    include_metadata: bool = Field(
+        default=False,
+        description="Whether to include detailed metadata in responses"
+    )
+
+
+class BatchAnalysisResponse(BaseModel):
+    """Response model for batch analysis."""
+    success: bool = Field(description="Whether the batch analysis was successful")
+    total_locations: int = Field(description="Total number of locations processed")
+    successful_analyses: int = Field(description="Number of successful analyses")
+    failed_analyses: int = Field(description="Number of failed analyses")
+    results: List[IntegratedAnalysisResponse] = Field(description="Individual analysis results")
+    summary: Dict[str, Any] = Field(description="Summary of batch analysis")
+
+
+class CustomAnalysisRequest(BaseModel):
+    """Request model for custom analysis with flexible parameters."""
+    location: str = Field(
+        ..., 
+        description="Location to analyze",
+        example="Seattle, WA"
+    )
+    custom_query: str = Field(
+        ...,
+        description="Custom analysis query or focus area",
+        example="zoning and development permits for mixed-use properties"
+    )
+    include_visualizations: bool = Field(
+        default=True,
+        description="Whether to generate visualizations for the analysis"
+    )
+    visualization_preferences: Optional[Dict[str, Any]] = Field(
+        default=None,
+        description="Specific visualization preferences and requirements"
+    )
+    include_metadata: bool = Field(
+        default=False,
+        description="Whether to include detailed metadata in the response"
+    )
+
+
+class SystemStatusResponse(BaseModel):
+    """Response model for integrated system status."""
+    system_ready: bool = Field(description="Whether the integrated system is ready")
+    real_estate_agent_status: str = Field(description="Status of the real estate agent")
+    visualization_agent_status: str = Field(description="Status of the visualization agent")
+    mcp_server_connected: bool = Field(description="Whether MCP server is connected")
+    available_analysis_types: List[str] = Field(description="Available analysis types")
+    system_capabilities: Dict[str, Any] = Field(description="System capabilities and features")
+
+
+class AnalysisTypesResponse(BaseModel):
+    """Response model for available analysis types."""
+    predefined_types: List[Dict[str, str]] = Field(description="Predefined analysis types with descriptions")
+    custom_supported: bool = Field(description="Whether custom analysis is supported")
+    focus_areas: List[str] = Field(description="Available focus areas for analysis")
+    examples: Dict[str, List[str]] = Field(description="Example queries for each analysis type")
+
+
 class ToolsResponse(BaseModel):
     """Response model for available tools."""
     visualization_tools: List[str] = Field(description="Available visualization tools")
@@ -389,7 +461,72 @@ async def get_example_queries():
                     "Show me public transit accessibility for this address"
                 ]
             }
-        ]
+        ],
+        "integrated_analysis_examples": [
+            {
+                "endpoint": "/integrated/analyze",
+                "description": "Comprehensive analysis with visualizations",
+                "example_request": {
+                    "location": "Austin, TX",
+                    "analysis_focus": "comprehensive",
+                    "include_metadata": True
+                }
+            },
+            {
+                "endpoint": "/integrated/custom-analysis",
+                "description": "Custom analysis with flexible parameters",
+                "example_request": {
+                    "location": "Seattle, WA",
+                    "custom_query": "zoning and development permits for mixed-use properties",
+                    "include_visualizations": True,
+                    "include_metadata": False
+                }
+            },
+            {
+                "endpoint": "/integrated/batch-analysis",
+                "description": "Batch analysis for multiple locations",
+                "example_request": {
+                    "locations": ["Austin, TX", "Denver, CO", "Portland, OR"],
+                    "analysis_focus": "crime and safety",
+                    "include_metadata": False
+                }
+            },
+            {
+                "endpoint": "/integrated/crime-analysis",
+                "description": "Quick crime analysis with visualizations",
+                "example_request": {
+                    "location": "San Francisco, CA"
+                }
+            },
+            {
+                "endpoint": "/integrated/market-analysis",
+                "description": "Market demographics and economics analysis",
+                "example_request": {
+                    "location": "Miami, FL"
+                }
+            }
+        ],
+        "available_endpoints": {
+            "basic_analysis": [
+                "/query/sync - Synchronous real estate data analysis",
+                "/visualization/query - Create visualizations and charts"
+            ],
+            "integrated_analysis": [
+                "/integrated/analyze - Full integrated analysis with visualizations",
+                "/integrated/custom-analysis - Custom analysis with flexible parameters",
+                "/integrated/batch-analysis - Process multiple locations at once",
+                "/integrated/crime-analysis - Focused crime and safety analysis",
+                "/integrated/market-analysis - Demographics and market analysis"
+            ],
+            "system_info": [
+                "/integrated/status - System health and component status",
+                "/integrated/analysis-types - Available analysis types and examples",
+                "/integrated/info - Detailed system capabilities",
+                "/health - Basic API health check",
+                "/agent/info - Real estate agent capabilities",
+                "/visualization/info - Visualization agent capabilities"
+            ]
+        }
     }
 
 
@@ -631,6 +768,217 @@ async def integrated_market_analysis(
             status_code=500,
             detail=f"Market analysis failed: {str(e)}"
         )
+
+
+# Enhanced Integrated Analysis Endpoints
+@app.get("/integrated/status", response_model=SystemStatusResponse)
+async def get_integrated_system_status() -> SystemStatusResponse:
+    """
+    Get the status and health of the integrated analysis system.
+    """
+    try:
+        # Check system components
+        real_estate_ready = agent_instance is not None
+        visualization_ready = visualization_agent_instance is not None
+        integrated_ready = integrated_system is not None
+        
+        # Check MCP server connection
+        mcp_connected = False
+        if visualization_agent_instance:
+            try:
+                mcp_connected = visualization_agent_instance.mcp_client is not None
+            except:
+                mcp_connected = False
+        
+        return SystemStatusResponse(
+            system_ready=integrated_ready and real_estate_ready and visualization_ready,
+            real_estate_agent_status="ready" if real_estate_ready else "not initialized",
+            visualization_agent_status="ready" if visualization_ready else "not initialized",
+            mcp_server_connected=mcp_connected,
+            available_analysis_types=[
+                "comprehensive", "crime and safety", "demographics and economic indicators",
+                "zoning and planning", "environmental factors", "transportation and infrastructure",
+                "utilities and services", "custom"
+            ],
+            system_capabilities={
+                "real_estate_analysis": real_estate_ready,
+                "data_visualization": visualization_ready,
+                "integrated_workflows": integrated_ready,
+                "batch_processing": integrated_ready,
+                "custom_analysis": integrated_ready,
+                "mcp_visualization_tools": mcp_connected
+            }
+        )
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to get system status: {str(e)}"
+        )
+
+
+@app.get("/integrated/analysis-types", response_model=AnalysisTypesResponse)
+async def get_analysis_types() -> AnalysisTypesResponse:
+    """
+    Get available analysis types and their descriptions.
+    """
+    return AnalysisTypesResponse(
+        predefined_types=[
+            {
+                "type": "comprehensive",
+                "description": "Complete due diligence analysis covering all major factors"
+            },
+            {
+                "type": "crime and safety",
+                "description": "Focus on crime statistics, safety data, and security factors"
+            },
+            {
+                "type": "demographics and economic indicators",
+                "description": "Population demographics, income data, employment statistics"
+            },
+            {
+                "type": "zoning and planning",
+                "description": "Zoning regulations, development permits, planning restrictions"
+            },
+            {
+                "type": "environmental factors",
+                "description": "Environmental data, pollution levels, natural hazards"
+            },
+            {
+                "type": "transportation and infrastructure",
+                "description": "Transportation access, infrastructure quality, connectivity"
+            },
+            {
+                "type": "utilities and services",
+                "description": "Utility availability, service quality, municipal services"
+            }
+        ],
+        custom_supported=True,
+        focus_areas=[
+            "Crime & Safety", "Demographics & Economics", "Zoning & Planning",
+            "Environmental Factors", "Transportation & Infrastructure", "Utilities & Services",
+            "Construction & Permits", "Market Trends", "Investment Risk Assessment"
+        ],
+        examples={
+            "comprehensive": [
+                "Austin, TX comprehensive analysis",
+                "Complete due diligence for downtown Portland properties"
+            ],
+            "crime_and_safety": [
+                "Crime data analysis for San Francisco Financial District",
+                "Safety assessment for Chicago South Loop"
+            ],
+            "demographics": [
+                "Market demographics for Miami Beach",
+                "Population trends in Seattle neighborhoods"
+            ],
+            "custom": [
+                "Flood risk assessment for Houston properties",
+                "Tech industry impact on local real estate in Palo Alto"
+            ]
+        }
+    )
+
+
+@app.post("/integrated/custom-analysis", response_model=IntegratedAnalysisResponse)
+async def custom_integrated_analysis(
+    request: CustomAnalysisRequest,
+    system: IntegratedRealEstateAnalysis = Depends(get_integrated_system)
+) -> IntegratedAnalysisResponse:
+    """
+    Perform custom integrated analysis with user-defined focus and requirements.
+    """
+    try:
+        # Prepare custom analysis parameters
+        analysis_focus = request.custom_query
+        
+        if request.include_visualizations:
+            # Use full integrated analysis
+            result = await system.analyze_and_visualize(request.location, analysis_focus)
+        else:
+            # Use only data analysis (modify the query to skip visualization)
+            query = f"""
+            Please analyze {analysis_focus} for {request.location}.
+            Find relevant datasets, save them to files, and provide analysis of key trends and insights.
+            Focus on data that would be relevant for real estate investment decisions.
+            """
+            result = {
+                "location": request.location,
+                "analysis_focus": analysis_focus,
+                "data_analysis": await system.real_estate_agent.query(query),
+                "visualizations": None,
+                "success": True,
+                "errors": []
+            }
+        
+        response_data = {
+            "success": result.get("success", False),
+            "location": result.get("location", ""),
+            "analysis_focus": result.get("analysis_focus", ""),
+            "data_analysis": result.get("data_analysis"),
+            "visualizations": result.get("visualizations"),
+            "errors": result.get("errors", [])
+        }
+        
+        if request.include_metadata:
+            response_data["metadata"] = {
+                "request_details": request.dict(),
+                "custom_query": request.custom_query,
+                "visualization_included": request.include_visualizations,
+                "visualization_preferences": request.visualization_preferences
+            }
+        
+        return IntegratedAnalysisResponse(**response_data)
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Custom analysis failed: {str(e)}"
+        )
+
+
+@app.get("/integrated/info", response_model=AgentInfoResponse)
+async def get_integrated_system_info() -> AgentInfoResponse:
+    """
+    Get detailed information about the integrated analysis system capabilities.
+    """
+    return AgentInfoResponse(
+        agent_type="Integrated Real Estate Analysis System",
+        capabilities=[
+            "Comprehensive multi-source data analysis",
+            "Automated visualization generation", 
+            "Real estate due diligence workflows",
+            "Crime and safety data analysis",
+            "Demographics and market research",
+            "Zoning and planning information",
+            "Environmental impact assessment",
+            "Transportation and infrastructure analysis",
+            "Batch processing for multiple locations",
+            "Custom analysis with flexible parameters",
+            "Data export and visualization export",
+            "Interactive dashboard creation"
+        ],
+        data_sources=[
+            "Data.gov datasets",
+            "Crime statistics databases",
+            "Census and demographic data",
+            "Zoning and permit records",
+            "Environmental monitoring data",
+            "Transportation and infrastructure data",
+            "Economic indicators",
+            "Market trend data"
+        ],
+        focus_areas=[
+            "Integrated Real Estate Analysis",
+            "Data-Driven Decision Making",
+            "Risk Assessment",
+            "Market Intelligence",
+            "Location Analytics",
+            "Investment Due Diligence",
+            "Visual Data Presentation",
+            "Automated Reporting"
+        ]
+    )
 
 
 if __name__ == "__main__":
