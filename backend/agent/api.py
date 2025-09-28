@@ -17,30 +17,52 @@ from pydantic import BaseModel, Field
 import uvicorn
 
 from real_estate_agent import RealEstateAgent, create_real_estate_agent
+from visualization_agent import VisualizationAgent, create_visualization_agent
+from integrated_agents_example import IntegratedRealEstateAnalysis
 
 
-# Global agent instance
+# Global agent instances
 agent_instance: Optional[RealEstateAgent] = None
+visualization_agent_instance: Optional[VisualizationAgent] = None
+integrated_system: Optional[IntegratedRealEstateAnalysis] = None
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Manage the lifecycle of the FastAPI application."""
-    global agent_instance
+    global agent_instance, visualization_agent_instance, integrated_system
     
-    # Startup: Initialize the agent
-    print("Initializing Real Estate Agent...")
+    # Startup: Initialize all agents
+    print("Initializing agents...")
+    
+    # Initialize Real Estate Agent
     try:
         agent_instance = create_real_estate_agent()
         print("✓ Real Estate Agent initialized successfully")
     except Exception as e:
-        print(f"✗ Failed to initialize agent: {e}")
+        print(f"✗ Failed to initialize Real Estate Agent: {e}")
         agent_instance = None
+    
+    # Initialize Visualization Agent
+    try:
+        visualization_agent_instance = create_visualization_agent()
+        print("✓ Visualization Agent initialized successfully")
+    except Exception as e:
+        print(f"✗ Failed to initialize Visualization Agent: {e}")
+        visualization_agent_instance = None
+    
+    # Initialize Integrated System
+    try:
+        integrated_system = IntegratedRealEstateAnalysis()
+        print("✓ Integrated Analysis System initialized successfully")
+    except Exception as e:
+        print(f"✗ Failed to initialize Integrated System: {e}")
+        integrated_system = None
     
     yield
     
     # Shutdown: Clean up resources
-    print("Shutting down Real Estate Agent...")
+    print("Shutting down agents...")
 
 
 # Create FastAPI app with lifespan management
@@ -115,7 +137,71 @@ class AgentInfoResponse(BaseModel):
     focus_areas: List[str] = Field(description="Key focus areas for analysis")
 
 
-# Dependency to get the agent instance
+class VisualizationRequest(BaseModel):
+    """Request model for visualization queries."""
+    request: str = Field(
+        ..., 
+        description="The visualization request or description",
+        example="Create a bar chart showing crime rates by neighborhood"
+    )
+    data_context: Optional[str] = Field(
+        default=None,
+        description="Optional context about the data to be visualized"
+    )
+    include_metadata: bool = Field(
+        default=False,
+        description="Whether to include detailed metadata in the response"
+    )
+
+
+class VisualizationResponse(BaseModel):
+    """Response model for visualization queries."""
+    success: bool = Field(description="Whether the visualization was successful")
+    response: str = Field(description="The agent's response with visualization details")
+    mcp_connected: bool = Field(description="Whether MCP visualization server is connected")
+    tools_available: bool = Field(description="Whether visualization tools are available")
+    message_count: Optional[int] = Field(description="Number of messages in the conversation")
+    error: Optional[str] = Field(description="Error message if the query failed")
+    metadata: Optional[Dict[str, Any]] = Field(description="Additional metadata if requested")
+
+
+class IntegratedAnalysisRequest(BaseModel):
+    """Request model for integrated analysis (data + visualization)."""
+    location: str = Field(
+        ..., 
+        description="Location to analyze (city, county, zip code, etc.)",
+        example="Austin, TX"
+    )
+    analysis_focus: str = Field(
+        default="comprehensive",
+        description="Focus area for analysis",
+        example="crime and safety"
+    )
+    include_metadata: bool = Field(
+        default=False,
+        description="Whether to include detailed metadata in the response"
+    )
+
+
+class IntegratedAnalysisResponse(BaseModel):
+    """Response model for integrated analysis."""
+    success: bool = Field(description="Whether the analysis was successful")
+    location: str = Field(description="Location that was analyzed")
+    analysis_focus: str = Field(description="Focus area of the analysis")
+    data_analysis: Optional[Dict[str, Any]] = Field(description="Real estate data analysis results")
+    visualizations: Optional[Dict[str, Any]] = Field(description="Visualization results")
+    errors: List[str] = Field(description="List of any errors encountered")
+    metadata: Optional[Dict[str, Any]] = Field(description="Additional metadata if requested")
+
+
+class ToolsResponse(BaseModel):
+    """Response model for available tools."""
+    visualization_tools: List[str] = Field(description="Available visualization tools")
+    mcp_connected: bool = Field(description="Whether MCP server is connected")
+    server_url: str = Field(description="MCP server URL")
+
+
+# Dependency functions to get agent instances
 async def get_agent() -> RealEstateAgent:
     """Dependency to get the initialized agent instance."""
     if agent_instance is None:
@@ -124,6 +210,26 @@ async def get_agent() -> RealEstateAgent:
             detail="Real Estate Agent is not initialized. Please check the server logs."
         )
     return agent_instance
+
+
+async def get_visualization_agent() -> VisualizationAgent:
+    """Dependency to get the visualization agent instance."""
+    if visualization_agent_instance is None:
+        raise HTTPException(
+            status_code=503, 
+            detail="Visualization Agent is not initialized. Please check the server logs."
+        )
+    return visualization_agent_instance
+
+
+async def get_integrated_system() -> IntegratedRealEstateAnalysis:
+    """Dependency to get the integrated analysis system."""
+    if integrated_system is None:
+        raise HTTPException(
+            status_code=503, 
+            detail="Integrated Analysis System is not initialized. Please check the server logs."
+        )
+    return integrated_system
 
 
 # API Routes
@@ -331,6 +437,200 @@ def get_csv_status():
     Frontend polls this endpoint to get status of all CSVs.
     """
     return csv_status
+
+
+# Visualization Agent Endpoints
+@app.post("/visualization/query", response_model=VisualizationResponse)
+async def query_visualization(
+    request: VisualizationRequest,
+    viz_agent: VisualizationAgent = Depends(get_visualization_agent)
+) -> VisualizationResponse:
+    """
+    Query the visualization agent to create charts, graphs, and visualizations.
+    
+    This endpoint connects to the MCP visualization server and uses available
+    tools to create meaningful visual representations of data.
+    """
+    try:
+        result = await viz_agent.query(request.request, request.data_context)
+        
+        response_data = {
+            "success": result.get("success", False),
+            "response": result.get("response", ""),
+            "mcp_connected": result.get("mcp_connected", False),
+            "tools_available": result.get("tools_available", False),
+            "message_count": result.get("message_count"),
+            "error": result.get("error")
+        }
+        
+        if request.include_metadata:
+            response_data["metadata"] = {
+                "all_messages": result.get("all_messages", []),
+                "request_details": request.dict()
+            }
+        
+        return VisualizationResponse(**response_data)
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Visualization query failed: {str(e)}"
+        )
+
+
+@app.get("/visualization/tools", response_model=ToolsResponse)
+async def get_visualization_tools(
+    viz_agent: VisualizationAgent = Depends(get_visualization_agent)
+) -> ToolsResponse:
+    """
+    Get list of available visualization tools from the MCP server.
+    """
+    try:
+        tools = await viz_agent.get_available_tools()
+        
+        return ToolsResponse(
+            visualization_tools=tools,
+            mcp_connected=viz_agent.mcp_client is not None,
+            server_url=viz_agent.mcp_server_url
+        )
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Failed to get visualization tools: {str(e)}"
+        )
+
+
+@app.get("/visualization/info", response_model=AgentInfoResponse)
+async def get_visualization_agent_info() -> AgentInfoResponse:
+    """
+    Get information about the visualization agent's capabilities.
+    """
+    return AgentInfoResponse(
+        agent_type="Visualization Agent",
+        capabilities=[
+            "Create interactive charts and graphs",
+            "Generate heatmaps and geographic visualizations", 
+            "Design dashboard layouts",
+            "Recommend appropriate chart types",
+            "Process various data formats",
+            "Export visualizations in multiple formats"
+        ],
+        data_sources=[
+            "MCP Visualization Server",
+            "Real Estate Analysis Data",
+            "CSV/JSON datasets",
+            "API data feeds"
+        ],
+        focus_areas=[
+            "Data visualization",
+            "Interactive charts",
+            "Statistical plots",
+            "Geographic mapping",
+            "Dashboard design",
+            "Visual analytics"
+        ]
+    )
+
+
+# Integrated Analysis Endpoints
+@app.post("/integrated/analyze", response_model=IntegratedAnalysisResponse)
+async def integrated_analysis(
+    request: IntegratedAnalysisRequest,
+    system: IntegratedRealEstateAnalysis = Depends(get_integrated_system)
+) -> IntegratedAnalysisResponse:
+    """
+    Perform integrated real estate analysis with automatic visualizations.
+    
+    This endpoint combines the real estate data analysis agent with the visualization
+    agent to provide comprehensive insights with accompanying charts and graphs.
+    """
+    try:
+        result = await system.analyze_and_visualize(
+            request.location, 
+            request.analysis_focus
+        )
+        
+        response_data = {
+            "success": result.get("success", False),
+            "location": result.get("location", ""),
+            "analysis_focus": result.get("analysis_focus", ""),
+            "data_analysis": result.get("data_analysis"),
+            "visualizations": result.get("visualizations"),
+            "errors": result.get("errors", [])
+        }
+        
+        if request.include_metadata:
+            response_data["metadata"] = {
+                "request_details": request.dict(),
+                "processing_info": {
+                    "data_analysis_messages": result.get("data_analysis", {}).get("message_count", 0),
+                    "visualization_messages": result.get("visualizations", {}).get("message_count", 0),
+                    "mcp_connected": result.get("visualizations", {}).get("mcp_connected", False)
+                }
+            }
+        
+        return IntegratedAnalysisResponse(**response_data)
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Integrated analysis failed: {str(e)}"
+        )
+
+
+@app.post("/integrated/crime-analysis", response_model=IntegratedAnalysisResponse)
+async def integrated_crime_analysis(
+    location: str,
+    system: IntegratedRealEstateAnalysis = Depends(get_integrated_system)
+) -> IntegratedAnalysisResponse:
+    """
+    Quick integrated analysis focused on crime and safety data with visualizations.
+    """
+    try:
+        result = await system.quick_crime_analysis(location)
+        
+        return IntegratedAnalysisResponse(
+            success=result.get("success", False),
+            location=result.get("location", ""),
+            analysis_focus=result.get("analysis_focus", ""),
+            data_analysis=result.get("data_analysis"),
+            visualizations=result.get("visualizations"),
+            errors=result.get("errors", [])
+        )
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Crime analysis failed: {str(e)}"
+        )
+
+
+@app.post("/integrated/market-analysis", response_model=IntegratedAnalysisResponse)
+async def integrated_market_analysis(
+    location: str,
+    system: IntegratedRealEstateAnalysis = Depends(get_integrated_system)
+) -> IntegratedAnalysisResponse:
+    """
+    Quick integrated analysis focused on demographics and market indicators with visualizations.
+    """
+    try:
+        result = await system.demographic_market_analysis(location)
+        
+        return IntegratedAnalysisResponse(
+            success=result.get("success", False),
+            location=result.get("location", ""),
+            analysis_focus=result.get("analysis_focus", ""),
+            data_analysis=result.get("data_analysis"),
+            visualizations=result.get("visualizations"),
+            errors=result.get("errors", [])
+        )
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Market analysis failed: {str(e)}"
+        )
 
 
 if __name__ == "__main__":
