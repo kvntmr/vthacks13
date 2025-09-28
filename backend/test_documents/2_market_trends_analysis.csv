@@ -1,0 +1,31 @@
+City,Average_Home_Price,Price_Change_YoY,Inventory_Days,New_Listings_Monthly,Market_Status
+New York,850000,5.2%,45,1250,Hot
+Los Angeles,750000,3.8%,38,980,Hot
+Chicago,320000,2.1%,52,750,Balanced
+Houston,280000,1.5%,48,890,Balanced
+Phoenix,420000,7.2%,28,650,Hot
+Philadelphia,250000,1.8%,55,420,Cool
+San Antonio,240000,2.3%,42,380,Balanced
+San Diego,800000,4.5%,35,520,Hot
+Dallas,350000,3.1%,40,720,Balanced
+San Jose,1200000,6.8%,25,180,Hot
+Austin,450000,8.1%,22,340,Hot
+Jacksonville,220000,2.9%,45,290,Balanced
+Fort Worth,280000,2.7%,38,250,Balanced
+Columbus,200000,1.9%,48,180,Cool
+Charlotte,280000,3.4%,42,220,Balanced
+Seattle,650000,5.9%,32,380,Hot
+Denver,480000,4.2%,35,290,Hot
+Washington,550000,2.8%,48,450,Balanced
+Boston,650000,3.7%,42,320,Balanced
+El Paso,180000,1.2%,55,120,Cool
+Nashville,380000,6.5%,28,180,Hot
+Detroit,150000,8.9%,65,95,Cool
+Oklahoma City,160000,1.8%,52,140,Cool
+Portland,480000,3.2%,38,220,Balanced
+Las Vegas,380000,5.1%,32,280,Hot
+Memphis,180000,2.1%,48,160,Balanced
+Louisville,200000,1.5%,45,120,Cool
+Baltimore,280000,1.9%,52,180,Cool
+Milwaukee,220000,2.3%,48,140,Cool
+Albuquerque,240000,2.8%,42,110,Balanced

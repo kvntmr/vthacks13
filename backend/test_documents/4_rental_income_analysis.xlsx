@@ -1,0 +1,21 @@
+Property_ID,Address,City,State,Property_Type,Units,Bedrooms,Bathrooms,Sq_Ft,Monthly_Rent,Annual_Rent,Occupancy_Rate,Operating_Expenses,Net_Income,Cap_Rate
+RE001,123 Main St,New York,NY,Apartment,1,2,2,1200,3500,42000,95%,1200,28500,6.8%
+RE002,456 Oak Ave,Los Angeles,CA,Apartment,1,3,2,1500,2800,33600,92%,1100,19920,5.9%
+RE003,789 Pine St,Chicago,IL,Apartment,1,1,1,800,1800,21600,88%,800,15040,7.0%
+RE004,321 Elm Dr,Houston,TX,House,1,4,3,2000,2200,26400,90%,1000,16760,6.3%
+RE005,654 Maple Ln,Phoenix,AZ,Apartment,1,2,2,1100,1600,19200,94%,900,11136,5.8%
+RE006,987 Cedar Rd,Philadelphia,PA,Apartment,1,1,1,700,1200,14400,85%,600,8640,6.0%
+RE007,147 Birch St,San Antonio,TX,House,1,3,2,1400,1500,18000,87%,700,11660,6.5%
+RE008,258 Spruce Ave,San Diego,CA,Apartment,1,2,2,1000,2400,28800,91%,1000,16208,5.6%
+RE009,369 Willow Way,Dallas,TX,Apartment,1,2,1,900,1400,16800,89%,700,10192,6.1%
+RE010,741 Poplar Pl,San Jose,CA,Apartment,1,1,1,750,3200,38400,93%,1200,22992,6.0%
+RE011,852 Ash St,Austin,TX,House,1,3,2,1300,2000,24000,90%,800,14800,6.2%
+RE012,963 Hickory Dr,Jacksonville,FL,Apartment,1,2,2,1000,1100,13200,86%,600,7152,5.4%
+RE013,159 Dogwood Ln,Fort Worth,TX,House,1,4,3,1800,1800,21600,88%,900,13032,6.0%
+RE014,357 Magnolia Rd,Columbus,OH,Apartment,1,1,1,650,1000,12000,84%,500,7080,5.9%
+RE015,468 Sycamore St,Charlotte,NC,Apartment,1,2,2,950,1300,15600,87%,700,9068,5.8%
+RE016,579 Redwood Ave,Seattle,WA,Apartment,1,2,1,850,2200,26400,92%,1000,15288,5.8%
+RE017,680 Pinecone Dr,Denver,CO,House,1,3,2,1200,1900,22800,89%,800,13468,5.9%
+RE018,791 Acorn St,Washington,DC,Apartment,1,1,1,700,2000,24000,90%,900,13500,5.6%
+RE019,802 Chestnut Ln,Boston,MA,Apartment,1,2,1,800,2500,30000,91%,1100,17090,5.7%
+RE020,913 Walnut Rd,El Paso,TX,House,1,3,2,1100,900,10800,82%,500,6356,5.9%
