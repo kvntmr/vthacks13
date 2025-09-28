@@ -355,3 +355,109 @@ class PowerPointParser:
             return True, ""
         except Exception as e:
             return False, f"Invalid PowerPoint file: {str(e)}"
+    
+    async def parse_file_from_bytes(self, file_content: bytes, filename: str) -> Dict[str, Any]:
+        """
+        Parse a PowerPoint file from bytes and extract text content
+        
+        Args:
+            file_content: PowerPoint file content as bytes
+            filename: Name of the file
+            
+        Returns:
+            Dictionary containing parsed content
+        """
+        try:
+            result = {
+                "file_path": filename,
+                "file_name": filename,
+                "file_type": "pptx",
+                "extracted_text": "",
+                "metadata": {},
+                "processing_summary": {
+                    "total_slides": 0,
+                    "total_text_boxes": 0,
+                    "total_images": 0,
+                    "total_text_length": 0
+                }
+            }
+            
+            # Create BytesIO object for python-pptx
+            file_buffer = io.BytesIO(file_content)
+            
+            # Load presentation
+            prs = Presentation(file_buffer)
+            
+            # Extract metadata
+            core_props = prs.core_properties
+            result["metadata"] = {
+                "title": core_props.title or "",
+                "author": core_props.author or "",
+                "subject": core_props.subject or "",
+                "keywords": core_props.keywords or "",
+                "comments": core_props.comments or "",
+                "created": str(core_props.created) if core_props.created else "",
+                "modified": str(core_props.modified) if core_props.modified else "",
+                "last_modified_by": core_props.last_modified_by or "",
+                "version": core_props.version or "",
+                "file_size_bytes": len(file_content)
+            }
+            
+            # Extract text content from slides
+            text_content = []
+            slide_count = 0
+            text_box_count = 0
+            image_count = 0
+            
+            for slide_num, slide in enumerate(prs.slides, 1):
+                slide_count += 1
+                slide_text = [f"[SLIDE {slide_num}]"]
+                
+                for shape in slide.shapes:
+                    if hasattr(shape, "text") and shape.text.strip():
+                        text_box_count += 1
+                        slide_text.append(shape.text.strip())
+                    elif shape.shape_type == MSO_SHAPE_TYPE.PICTURE:
+                        image_count += 1
+                        slide_text.append(f"[IMAGE {image_count}]")
+                    elif shape.shape_type == MSO_SHAPE_TYPE.TABLE:
+                        # Extract table content
+                        table_text = []
+                        for row in shape.table.rows:
+                            row_text = []
+                            for cell in row.cells:
+                                if cell.text.strip():
+                                    row_text.append(cell.text.strip())
+                            if row_text:
+                                table_text.append(" | ".join(row_text))
+                        if table_text:
+                            slide_text.append(f"[TABLE]\n" + "\n".join(table_text))
+                
+                if len(slide_text) > 1:  # More than just the slide header
+                    text_content.append("\n".join(slide_text))
+            
+            result["extracted_text"] = "\n\n".join(text_content)
+            result["processing_summary"] = {
+                "total_slides": slide_count,
+                "total_text_boxes": text_box_count,
+                "total_images": image_count,
+                "total_text_length": len(result["extracted_text"])
+            }
+            
+            return result
+            
+        except Exception as e:
+            return {
+                "file_path": filename,
+                "file_name": filename,
+                "file_type": "pptx",
+                "error": f"Failed to parse PowerPoint file: {str(e)}",
+                "extracted_text": "",
+                "metadata": {},
+                "processing_summary": {
+                    "total_slides": 0,
+                    "total_text_boxes": 0,
+                    "total_images": 0,
+                    "total_text_length": 0
+                }
+            }

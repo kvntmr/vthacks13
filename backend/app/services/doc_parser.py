@@ -4,6 +4,7 @@ Extracts text and metadata from Microsoft Word documents
 """
 
 import os
+import io
 from typing import Dict, Any, List
 from docx import Document
 from docx.document import Document as DocumentType
@@ -139,4 +140,99 @@ class DocParser:
         """Check if file format is supported"""
         file_ext = os.path.splitext(file_path.lower())[1]
         return file_ext in self.get_supported_formats()
+    
+    async def parse_file_from_bytes(self, file_content: bytes, filename: str) -> Dict[str, Any]:
+        """
+        Parse a DOC/DOCX file from bytes and extract text content
+        
+        Args:
+            file_content: DOC/DOCX file content as bytes
+            filename: Name of the file
+            
+        Returns:
+            Dictionary containing parsed content
+        """
+        try:
+            result = {
+                "file_path": filename,
+                "file_name": filename,
+                "file_type": "docx",
+                "extracted_text": "",
+                "metadata": {},
+                "processing_summary": {
+                    "total_paragraphs": 0,
+                    "total_tables": 0,
+                    "total_text_length": 0
+                }
+            }
+            
+            # Create BytesIO object for python-docx
+            file_buffer = io.BytesIO(file_content)
+            
+            # Load document
+            doc = Document(file_buffer)
+            
+            # Extract metadata
+            core_props = doc.core_properties
+            result["metadata"] = {
+                "title": core_props.title or "",
+                "author": core_props.author or "",
+                "subject": core_props.subject or "",
+                "keywords": core_props.keywords or "",
+                "comments": core_props.comments or "",
+                "created": str(core_props.created) if core_props.created else "",
+                "modified": str(core_props.modified) if core_props.modified else "",
+                "last_modified_by": core_props.last_modified_by or "",
+                "version": core_props.version or "",
+                "file_size_bytes": len(file_content)
+            }
+            
+            # Extract text content
+            text_content = []
+            paragraph_count = 0
+            table_count = 0
+            
+            for element in doc.element.body:
+                if element.tag.endswith('p'):  # Paragraph
+                    paragraph_count += 1
+                    para = Paragraph(element, doc)
+                    if para.text.strip():
+                        text_content.append(para.text.strip())
+                elif element.tag.endswith('tbl'):  # Table
+                    table_count += 1
+                    table = Table(element, doc)
+                    table_text = []
+                    for row in table.rows:
+                        row_text = []
+                        for cell in row.cells:
+                            if cell.text.strip():
+                                row_text.append(cell.text.strip())
+                        if row_text:
+                            table_text.append(" | ".join(row_text))
+                    if table_text:
+                        text_content.append(f"[TABLE {table_count}]\n" + "\n".join(table_text))
+            
+            result["extracted_text"] = "\n\n".join(text_content)
+            result["processing_summary"] = {
+                "total_paragraphs": paragraph_count,
+                "total_tables": table_count,
+                "total_text_length": len(result["extracted_text"])
+            }
+            
+            return result
+            
+        except Exception as e:
+            return {
+                "file_path": filename,
+                "file_name": filename,
+                "file_type": "docx",
+                "error": f"Failed to parse DOC/DOCX file: {str(e)}",
+                "extracted_text": "",
+                "metadata": {},
+                "processing_summary": {
+                    "total_paragraphs": 0,
+                    "total_tables": 0,
+                    "total_text_length": 0
+                }
+            }
 

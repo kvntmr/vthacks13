@@ -110,6 +110,90 @@ class TextParser:
                 }
             }
     
+    async def parse_file_from_bytes(self, file_content: bytes, filename: str) -> Dict[str, Any]:
+        """
+        Parse text content from bytes
+        
+        Args:
+            file_content: File content as bytes
+            filename: Name of the file
+            
+        Returns:
+            Dictionary containing parsed content
+        """
+        try:
+            result = {
+                "file_path": filename,
+                "file_name": filename,
+                "file_type": "text",
+                "extracted_text": "",
+                "metadata": {},
+                "processing_summary": {
+                    "file_size_bytes": len(file_content),
+                    "total_lines": 0,
+                    "total_text_length": 0,
+                    "encoding_detected": "unknown"
+                }
+            }
+            
+            # Detect encoding
+            encoding_result = chardet.detect(file_content)
+            detected_encoding = encoding_result.get('encoding', 'utf-8')
+            confidence = encoding_result.get('confidence', 0)
+            
+            result["metadata"] = {
+                "detected_encoding": detected_encoding,
+                "encoding_confidence": confidence,
+                "file_size_bytes": len(file_content)
+            }
+            
+            # Try to decode with detected encoding
+            text_content = ""
+            encoding_used = detected_encoding
+            
+            try:
+                text_content = file_content.decode(detected_encoding)
+            except (UnicodeDecodeError, UnicodeError):
+                # Fallback to other encodings
+                for encoding in self.supported_encodings:
+                    try:
+                        text_content = file_content.decode(encoding)
+                        encoding_used = encoding
+                        break
+                    except (UnicodeDecodeError, UnicodeError):
+                        continue
+                
+                if not text_content:
+                    # Last resort: decode with errors='ignore'
+                    text_content = file_content.decode('utf-8', errors='ignore')
+                    encoding_used = 'utf-8 (with errors ignored)'
+            
+            result["extracted_text"] = text_content
+            result["processing_summary"] = {
+                "file_size_bytes": len(file_content),
+                "total_lines": len(text_content.splitlines()),
+                "total_text_length": len(text_content),
+                "encoding_detected": encoding_used
+            }
+            
+            return result
+            
+        except Exception as e:
+            return {
+                "file_path": filename,
+                "file_name": filename,
+                "file_type": "text",
+                "error": f"Failed to parse text file: {str(e)}",
+                "extracted_text": "",
+                "metadata": {},
+                "processing_summary": {
+                    "file_size_bytes": len(file_content),
+                    "total_lines": 0,
+                    "total_text_length": 0,
+                    "encoding_detected": "unknown"
+                }
+            }
+    
     def get_supported_formats(self) -> List[str]:
         """Get list of supported file formats"""
         return [".txt", ".text", ".log", ".md", ".markdown", ".csv"]

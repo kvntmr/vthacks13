@@ -4,7 +4,7 @@ Main FastAPI application for Real Estate Investment Analysis
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.v1 import powerpoint
+from app.api.v1 import powerpoint, file_processing, memory_screening, ai_agent
 
 app = FastAPI(
     title="Real Estate Investment Analysis API",
@@ -23,6 +23,9 @@ app.add_middleware(
 
 # Include API routers
 app.include_router(powerpoint.router, prefix="/api/v1")
+app.include_router(file_processing.router, prefix="/api/v1")
+app.include_router(memory_screening.router, prefix="/api/v1")
+app.include_router(ai_agent.router, prefix="/api/v1")
 
 @app.get("/")
 async def root():
