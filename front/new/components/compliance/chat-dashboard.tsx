@@ -64,6 +64,7 @@ import SpreadsheetEditor from "@/components/spreadsheet";
 import React from "react";
 import { backendAPI } from "@/lib/api/backend";
 import { toast } from "sonner";
+import { useLocalStorage } from "usehooks-ts";
 
 import { Spreadsheet, Worksheet, jspreadsheet } from "@jspreadsheet-ce/react";
 import "jsuites/dist/jsuites.css";
@@ -2670,7 +2671,11 @@ function ChatInterface({
   folderIndex: Record<string, FolderIndexEntry>;
   onCloseLeftSidebar?: () => void;
 }) {
-  const [state, setState] = useState<ChatInterfaceState>({
+  // Separate state for non-serializable data
+  const [attachedFiles, setAttachedFiles] = useState<File[]>([]);
+  
+  // Persistent state for serializable data
+  const [persistentState, setPersistentState] = useLocalStorage<Omit<ChatInterfaceState, 'attachedFiles'>>("chat-dashboard-state", {
     messages: [
       {
         id: "welcome",
@@ -2681,7 +2686,6 @@ function ChatInterface({
     ],
     isStreaming: false,
     currentMessage: "",
-    attachedFiles: [],
     showVisualization: null,
     selectedFolders: [],
     showDatasetSidebar: false,
@@ -2690,6 +2694,38 @@ function ChatInterface({
     datasetJsonData: {},
     conversationId: null,
   });
+
+  // Combined state
+  const state: ChatInterfaceState = {
+    ...persistentState,
+    attachedFiles,
+  };
+
+  // Debug: Log current state
+  console.log('Current chat state:', {
+    messagesCount: state.messages.length,
+    messages: state.messages,
+    conversationId: state.conversationId
+  });
+
+  const setState = (updater: (prev: ChatInterfaceState) => ChatInterfaceState) => {
+    const currentState = {
+      ...persistentState,
+      attachedFiles,
+    };
+    const newState = updater(currentState);
+    const { attachedFiles: newAttachedFiles, ...newPersistentState } = newState;
+    
+    console.log('setState called:', {
+      currentMessages: currentState.messages.length,
+      newMessages: newState.messages.length,
+      currentState,
+      newState
+    });
+    
+    setAttachedFiles(newAttachedFiles);
+    setPersistentState(newPersistentState);
+  };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const folderInputRef = useRef<HTMLInputElement>(null);
@@ -2703,10 +2739,10 @@ function ChatInterface({
     setStateRef.current = setState;
   }, [setState]);
 
-  // Keep the ref in sync with state
+  // Keep the ref in sync with attachedFiles state
   useEffect(() => {
-    attachedFilesRef.current = state.attachedFiles;
-  }, [state.attachedFiles]);
+    attachedFilesRef.current = attachedFiles;
+  }, [attachedFiles]);
 
   // Get all available folders for selection
   const availableFolders = useMemo(() => {
@@ -2982,6 +3018,23 @@ function ChatInterface({
     }));
   };
 
+  const clearChat = () => {
+    setState(prev => ({
+      ...prev,
+      messages: [
+        {
+          id: "welcome",
+          role: "assistant",
+          content: "Hello! I'm here to help you analyze real estate data. You can upload files, ask questions, and I'll provide insights with interactive visualizations. What would you like to explore?",
+          timestamp: new Date().toLocaleTimeString(),
+        },
+      ],
+      conversationId: null,
+    }));
+    setAttachedFiles([]);
+    toast.success("Chat history cleared");
+  };
+
   const sendMessage = async () => {
     if (!state.currentMessage.trim() && state.attachedFiles.length === 0) return;
 
@@ -2993,29 +3046,29 @@ function ChatInterface({
       attachments: state.attachedFiles.length > 0 ? [...state.attachedFiles] : undefined,
     };
 
-    setState(prev => ({
+    // Add user message directly to persistent state
+    const newMessages = [...persistentState.messages, userMessage];
+    setPersistentState(prev => ({
       ...prev,
-      messages: [...prev.messages, userMessage],
+      messages: newMessages,
       currentMessage: "",
-      attachedFiles: [],
       isStreaming: true,
     }));
+    setAttachedFiles([]);
+    
+    console.log('Adding user message to state:', userMessage);
+    console.log('New messages array:', newMessages);
 
     try {
       // Make real API call to the backend
-      console.log('Sending message to backend:', state.currentMessage);
+      console.log('Sending message to backend:', userMessage.content);
       const response = await backendAPI.chat({
-        message: state.currentMessage,
+        message: userMessage.content,
         conversation_id: state.conversationId || undefined,
       });
       
       console.log('Received response from backend:', response);
       
-      // Update conversation ID if we got one back
-      if (response.conversation_id) {
-        setState(prev => ({ ...prev, conversationId: response.conversation_id }));
-      }
-
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
@@ -3023,11 +3076,19 @@ function ChatInterface({
         timestamp: response.timestamp || new Date().toLocaleTimeString(),
       };
 
-      setState(prev => ({
-        ...prev,
-        messages: [...prev.messages, assistantMessage],
-        isStreaming: false,
-      }));
+      // Add assistant message directly to persistent state
+      setPersistentState(prev => {
+        const newMessages = [...prev.messages, assistantMessage];
+        const newState = {
+          ...prev,
+          messages: newMessages,
+          isStreaming: false,
+          conversationId: response.conversation_id || prev.conversationId,
+        };
+        console.log('Adding assistant message to state:', assistantMessage);
+        console.log('Final messages array:', newMessages);
+        return newState;
+      });
     } catch (error) {
       console.error('Error sending message to backend:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to send message';
@@ -3039,7 +3100,7 @@ function ChatInterface({
         timestamp: new Date().toLocaleTimeString(),
       };
       
-      setState(prev => ({
+      setPersistentState(prev => ({
         ...prev,
         messages: [...prev.messages, errorChatMessage],
         isStreaming: false,
@@ -3077,11 +3138,24 @@ function ChatInterface({
   return (
     <div className="flex h-full flex-col gap-6 rounded-3xl border border-border/60 bg-background/95 px-6 py-6 shadow-sm">
       {/* Header */}
-      <div className="flex flex-col gap-2">
-        <h1 className="font-semibold text-2xl text-foreground">AI Assistant</h1>
-        <p className="text-muted-foreground text-sm">
-          Upload files, ask questions, and get AI-powered insights with interactive visualizations.
-        </p>
+      <div className="flex items-start justify-between">
+        <div className="flex flex-col gap-2">
+          <h1 className="font-semibold text-2xl text-foreground">AI Assistant</h1>
+          <p className="text-muted-foreground text-sm">
+            Upload files, ask questions, and get AI-powered insights with interactive visualizations.
+          </p>
+        </div>
+        {state.messages.length > 1 && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={clearChat}
+            className="text-muted-foreground hover:text-foreground"
+          >
+            <X className="h-4 w-4 mr-2" />
+            Clear Chat
+          </Button>
+        )}
       </div>
 
       {/* Messages Area */}
