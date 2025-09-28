@@ -10,22 +10,68 @@ import json
 import urllib.parse
 import xml.etree.ElementTree as ET
 import io
+import os
+from datetime import datetime
+from pathlib import Path
 from typing import Dict, Any, Optional, Union
 import httpx
 import pandas as pd
 from pydantic import BaseModel, ValidationError
 
 # LangChain imports for tool creation
-from langchain_core.tools import tool
+from langchain_core.tools import tool, StructuredTool
 
 
 # Base configuration
 BASE_URL = "https://catalog.data.gov/api/3"
 DEFAULT_TIMEOUT = 30.0
 TAGS_TIMEOUT = 120.0  # Tags endpoint can be very slow due to large number of tags
-RESOURCE_TIMEOUT = 60.0  # Timeout for resource data downloads
+RESOURCE_TIMEOUT = 300.0  # Timeout for resource data downloads (5 minutes)
 MAX_RESOURCE_SIZE = 100 * 1024 * 1024  # 100MB limit for resource downloads
 STREAMING_THRESHOLD = 10 * 1024 * 1024  # 10MB threshold for streaming downloads
+
+# AI Files configuration
+AI_FILES_DIR = "./AI_FILES/"
+_file_counter = {"value": 0}  # Use dict to make it mutable for global access
+
+
+def save_to_file(data: Dict[str, Any], filename: str = None, function_name: str = "unknown") -> Dict[str, Any]:
+    """
+    Save data to a file in the AI_FILES directory.
+    
+    This function automatically saves the data returned by tooling functions to files
+    for later access by AI models. It handles automatic filename generation when
+    no filename is provided.
+    
+    Args:
+        data (Dict[str, Any]): Data to save
+        filename (str, optional): Specific filename to use. If not provided, generates a default name.
+        function_name (str): Name of the calling function for default filename generation
+        
+    Returns:
+        Dict[str, Any]: Updated data dictionary with save information added
+    """
+    # Generate default filename if not provided
+    if filename is None:
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        _file_counter["value"] += 1
+        filename = f"{function_name}_{timestamp}_{_file_counter['value']:04d}.json"
+    
+    # Ensure filename has .json extension
+    if not filename.lower().endswith('.json'):
+        filename += '.json'
+    
+    # Create full file path in AI_FILES directory
+    file_path = Path(AI_FILES_DIR) / filename
+    
+    # Use existing _save_to_json function to handle the actual saving
+    save_result = _save_to_json(data, str(file_path))
+    
+    # Add save information to the data
+    data_copy = data.copy()
+    data_copy.update(save_result)
+    
+    return data_copy
 
 
 class APIError(Exception):
@@ -37,11 +83,119 @@ class APIError(Exception):
         super().__init__(self.message)
 
 
-@tool
-async def search_packages(
+def _save_to_json(data: Dict[str, Any], file_path: str) -> Dict[str, Any]:
+    """
+    Save data to a JSON file with proper serialization handling.
+    
+    This utility function handles saving complex data structures to JSON files,
+    including pandas DataFrames and other non-serializable objects.
+    
+    Args:
+        data: Dictionary containing the data to save
+        file_path: Path where to save the JSON file
+        
+    Returns:
+        Dict with save operation results including file path, size, and success status
+        
+    Raises:
+        Exception: When JSON serialization or file writing fails
+    """
+    try:
+        # Create directory if it doesn't exist
+        file_path = Path(file_path)
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        # Create a copy of the data for JSON serialization
+        json_data = _prepare_for_json_serialization(data.copy())
+        
+        # Add metadata about when this was saved
+        json_data["_metadata"] = {
+            "saved_at": datetime.now().isoformat(),
+            "data_source": "data.gov",
+            "saved_by": "tooling.py"
+        }
+        
+        # Write to JSON file
+        with open(file_path, 'w', encoding='utf-8') as f:
+            json.dump(json_data, f, indent=2, ensure_ascii=False)
+        
+        # Get file size
+        file_size = file_path.stat().st_size
+        
+        return {
+            "json_saved": True,
+            "json_file_path": str(file_path.absolute()),
+            "json_file_size": file_size,
+            "json_saved_at": json_data["_metadata"]["saved_at"]
+        }
+        
+    except Exception as e:
+        return {
+            "json_saved": False,
+            "json_error": str(e),
+            "json_file_path": str(file_path) if 'file_path' in locals() else None
+        }
+
+
+def _prepare_for_json_serialization(obj: Any) -> Any:
+    """
+    Recursively prepare an object for JSON serialization.
+    
+    This function handles various data types that are not natively JSON serializable,
+    including pandas DataFrames, numpy arrays, and datetime objects.
+    
+    Args:
+        obj: Object to prepare for JSON serialization
+        
+    Returns:
+        JSON-serializable version of the object
+    """
+    if isinstance(obj, pd.DataFrame):
+        # Convert DataFrame to dict format with metadata
+        return {
+            "_type": "pandas_dataframe",
+            "_shape": obj.shape,
+            "_columns": list(obj.columns),
+            "_data": obj.to_dict(orient='records'),
+            "_dtypes": {col: str(dtype) for col, dtype in obj.dtypes.items()}
+        }
+    elif isinstance(obj, pd.Series):
+        # Convert Series to dict format
+        return {
+            "_type": "pandas_series",
+            "_name": obj.name,
+            "_data": obj.to_dict(),
+            "_dtype": str(obj.dtype)
+        }
+    elif isinstance(obj, dict):
+        # Recursively process dictionary values
+        return {key: _prepare_for_json_serialization(value) for key, value in obj.items()}
+    elif isinstance(obj, (list, tuple)):
+        # Recursively process list/tuple items
+        return [_prepare_for_json_serialization(item) for item in obj]
+    elif isinstance(obj, datetime):
+        # Convert datetime to ISO format string
+        return {
+            "_type": "datetime",
+            "_value": obj.isoformat()
+        }
+    elif hasattr(obj, '__dict__') and not isinstance(obj, (str, int, float, bool)):
+        # Handle objects with __dict__ attribute (custom objects)
+        return {
+            "_type": "custom_object",
+            "_class": obj.__class__.__name__,
+            "_data": _prepare_for_json_serialization(obj.__dict__)
+        }
+    else:
+        # Return as-is for JSON-serializable types (str, int, float, bool, None)
+        return obj
+
+
+async def search_packages_async(
     query: str, 
     rows: int = 10, 
     start: int = 0, 
+    json_file_path: Optional[str] = None,
     **filters
 ) -> Dict[str, Any]:
     """
@@ -55,6 +209,9 @@ async def search_packages(
         query (str): Search terms to look for in dataset titles, descriptions, and content
         rows (int, optional): Number of results to return. Defaults to 10.
         start (int, optional): Starting index for pagination. Defaults to 0.
+        json_file_path (str, optional): Path to save the results as a JSON file. If provided,
+                                      the complete response will be saved to this file with 
+                                      proper serialization of complex data types.
         **filters: Additional CKAN search parameters such as:
             - fq (str): Filter query using Solr syntax (e.g., 'organization:epa-gov')
             - facet (str): Enable/disable faceted search
@@ -142,14 +299,24 @@ async def search_packages(
                     }
                 }
             
-            # Return successful response
-            return {
+            # Prepare successful response
+            response_data = {
                 "success": True,
                 "result": data.get("result", {}),
                 "help": data.get("help", ""),
                 "query_params": params,
                 "endpoint": endpoint
             }
+            
+            # Save to JSON file if requested (backward compatibility)
+            if json_file_path:
+                json_result = _save_to_json(response_data, json_file_path)
+                response_data.update(json_result)
+            
+            # Always save to AI_FILES directory
+            response_data = save_to_file(response_data, function_name="search_packages")
+            
+            return response_data
             
     except httpx.TimeoutException:
         return {
@@ -183,8 +350,7 @@ async def search_packages(
         }
 
 
-@tool
-async def get_package_details(package_id: str, **options) -> Dict[str, Any]:
+async def get_package_details_async(package_id: str, json_file_path: Optional[str] = None, **options) -> Dict[str, Any]:
     """
     Retrieve detailed information about a specific dataset.
     
@@ -195,6 +361,8 @@ async def get_package_details(package_id: str, **options) -> Dict[str, Any]:
     Args:
         package_id (str): Unique identifier or name of the package to retrieve.
                          Can be either the package's UUID or its URL-friendly name.
+        json_file_path (str, optional): Path to save the package details as a JSON file.
+                                      If provided, the complete response will be saved.
         **options: Additional CKAN package_show parameters such as:
             - include_tracking (bool): Include view tracking information
             - use_default_schema (bool): Use default schema for response
@@ -336,6 +504,14 @@ async def get_package_details(package_id: str, **options) -> Dict[str, Any]:
                     "formats": list(set(res.get("format", "").upper() for res in result.get("resources", []) if res.get("format")))
                 }
             
+            # Save to JSON file if requested (backward compatibility)
+            if json_file_path:
+                json_result = _save_to_json(response_data, json_file_path)
+                response_data.update(json_result)
+            
+            # Always save to AI_FILES directory
+            response_data = save_to_file(response_data, function_name="get_package_details")
+            
             return response_data
             
     except httpx.TimeoutException:
@@ -370,8 +546,7 @@ async def get_package_details(package_id: str, **options) -> Dict[str, Any]:
         }
 
 
-@tool
-async def list_groups(**options) -> Dict[str, Any]:
+async def list_groups_async(json_file_path: Optional[str] = None, **options) -> Dict[str, Any]:
     """
     Retrieve all available groups/organizations in the Data.gov catalog.
     
@@ -380,6 +555,8 @@ async def list_groups(**options) -> Dict[str, Any]:
     discovering what organizations publish data.
     
     Args:
+        json_file_path (str, optional): Path to save the groups list as a JSON file.
+                                      If provided, the complete response will be saved.
         **options: Additional CKAN group_list parameters such as:
             - sort (str): Sort order for groups (e.g., 'name', 'packages')
             - all_fields (bool): Return full group objects instead of just names
@@ -474,10 +651,10 @@ async def list_groups(**options) -> Dict[str, Any]:
                     }
                 }
             
-            # Return successful response
+            # Prepare successful response
             result = data.get("result", [])
             
-            return {
+            response_data = {
                 "success": True,
                 "result": result,
                 "count": len(result),
@@ -485,6 +662,16 @@ async def list_groups(**options) -> Dict[str, Any]:
                 "endpoint": endpoint,
                 "params": params
             }
+            
+            # Save to JSON file if requested (backward compatibility)
+            if json_file_path:
+                json_result = _save_to_json(response_data, json_file_path)
+                response_data.update(json_result)
+            
+            # Always save to AI_FILES directory
+            response_data = save_to_file(response_data, function_name="list_groups")
+            
+            return response_data
             
     except httpx.TimeoutException:
         return {
@@ -515,8 +702,7 @@ async def list_groups(**options) -> Dict[str, Any]:
         }
 
 
-@tool
-async def list_tags(**options) -> Dict[str, Any]:
+async def list_tags_async(json_file_path: Optional[str] = None, **options) -> Dict[str, Any]:
     """
     Retrieve all available tags used across datasets in the Data.gov catalog.
     
@@ -528,6 +714,8 @@ async def list_tags(**options) -> Dict[str, Any]:
     number of tags in the Data.gov catalog (potentially hundreds of thousands).
     
     Args:
+        json_file_path (str, optional): Path to save the tags list as a JSON file.
+                                      If provided, the complete response will be saved.
         **options: Additional CKAN tag_list parameters such as:
             - vocabulary_id (str): Filter tags by vocabulary ID
             - all_fields (bool): Return full tag objects instead of just names
@@ -615,10 +803,10 @@ async def list_tags(**options) -> Dict[str, Any]:
                     }
                 }
             
-            # Return successful response
+            # Prepare successful response
             result = data.get("result", [])
             
-            return {
+            response_data = {
                 "success": True,
                 "result": result,
                 "count": len(result),
@@ -626,6 +814,16 @@ async def list_tags(**options) -> Dict[str, Any]:
                 "endpoint": endpoint,
                 "params": params
             }
+            
+            # Save to JSON file if requested (backward compatibility)
+            if json_file_path:
+                json_result = _save_to_json(response_data, json_file_path)
+                response_data.update(json_result)
+            
+            # Always save to AI_FILES directory
+            response_data = save_to_file(response_data, function_name="list_tags")
+            
+            return response_data
             
     except httpx.TimeoutException:
         return {
@@ -656,11 +854,11 @@ async def list_tags(**options) -> Dict[str, Any]:
         }
 
 
-@tool
-async def fetch_resource_data(
+async def fetch_resource_data_async(
     resource_url: str, 
     format_hint: Optional[str] = None,
-    max_size: Optional[int] = None
+    max_size: Optional[int] = None,
+    json_file_path: Optional[str] = None
 ) -> Dict[str, Any]:
     """
     Download and parse data from a dataset resource URL.
@@ -674,6 +872,8 @@ async def fetch_resource_data(
         format_hint (str, optional): Format specification to override detection.
                                    Supported: 'csv', 'json', 'xml', 'xlsx', 'xls', 'txt'
         max_size (int, optional): Maximum file size in bytes. Defaults to MAX_RESOURCE_SIZE.
+        json_file_path (str, optional): Path to save the resource data as a JSON file.
+                                      If provided, the complete response with parsed data will be saved.
     
     Returns:
         Dict[str, Any]: Dictionary containing:
@@ -826,7 +1026,7 @@ async def fetch_resource_data(
             try:
                 parsed_data = _parse_resource_data(response.content, detected_format, response.encoding)
                 
-                return {
+                response_data = {
                     "success": True,
                     "data": parsed_data,
                     "metadata": {
@@ -837,6 +1037,16 @@ async def fetch_resource_data(
                         "encoding": response.encoding or 'utf-8'
                     }
                 }
+                
+                # Save to JSON file if requested (backward compatibility)
+                if json_file_path:
+                    json_result = _save_to_json(response_data, json_file_path)
+                    response_data.update(json_result)
+                
+                # Always save to AI_FILES directory
+                response_data = save_to_file(response_data, function_name="fetch_resource_data")
+                
+                return response_data
                 
             except Exception as e:
                 return {
@@ -1015,8 +1225,7 @@ def _xml_to_dict(element: ET.Element) -> Dict[str, Any]:
     return result if result else element.text
 
 
-@tool
-async def validate_resource_url(url: str) -> Dict[str, Any]:
+async def validate_resource_url_async(url: str, json_file_path: Optional[str] = None) -> Dict[str, Any]:
     """
     Validate if a resource URL is accessible and downloadable.
     
@@ -1026,6 +1235,7 @@ async def validate_resource_url(url: str) -> Dict[str, Any]:
     
     Args:
         url (str): Resource URL to validate
+        json_file_path (str, optional): Path to save the validation results as a JSON file.
     
     Returns:
         Dict[str, Any]: Dictionary containing:
@@ -1129,12 +1339,22 @@ async def validate_resource_url(url: str) -> Dict[str, Any]:
             # Check if the URL is accessible (2xx status codes)
             is_accessible = 200 <= response.status_code < 300
             
-            return {
+            response_data = {
                 "success": True,
                 "accessible": is_accessible,
                 "url": url,
                 "metadata": metadata
             }
+            
+            # Save to JSON file if requested (backward compatibility)
+            if json_file_path:
+                json_result = _save_to_json(response_data, json_file_path)
+                response_data.update(json_result)
+            
+            # Always save to AI_FILES directory
+            response_data = save_to_file(response_data, function_name="validate_resource_url")
+            
+            return response_data
             
     except httpx.TimeoutException:
         return {
@@ -1168,8 +1388,7 @@ async def validate_resource_url(url: str) -> Dict[str, Any]:
         }
 
 
-@tool
-async def get_package_resources(package_id: str) -> Dict[str, Any]:
+async def get_package_resources_async(package_id: str, json_file_path: Optional[str] = None) -> Dict[str, Any]:
     """
     Extract all resource URLs and metadata from a package.
     
@@ -1180,6 +1399,8 @@ async def get_package_resources(package_id: str) -> Dict[str, Any]:
     
     Args:
         package_id (str): Unique identifier or name of the package to get resources for
+        json_file_path (str, optional): Path to save the resource list as a JSON file.
+                                      If provided, the complete response will be saved.
     
     Returns:
         Dict[str, Any]: Dictionary containing:
@@ -1226,7 +1447,7 @@ async def get_package_resources(package_id: str) -> Dict[str, Any]:
         }
     
     # Get package details using existing function
-    package_details = await get_package_details(package_id.strip())
+    package_details = await get_package_details_async(package_id.strip())
     
     # Check if package details retrieval was successful
     if not package_details.get("success", False):
@@ -1304,7 +1525,7 @@ async def get_package_resources(package_id: str) -> Dict[str, Any]:
         "type": package_data.get("type", "")
     }
     
-    return {
+    response_data = {
         "success": True,
         "resources": processed_resources,
         "package_info": package_info,
@@ -1313,6 +1534,16 @@ async def get_package_resources(package_id: str) -> Dict[str, Any]:
         "total_raw_resources": len(raw_resources),  # Including invalid ones for debugging
         "formats_available": list(set(res["format"] for res in processed_resources if res["format"] != "UNKNOWN"))
     }
+    
+    # Save to JSON file if requested (backward compatibility)
+    if json_file_path:
+        json_result = _save_to_json(response_data, json_file_path)
+        response_data.update(json_result)
+    
+    # Always save to AI_FILES directory
+    response_data = save_to_file(response_data, function_name="get_package_resources")
+    
+    return response_data
 
 
 @tool
@@ -1512,7 +1743,7 @@ def get_catalog_info() -> Dict[str, Any]:
         # Find top organizations
         top_orgs = sorted(orgs, key=lambda x: x.get("package_count", 0), reverse=True)[:5]
         
-        return {
+        response_data = {
             "success": True,
             "organizations": {
                 "count": len(orgs),
@@ -1532,6 +1763,11 @@ def get_catalog_info() -> Dict[str, Any]:
             },
             "summary": f"Data.gov catalog contains {len(orgs)} organizations with {total_datasets:,} total datasets. Tag listing is available but very slow."
         }
+        
+        # Always save to AI_FILES directory
+        response_data = save_to_file(response_data, function_name="get_catalog_info")
+        
+        return response_data
         
     except Exception as e:
         return {
@@ -1577,15 +1813,15 @@ def search_packages_sync(
             import nest_asyncio
             nest_asyncio.apply()
             # Call the original async function directly, not the tool
-            return loop.run_until_complete(search_packages.coroutine(query, rows, start, **filters))
+            return loop.run_until_complete(search_packages_async(query, rows, start, **filters))
         else:
-            return loop.run_until_complete(search_packages.coroutine(query, rows, start, **filters))
+            return loop.run_until_complete(search_packages_async(query, rows, start, **filters))
     except RuntimeError:
         # No event loop exists, create a new one
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
-            return loop.run_until_complete(search_packages.coroutine(query, rows, start, **filters))
+            return loop.run_until_complete(search_packages_async(query, rows, start, **filters))
         finally:
             loop.close()
 
@@ -1611,15 +1847,15 @@ def get_package_details_sync(package_id: str, **options) -> Dict[str, Any]:
             # This typically happens in Jupyter notebooks or when called from async context
             import nest_asyncio
             nest_asyncio.apply()
-            return loop.run_until_complete(get_package_details.coroutine(package_id, **options))
+            return loop.run_until_complete(get_package_details_async(package_id, **options))
         else:
-            return loop.run_until_complete(get_package_details.coroutine(package_id, **options))
+            return loop.run_until_complete(get_package_details_async(package_id, **options))
     except RuntimeError:
         # No event loop exists, create a new one
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
-            return loop.run_until_complete(get_package_details.coroutine(package_id, **options))
+            return loop.run_until_complete(get_package_details_async(package_id, **options))
         finally:
             loop.close()
 
@@ -1644,15 +1880,15 @@ def list_groups_sync(**options) -> Dict[str, Any]:
             # This typically happens in Jupyter notebooks or when called from async context
             import nest_asyncio
             nest_asyncio.apply()
-            return loop.run_until_complete(list_groups.func(**options))
+            return loop.run_until_complete(list_groups_async(**options))
         else:
-            return loop.run_until_complete(list_groups.func(**options))
+            return loop.run_until_complete(list_groups_async(**options))
     except RuntimeError:
         # No event loop exists, create a new one
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
-            return loop.run_until_complete(list_groups.func(**options))
+            return loop.run_until_complete(list_groups_async(**options))
         finally:
             loop.close()
 
@@ -1677,15 +1913,15 @@ def list_tags_sync(**options) -> Dict[str, Any]:
             # This typically happens in Jupyter notebooks or when called from async context
             import nest_asyncio
             nest_asyncio.apply()
-            return loop.run_until_complete(list_tags.func(**options))
+            return loop.run_until_complete(list_tags_async(**options))
         else:
-            return loop.run_until_complete(list_tags.func(**options))
+            return loop.run_until_complete(list_tags_async(**options))
     except RuntimeError:
         # No event loop exists, create a new one
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
-            return loop.run_until_complete(list_tags.func(**options))
+            return loop.run_until_complete(list_tags_async(**options))
         finally:
             loop.close()
 
@@ -1716,15 +1952,15 @@ def fetch_resource_data_sync(
             # This typically happens in Jupyter notebooks or when called from async context
             import nest_asyncio
             nest_asyncio.apply()
-            return loop.run_until_complete(fetch_resource_data.func(resource_url, format_hint, max_size))
+            return loop.run_until_complete(fetch_resource_data_async(resource_url, format_hint, max_size))
         else:
-            return loop.run_until_complete(fetch_resource_data.func(resource_url, format_hint, max_size))
+            return loop.run_until_complete(fetch_resource_data_async(resource_url, format_hint, max_size))
     except RuntimeError:
         # No event loop exists, create a new one
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
-            return loop.run_until_complete(fetch_resource_data.func(resource_url, format_hint, max_size))
+            return loop.run_until_complete(fetch_resource_data_async(resource_url, format_hint, max_size))
         finally:
             loop.close()
 
@@ -1749,15 +1985,15 @@ def get_package_resources_sync(package_id: str) -> Dict[str, Any]:
             # This typically happens in Jupyter notebooks or when called from async context
             import nest_asyncio
             nest_asyncio.apply()
-            return loop.run_until_complete(get_package_resources.func(package_id))
+            return loop.run_until_complete(get_package_resources_async(package_id))
         else:
-            return loop.run_until_complete(get_package_resources.func(package_id))
+            return loop.run_until_complete(get_package_resources_async(package_id))
     except RuntimeError:
         # No event loop exists, create a new one
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
-            return loop.run_until_complete(get_package_resources.func(package_id))
+            return loop.run_until_complete(get_package_resources_async(package_id))
         finally:
             loop.close()
 
@@ -1782,15 +2018,15 @@ def validate_resource_url_sync(url: str) -> Dict[str, Any]:
             # This typically happens in Jupyter notebooks or when called from async context
             import nest_asyncio
             nest_asyncio.apply()
-            return loop.run_until_complete(validate_resource_url.func(url))
+            return loop.run_until_complete(validate_resource_url_async(url))
         else:
-            return loop.run_until_complete(validate_resource_url.func(url))
+            return loop.run_until_complete(validate_resource_url_async(url))
     except RuntimeError:
         # No event loop exists, create a new one
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
-            return loop.run_until_complete(validate_resource_url.func(url))
+            return loop.run_until_complete(validate_resource_url_async(url))
         finally:
             loop.close()
 
@@ -1924,9 +2160,64 @@ def download_small_dataset(resource_url: str, format_hint: str = None) -> Dict[s
     Returns:
         Dictionary with parsed data and metadata
     """
+    print("Downloading a section of the database...")
     # Limit to 10MB for tool usage
     return fetch_resource_data_sync(resource_url, format_hint, max_size=10*1024*1024)
 
+
+# ========================
+# StructuredTool Wrappers for Sync/Async Compatibility  
+# ========================
+
+# Create StructuredTool instances that support both sync and async invocation
+search_packages = StructuredTool.from_function(
+    func=search_packages_sync,
+    coroutine=search_packages_async,
+    name="search_packages",
+    description="Search for datasets using the CKAN package_search endpoint."
+)
+
+get_package_details = StructuredTool.from_function(
+    func=get_package_details_sync,
+    coroutine=get_package_details_async,
+    name="get_package_details",
+    description="Retrieve detailed information about a specific dataset."
+)
+
+list_groups = StructuredTool.from_function(
+    func=list_groups_sync,
+    coroutine=list_groups_async,
+    name="list_groups", 
+    description="Retrieve all available groups/organizations in the Data.gov catalog."
+)
+
+list_tags = StructuredTool.from_function(
+    func=list_tags_sync,
+    coroutine=list_tags_async,
+    name="list_tags",
+    description="Retrieve all available tags used across datasets in the Data.gov catalog."
+)
+
+fetch_resource_data = StructuredTool.from_function(
+    func=fetch_resource_data_sync,
+    coroutine=fetch_resource_data_async,
+    name="fetch_resource_data",
+    description="Download and parse data from a dataset resource URL."
+)
+
+validate_resource_url = StructuredTool.from_function(
+    func=validate_resource_url_sync,
+    coroutine=validate_resource_url_async,
+    name="validate_resource_url",
+    description="Validate if a resource URL is accessible and downloadable."
+)
+
+get_package_resources = StructuredTool.from_function(
+    func=get_package_resources_sync,
+    coroutine=get_package_resources_async,
+    name="get_package_resources",
+    description="Extract all resource URLs and metadata from a package."
+)
 
 # Collection of all Data.gov tools for easy import
 DATA_GOV_TOOLS = [
@@ -1943,7 +2234,11 @@ DATA_GOV_TOOLS = [
     validate_and_get_resource_info,
     download_small_dataset,
     build_search_query,
-    get_catalog_info
+    get_catalog_info,
+    # Add the new StructuredTool wrappers
+    search_packages,
+    fetch_resource_data,
+    validate_resource_url
 ]
 
 

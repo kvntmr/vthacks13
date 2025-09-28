@@ -15,6 +15,9 @@ from langchain.chat_models import init_chat_model
 from langchain_core.messages import HumanMessage
 from langchain_core.tools import tool
 from langgraph.prebuilt import create_react_agent
+from langfuse.langchain import CallbackHandler
+langfuse_handler = CallbackHandler()
+config={"callbacks": [langfuse_handler]}
 
 # Import all data.gov tools from tooling.py
 from tooling import (
@@ -46,6 +49,7 @@ YOUR ROLE:
 - Help commercial real estate professionals assess properties and markets
 - Find and analyze relevant government datasets for due diligence
 - Provide data-driven insights on factors affecting real estate value and risk
+- ALWAYS save the results to a JSON file for future reference and analysis.
 
 KEY FOCUS AREAS:
 1. CRIME & SAFETY DATA
@@ -174,6 +178,7 @@ financial investments. Accuracy, recency, and comprehensive analysis are critica
             events = self.agent.stream(
                 {"messages": messages},
                 stream_mode="values",
+                config={"callbacks": [langfuse_handler]}
             )
             
             # Collect all messages
