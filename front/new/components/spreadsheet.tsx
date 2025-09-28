@@ -3,6 +3,7 @@ import React, { useState, useCallback, useRef, useEffect } from "react";
 import Spreadsheet from "react-spreadsheet";
 import { Button } from "./ui/button";
 import { useTheme } from "next-themes";
+import { Download, Upload } from "lucide-react";
 
 // Custom styles for the spreadsheet with enhanced dark mode support
 const spreadsheetStyles = `
@@ -76,6 +77,8 @@ const spreadsheetStyles = `
   
   /* Dark mode specific enhancements */
   .dark .react-spreadsheet .react-spreadsheet-cell {
+    background-color: hsl(var(--background)) !important;
+    color: hsl(var(--foreground)) !important;
     border-color: hsl(var(--border)) !important;
   }
   
@@ -88,25 +91,52 @@ const spreadsheetStyles = `
     box-shadow: inset 0 0 0 2px hsl(var(--ring)) !important;
   }
   
+  .dark .react-spreadsheet .react-spreadsheet-cell input {
+    background-color: transparent !important;
+    color: hsl(var(--foreground)) !important;
+  }
+  
+  .dark .spreadsheet-wrapper,
+  .dark .spreadsheet-container,
+  .dark .react-spreadsheet,
+  .dark .react-spreadsheet .react-spreadsheet-container {
+    background-color: hsl(var(--background)) !important;
+    color: hsl(var(--foreground)) !important;
+  }
+  
+  /* Fallback dark mode colors in case CSS variables don't work */
+  .dark .react-spreadsheet .react-spreadsheet-cell {
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+    border-color: #374151 !important;
+  }
+  
+  .dark .react-spreadsheet .react-spreadsheet-cell:hover {
+    background-color: #374151 !important;
+  }
+  
+  .dark .react-spreadsheet .react-spreadsheet-cell.selected {
+    background-color: #374151 !important;
+    box-shadow: inset 0 0 0 2px #60a5fa !important;
+  }
+  
+  .dark .react-spreadsheet .react-spreadsheet-cell input {
+    background-color: transparent !important;
+    color: #ffffff !important;
+  }
+  
+  .dark .spreadsheet-wrapper,
+  .dark .spreadsheet-container,
+  .dark .react-spreadsheet,
+  .dark .react-spreadsheet .react-spreadsheet-container {
+    background-color: #1a1a1a !important;
+    color: #ffffff !important;
+  }
+  
   /* System theme preference support */
   @media (prefers-color-scheme: dark) {
-    .spreadsheet-wrapper,
-    .spreadsheet-container,
-    .react-spreadsheet,
-    .react-spreadsheet .react-spreadsheet-container {
-      background-color: hsl(var(--background)) !important;
-      color: hsl(var(--foreground)) !important;
-    }
-    
     .react-spreadsheet .react-spreadsheet-cell {
-      background-color: hsl(var(--background)) !important;
-      color: hsl(var(--foreground)) !important;
       border-color: hsl(var(--border)) !important;
-    }
-    
-    .react-spreadsheet .react-spreadsheet-cell input {
-      background-color: transparent !important;
-      color: hsl(var(--foreground)) !important;
     }
     
     .react-spreadsheet .react-spreadsheet-cell:hover {
@@ -122,12 +152,10 @@ const spreadsheetStyles = `
     .react-spreadsheet .react-spreadsheet-column-header {
       background-color: hsl(var(--muted)) !important;
       color: hsl(var(--muted-foreground)) !important;
-      border-color: hsl(var(--border)) !important;
     }
     
     .react-spreadsheet .react-spreadsheet-corner {
       background-color: hsl(var(--muted)) !important;
-      border-color: hsl(var(--border)) !important;
     }
     
     .spreadsheet-container::-webkit-scrollbar-track {
@@ -140,49 +168,6 @@ const spreadsheetStyles = `
     
     .spreadsheet-container::-webkit-scrollbar-thumb:hover {
       background: hsl(var(--muted-foreground)) !important;
-    }
-  }
-  
-  /* Light mode system preference support */
-  @media (prefers-color-scheme: light) {
-    .spreadsheet-wrapper,
-    .spreadsheet-container,
-    .react-spreadsheet,
-    .react-spreadsheet .react-spreadsheet-container {
-      background-color: hsl(var(--background)) !important;
-      color: hsl(var(--foreground)) !important;
-    }
-    
-    .react-spreadsheet .react-spreadsheet-cell {
-      background-color: hsl(var(--background)) !important;
-      color: hsl(var(--foreground)) !important;
-      border-color: hsl(var(--border)) !important;
-    }
-    
-    .react-spreadsheet .react-spreadsheet-cell input {
-      background-color: transparent !important;
-      color: hsl(var(--foreground)) !important;
-    }
-    
-    .react-spreadsheet .react-spreadsheet-cell:hover {
-      background-color: hsl(var(--accent)) !important;
-    }
-    
-    .react-spreadsheet .react-spreadsheet-cell.selected {
-      background-color: hsl(var(--accent)) !important;
-      box-shadow: inset 0 0 0 2px hsl(var(--ring)) !important;
-    }
-    
-    .react-spreadsheet .react-spreadsheet-row-header,
-    .react-spreadsheet .react-spreadsheet-column-header {
-      background-color: hsl(var(--muted)) !important;
-      color: hsl(var(--muted-foreground)) !important;
-      border-color: hsl(var(--border)) !important;
-    }
-    
-    .react-spreadsheet .react-spreadsheet-corner {
-      background-color: hsl(var(--muted)) !important;
-      border-color: hsl(var(--border)) !important;
     }
   }
   
@@ -235,8 +220,7 @@ const spreadsheetStyles = `
   
   .spreadsheet-container::-webkit-scrollbar-thumb:hover {
     background: hsl(var(--muted-foreground)) !important;
-  }
-  
+  }  
 `;
 
 // Generate initial data with a reasonable starting size
@@ -297,6 +281,21 @@ export default function SpreadsheetEditor() {
       mediaQuery.removeEventListener('change', handleChange);
     };
   }, []);
+
+  // Debug theme state
+  useEffect(() => {
+    console.log('Theme state:', { theme, systemTheme, isSystemDark });
+  }, [theme, systemTheme, isSystemDark]);
+
+  // Apply dark class to document when needed
+  useEffect(() => {
+    const isDark = theme === 'dark' || (theme === 'system' && isSystemDark);
+    if (isDark) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme, isSystemDark]);
 
   // Handle data changes - allow dynamic expansion
   const handleDataChange = useCallback((newData: any) => {
@@ -402,15 +401,58 @@ export default function SpreadsheetEditor() {
     // TODO: Implement underline formatting for selected cells
   }, []);
 
+  // Export functionality
+  const handleExportCSV = useCallback(() => {
+    try {
+      // Convert data to CSV format
+      const csvContent = data
+        .map(row => 
+          row.map(cell => {
+            const value = cell.value || '';
+            // Escape values that contain commas, quotes, or newlines
+            if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+              return `"${value.replace(/"/g, '""')}"`;
+            }
+            return value;
+          }).join(',')
+        )
+        .join('\n');
+
+      // Create and download the file
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      const url = URL.createObjectURL(blob);
+      
+      link.setAttribute('href', url);
+      link.setAttribute('download', `spreadsheet-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Clean up the URL object
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error exporting CSV:', error);
+      alert('Error exporting CSV file. Please try again.');
+    }
+  }, [data]);
+
   return (
     <>
-      <style dangerouslySetInnerHTML={{ __html: spreadsheetStyles }} />
+      <style>{spreadsheetStyles}</style>
       <div className="flex flex-col h-full w-full bg-background rounded-lg border border-border shadow-sm overflow-hidden">
         {/* Toolbar */}
         <div className="flex items-center gap-2 p-3 border-b border-border bg-muted/30 rounded-t-lg flex-shrink-0">
           <div className="flex items-center gap-1">
-            <Button variant="outline" size="sm" onClick={handleImportCSV}>
+            <Button variant="outline" size="sm" onClick={handleImportCSV} className="flex items-center gap-2">
+              <Upload className="h-4 w-4" />
               Import CSV
+            </Button>
+            <Button variant="outline" size="sm" onClick={handleExportCSV} className="flex items-center gap-2">
+              <Download className="h-4 w-4" />
+              Export CSV
             </Button>
           </div>
           
@@ -431,14 +473,14 @@ export default function SpreadsheetEditor() {
 
         {/* Spreadsheet Container */}
         <div className="flex-1 bg-background rounded-b-lg overflow-hidden">
-          <div 
-            className={`spreadsheet-wrapper w-full h-full ${theme === 'dark' || (theme === 'system' && isSystemDark) ? 'dark' : ''}`}
-            style={{ 
-              maxHeight: 'calc(100vh - 200px)',
-              maxWidth: '100%'
-            }}
-          >
-            <div className={`spreadsheet-container ${theme === 'dark' || (theme === 'system' && isSystemDark) ? 'dark' : ''}`}>
+            <div 
+              className={`spreadsheet-wrapper w-full h-full ${theme === 'dark' || (theme === 'system' && isSystemDark) ? 'dark' : ''}`}
+              style={{ 
+                maxHeight: 'calc(100vh - 200px)',
+                maxWidth: '100%'
+              }}
+            >
+              <div className={`spreadsheet-container ${theme === 'dark' || (theme === 'system' && isSystemDark) ? 'dark' : ''}`}>
               <Spreadsheet 
                 data={data} 
                 onChange={handleDataChange}
