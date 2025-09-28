@@ -21,6 +21,8 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 from pydantic import BaseModel, Field
 
+GEMINI_API_KEY =
+
 # Simple property data models for extraction
 class PropertyType(str, Enum):
     LOGISTICS = "logistics"

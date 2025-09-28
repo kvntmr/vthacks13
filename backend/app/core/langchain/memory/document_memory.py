@@ -10,12 +10,17 @@ from typing import Dict, Any, List, Optional
 from dataclasses import dataclass, asdict
 from enum import Enum
 
-from langchain_chroma import Chroma
+import os
+from dotenv import load_dotenv
+
+try:
+    from langchain_chroma import Chroma  # type: ignore
+except ImportError:
+    Chroma = None  # Fallback when library is unavailable (e.g., offline install)
+
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_core.documents import Document
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-import os
-from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -57,17 +62,27 @@ class DocumentMemory:
         """
         self.persist_directory = persist_directory
         
-        # Initialize embeddings
-        self.embeddings = GoogleGenerativeAIEmbeddings(
-            model="models/text-embedding-004",
-            google_api_key=os.getenv("GEMINI_API_KEY")
-        )
-        
-        # Initialize vector store
-        self.vectorstore = Chroma(
-            persist_directory=persist_directory,
-            embedding_function=self.embeddings
-        )
+        self.embeddings = None
+        self.vectorstore = None
+
+        if Chroma is not None and os.getenv("GEMINI_API_KEY"):
+            try:
+                self.embeddings = GoogleGenerativeAIEmbeddings(
+                    model="models/text-embedding-004",
+                    google_api_key=os.getenv("GEMINI_API_KEY")
+                )
+
+                self.vectorstore = Chroma(
+                    persist_directory=persist_directory,
+                    embedding_function=self.embeddings
+                )
+            except Exception as error:
+                # If embeddings/vector store cannot be initialised (e.g. missing key), fall back to in-memory search
+                print("[DocumentMemory] Falling back to in-memory search:", error)
+                self.vectorstore = None
+                self.embeddings = None
+        else:
+            print("[DocumentMemory] langchain_chroma not available or GEMINI_API_KEY missing. Using in-memory search only.")
         
         # Initialize text splitter
         self.text_splitter = RecursiveCharacterTextSplitter(
@@ -78,7 +93,8 @@ class DocumentMemory:
         
         # In-memory storage for document metadata
         self.document_metadata: Dict[str, DocumentMetadata] = {}
-    
+        self.chunk_store: Dict[str, List[str]] = {}
+
     async def store_document(
         self,
         content: str,
@@ -144,9 +160,12 @@ class DocumentMemory:
             )
             documents.append(doc)
         
-        # Add to vector store
-        self.vectorstore.add_documents(documents)
-        
+        # Add to vector store or fallback store
+        if self.vectorstore:
+            self.vectorstore.add_documents(documents)
+        else:
+            self.chunk_store[document_id] = [doc.page_content for doc in documents]
+
         return document_id
     
     async def search_documents(
@@ -176,12 +195,40 @@ class DocumentMemory:
             filter_dict["has_property_data"] = False
         
         # Search vector store
-        results = self.vectorstore.similarity_search_with_score(
-            query, 
-            k=limit,
-            filter=filter_dict if filter_dict else None
-        )
-        
+        results = []
+        if self.vectorstore:
+            results = self.vectorstore.similarity_search_with_score(
+                query,
+                k=limit,
+                filter=filter_dict if filter_dict else None
+            )
+        else:
+            query_lower = query.lower()
+            for document_id, chunks in self.chunk_store.items():
+                metadata = self.document_metadata.get(document_id)
+                if not metadata:
+                    continue
+                if document_type and metadata.document_type != document_type:
+                    continue
+
+                for idx, chunk in enumerate(chunks):
+                    if query_lower in chunk.lower():
+                        results.append((
+                            Document(
+                                page_content=chunk,
+                                metadata={
+                                    "document_id": document_id,
+                                    "chunk_index": idx,
+                                    "total_chunks": len(chunks),
+                                },
+                            ),
+                            0.0,  # similarity score placeholder
+                        ))
+                        if len(results) >= limit:
+                            break
+                if len(results) >= limit:
+                    break
+
         # Format results
         formatted_results = []
         for doc, score in results:
@@ -648,4 +695,3 @@ class DocumentMemory:
             "documents_with_property_data": with_property_data,
             "documents_without_property_data": total_documents - with_property_data
         }
-
