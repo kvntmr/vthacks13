@@ -65,6 +65,8 @@ import React from "react";
 import { backendAPI } from "@/lib/api/backend";
 import { toast } from "sonner";
 import { useLocalStorage } from "usehooks-ts";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 import { Spreadsheet, Worksheet, jspreadsheet } from "@jspreadsheet-ce/react";
 import "jsuites/dist/jsuites.css";
@@ -3188,7 +3190,60 @@ function ChatInterface({
                       ))}
                     </div>
                   )}
-                  <p className="whitespace-pre-wrap">{message.content}</p>
+                  {message.role === "assistant" ? (
+                    <div className="prose prose-sm max-w-none dark:prose-invert">
+                      <ReactMarkdown 
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          // Custom styling for better integration with the chat UI
+                          p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                          ul: ({ children }) => <ul className="mb-2 last:mb-0 pl-4">{children}</ul>,
+                          ol: ({ children }) => <ol className="mb-2 last:mb-0 pl-4">{children}</ol>,
+                          li: ({ children }) => <li className="mb-1">{children}</li>,
+                          code: ({ children, className }) => {
+                            const isInline = !className;
+                            if (isInline) {
+                              return <code className="bg-muted px-1 py-0.5 rounded text-xs font-mono">{children}</code>;
+                            }
+                            return (
+                              <pre className="bg-muted p-3 rounded-lg overflow-x-auto mb-2">
+                                <code className="text-xs font-mono">{children}</code>
+                              </pre>
+                            );
+                          },
+                          blockquote: ({ children }) => (
+                            <blockquote className="border-l-4 border-muted-foreground/20 pl-4 italic mb-2">
+                              {children}
+                            </blockquote>
+                          ),
+                          h1: ({ children }) => <h1 className="text-lg font-bold mb-2">{children}</h1>,
+                          h2: ({ children }) => <h2 className="text-base font-bold mb-2">{children}</h2>,
+                          h3: ({ children }) => <h3 className="text-sm font-bold mb-2">{children}</h3>,
+                          table: ({ children }) => (
+                            <div className="overflow-x-auto mb-2">
+                              <table className="min-w-full border-collapse border border-border">
+                                {children}
+                              </table>
+                            </div>
+                          ),
+                          th: ({ children }) => (
+                            <th className="border border-border bg-muted px-2 py-1 text-left font-semibold">
+                              {children}
+                            </th>
+                          ),
+                          td: ({ children }) => (
+                            <td className="border border-border px-2 py-1">
+                              {children}
+                            </td>
+                          ),
+                        }}
+                      >
+                        {message.content}
+                      </ReactMarkdown>
+                    </div>
+                  ) : (
+                    <p className="whitespace-pre-wrap">{message.content}</p>
+                  )}
                   {message.visualizations && message.visualizations.length > 0 && (
                     <div className="mt-3 space-y-2">
                       {message.visualizations.map((viz) => (
