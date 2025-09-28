@@ -1,8 +1,9 @@
 """
-Data.gov API Integration Module
+Data.gov API Integration Module with LangChain Tools
 
 This module provides functions to interact with the Data.gov CKAN API
 for searching, retrieving, and processing government datasets.
+All functions are decorated as LangChain tools for use with agents.
 """
 
 import json
@@ -13,6 +14,9 @@ from typing import Dict, Any, Optional, Union
 import httpx
 import pandas as pd
 from pydantic import BaseModel, ValidationError
+
+# LangChain imports for tool creation
+from langchain_core.tools import tool
 
 
 # Base configuration
@@ -33,6 +37,7 @@ class APIError(Exception):
         super().__init__(self.message)
 
 
+@tool
 async def search_packages(
     query: str, 
     rows: int = 10, 
@@ -178,6 +183,7 @@ async def search_packages(
         }
 
 
+@tool
 async def get_package_details(package_id: str, **options) -> Dict[str, Any]:
     """
     Retrieve detailed information about a specific dataset.
@@ -364,6 +370,7 @@ async def get_package_details(package_id: str, **options) -> Dict[str, Any]:
         }
 
 
+@tool
 async def list_groups(**options) -> Dict[str, Any]:
     """
     Retrieve all available groups/organizations in the Data.gov catalog.
@@ -508,6 +515,7 @@ async def list_groups(**options) -> Dict[str, Any]:
         }
 
 
+@tool
 async def list_tags(**options) -> Dict[str, Any]:
     """
     Retrieve all available tags used across datasets in the Data.gov catalog.
@@ -648,6 +656,7 @@ async def list_tags(**options) -> Dict[str, Any]:
         }
 
 
+@tool
 async def fetch_resource_data(
     resource_url: str, 
     format_hint: Optional[str] = None,
@@ -1006,6 +1015,7 @@ def _xml_to_dict(element: ET.Element) -> Dict[str, Any]:
     return result if result else element.text
 
 
+@tool
 async def validate_resource_url(url: str) -> Dict[str, Any]:
     """
     Validate if a resource URL is accessible and downloadable.
@@ -1158,6 +1168,7 @@ async def validate_resource_url(url: str) -> Dict[str, Any]:
         }
 
 
+@tool
 async def get_package_resources(package_id: str) -> Dict[str, Any]:
     """
     Extract all resource URLs and metadata from a package.
@@ -1304,6 +1315,7 @@ async def get_package_resources(package_id: str) -> Dict[str, Any]:
     }
 
 
+@tool
 def build_search_query(**criteria) -> str:
     """
     Helper function to build complex CKAN search queries.
@@ -1463,6 +1475,7 @@ def build_search_query(**criteria) -> str:
     return final_query
 
 
+@tool
 def get_catalog_info() -> Dict[str, Any]:
     """
     Get basic information about the Data.gov catalog without slow operations.
@@ -1551,6 +1564,10 @@ def search_packages_sync(
     """
     import asyncio
     
+    # Create parameter dictionary for the tool
+    params = {"query": query, "rows": rows, "start": start}
+    params.update(filters)
+    
     try:
         # Try to get the current event loop
         loop = asyncio.get_event_loop()
@@ -1559,15 +1576,16 @@ def search_packages_sync(
             # This typically happens in Jupyter notebooks or when called from async context
             import nest_asyncio
             nest_asyncio.apply()
-            return loop.run_until_complete(search_packages(query, rows, start, **filters))
+            # Call the original async function directly, not the tool
+            return loop.run_until_complete(search_packages.coroutine(query, rows, start, **filters))
         else:
-            return loop.run_until_complete(search_packages(query, rows, start, **filters))
+            return loop.run_until_complete(search_packages.coroutine(query, rows, start, **filters))
     except RuntimeError:
         # No event loop exists, create a new one
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
-            return loop.run_until_complete(search_packages(query, rows, start, **filters))
+            return loop.run_until_complete(search_packages.coroutine(query, rows, start, **filters))
         finally:
             loop.close()
 
@@ -1593,15 +1611,15 @@ def get_package_details_sync(package_id: str, **options) -> Dict[str, Any]:
             # This typically happens in Jupyter notebooks or when called from async context
             import nest_asyncio
             nest_asyncio.apply()
-            return loop.run_until_complete(get_package_details(package_id, **options))
+            return loop.run_until_complete(get_package_details.coroutine(package_id, **options))
         else:
-            return loop.run_until_complete(get_package_details(package_id, **options))
+            return loop.run_until_complete(get_package_details.coroutine(package_id, **options))
     except RuntimeError:
         # No event loop exists, create a new one
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
-            return loop.run_until_complete(get_package_details(package_id, **options))
+            return loop.run_until_complete(get_package_details.coroutine(package_id, **options))
         finally:
             loop.close()
 
@@ -1626,15 +1644,15 @@ def list_groups_sync(**options) -> Dict[str, Any]:
             # This typically happens in Jupyter notebooks or when called from async context
             import nest_asyncio
             nest_asyncio.apply()
-            return loop.run_until_complete(list_groups(**options))
+            return loop.run_until_complete(list_groups.func(**options))
         else:
-            return loop.run_until_complete(list_groups(**options))
+            return loop.run_until_complete(list_groups.func(**options))
     except RuntimeError:
         # No event loop exists, create a new one
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
-            return loop.run_until_complete(list_groups(**options))
+            return loop.run_until_complete(list_groups.func(**options))
         finally:
             loop.close()
 
@@ -1659,15 +1677,15 @@ def list_tags_sync(**options) -> Dict[str, Any]:
             # This typically happens in Jupyter notebooks or when called from async context
             import nest_asyncio
             nest_asyncio.apply()
-            return loop.run_until_complete(list_tags(**options))
+            return loop.run_until_complete(list_tags.func(**options))
         else:
-            return loop.run_until_complete(list_tags(**options))
+            return loop.run_until_complete(list_tags.func(**options))
     except RuntimeError:
         # No event loop exists, create a new one
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
-            return loop.run_until_complete(list_tags(**options))
+            return loop.run_until_complete(list_tags.func(**options))
         finally:
             loop.close()
 
@@ -1698,15 +1716,15 @@ def fetch_resource_data_sync(
             # This typically happens in Jupyter notebooks or when called from async context
             import nest_asyncio
             nest_asyncio.apply()
-            return loop.run_until_complete(fetch_resource_data(resource_url, format_hint, max_size))
+            return loop.run_until_complete(fetch_resource_data.func(resource_url, format_hint, max_size))
         else:
-            return loop.run_until_complete(fetch_resource_data(resource_url, format_hint, max_size))
+            return loop.run_until_complete(fetch_resource_data.func(resource_url, format_hint, max_size))
     except RuntimeError:
         # No event loop exists, create a new one
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
-            return loop.run_until_complete(fetch_resource_data(resource_url, format_hint, max_size))
+            return loop.run_until_complete(fetch_resource_data.func(resource_url, format_hint, max_size))
         finally:
             loop.close()
 
@@ -1731,15 +1749,15 @@ def get_package_resources_sync(package_id: str) -> Dict[str, Any]:
             # This typically happens in Jupyter notebooks or when called from async context
             import nest_asyncio
             nest_asyncio.apply()
-            return loop.run_until_complete(get_package_resources(package_id))
+            return loop.run_until_complete(get_package_resources.func(package_id))
         else:
-            return loop.run_until_complete(get_package_resources(package_id))
+            return loop.run_until_complete(get_package_resources.func(package_id))
     except RuntimeError:
         # No event loop exists, create a new one
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
-            return loop.run_until_complete(get_package_resources(package_id))
+            return loop.run_until_complete(get_package_resources.func(package_id))
         finally:
             loop.close()
 
@@ -1764,15 +1782,170 @@ def validate_resource_url_sync(url: str) -> Dict[str, Any]:
             # This typically happens in Jupyter notebooks or when called from async context
             import nest_asyncio
             nest_asyncio.apply()
-            return loop.run_until_complete(validate_resource_url(url))
+            return loop.run_until_complete(validate_resource_url.func(url))
         else:
-            return loop.run_until_complete(validate_resource_url(url))
+            return loop.run_until_complete(validate_resource_url.func(url))
     except RuntimeError:
         # No event loop exists, create a new one
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         try:
-            return loop.run_until_complete(validate_resource_url(url))
+            return loop.run_until_complete(validate_resource_url.func(url))
         finally:
             loop.close()
+
+
+# ========================
+# LangChain Tool Wrappers
+# ========================
+
+@tool
+def search_packages_simple(query: str, rows: int = 10) -> Dict[str, Any]:
+    """
+    Search for datasets on Data.gov using simple parameters.
+    
+    Args:
+        query: Search terms to look for in dataset titles, descriptions, and content
+        rows: Number of results to return (max 1000)
+    
+    Returns:
+        Dictionary containing search results with 'success', 'result' keys
+    """
+    return search_packages_sync(query, rows)
+
+
+@tool  
+def search_packages_by_organization(query: str, organization: str, rows: int = 10) -> Dict[str, Any]:
+    """
+    Search for datasets from a specific organization on Data.gov.
+    
+    Args:
+        query: Search terms to look for
+        organization: Organization name to filter by (e.g., 'epa-gov', 'noaa-gov')
+        rows: Number of results to return
+        
+    Returns:
+        Dictionary containing filtered search results
+    """
+    return search_packages_sync(query, rows, fq=f"organization:{organization}")
+
+
+@tool
+def search_packages_by_format(query: str, format_type: str, rows: int = 10) -> Dict[str, Any]:
+    """
+    Search for datasets with specific file format on Data.gov.
+    
+    Args:
+        query: Search terms to look for
+        format_type: File format to filter by (e.g., 'CSV', 'JSON', 'XML')
+        rows: Number of results to return
+        
+    Returns:
+        Dictionary containing search results filtered by format
+    """
+    return search_packages_sync(query, rows, fq=f"res_format:{format_type.upper()}")
+
+
+@tool
+def get_recent_datasets(query: str = "*", days: int = 30, rows: int = 10) -> Dict[str, Any]:
+    """
+    Get recently created or modified datasets from Data.gov.
+    
+    Args:
+        query: Search terms (use "*" for all datasets)
+        days: Number of days back to search (default 30)
+        rows: Number of results to return
+        
+    Returns:
+        Dictionary containing recent datasets
+    """
+    from datetime import datetime, timedelta
+    
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=days)
+    
+    date_filter = f"metadata_modified:[{start_date.isoformat()}Z TO {end_date.isoformat()}Z]"
+    return search_packages_sync(query, rows, fq=date_filter, sort="metadata_modified desc")
+
+
+@tool
+def get_organization_datasets(organization_name: str, rows: int = 20) -> Dict[str, Any]:
+    """
+    Get all datasets from a specific organization.
+    
+    Args:
+        organization_name: Name of the organization (e.g., 'epa-gov', 'dot-gov')
+        rows: Number of results to return
+        
+    Returns:
+        Dictionary containing organization's datasets
+    """
+    return search_packages_sync("*", rows, fq=f"organization:{organization_name}")
+
+
+@tool
+def get_datasets_by_tag(tag: str, rows: int = 20) -> Dict[str, Any]:
+    """
+    Get datasets that have a specific tag.
+    
+    Args:
+        tag: Tag to search for (e.g., 'climate', 'transportation', 'health')
+        rows: Number of results to return
+        
+    Returns:
+        Dictionary containing tagged datasets
+    """
+    return search_packages_sync("*", rows, fq=f"tags:{tag}")
+
+
+@tool
+def validate_and_get_resource_info(resource_url: str) -> Dict[str, Any]:
+    """
+    Validate a resource URL and get basic information about it.
+    
+    Args:
+        resource_url: URL of the resource to validate
+        
+    Returns:
+        Dictionary with validation results and metadata
+    """
+    return validate_resource_url_sync(resource_url)
+
+
+@tool
+def download_small_dataset(resource_url: str, format_hint: str = None) -> Dict[str, Any]:
+    """
+    Download and parse a small dataset (max 10MB) from a resource URL.
+    
+    Args:
+        resource_url: Direct URL to the data resource
+        format_hint: Expected format ('csv', 'json', 'xml') to override detection
+        
+    Returns:
+        Dictionary with parsed data and metadata
+    """
+    # Limit to 10MB for tool usage
+    return fetch_resource_data_sync(resource_url, format_hint, max_size=10*1024*1024)
+
+
+# Collection of all Data.gov tools for easy import
+DATA_GOV_TOOLS = [
+    search_packages_simple,
+    search_packages_by_organization, 
+    search_packages_by_format,
+    get_recent_datasets,
+    get_organization_datasets,
+    get_datasets_by_tag,
+    get_package_details,
+    get_package_resources,
+    list_groups,
+    list_tags, 
+    validate_and_get_resource_info,
+    download_small_dataset,
+    build_search_query,
+    get_catalog_info
+]
+
+
+
 
