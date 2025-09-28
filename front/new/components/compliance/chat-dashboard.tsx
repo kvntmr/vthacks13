@@ -82,7 +82,7 @@ type NavItem = {
 type RealEstateFile = {
   id: string;
   name: string;
-  type: "pdf" | "xlsx" | "doc";
+  type: "pdf" | "xlsx" | "doc" | "csv";
   size: string;
   status: "indexed" | "indexing" | "queued";
   progress?: number;
@@ -220,8 +220,7 @@ const FILE_LIBRARY_ROOT: RealEstateFolder = {
       name: "Lease Comps Summary.xlsx",
       type: "xlsx",
       size: "1.2 MB",
-      status: "indexing",
-      progress: 88,
+      status: "indexed",
       updatedAt: "2024-09-28T10:15:00Z",
     },
     {
@@ -231,6 +230,22 @@ const FILE_LIBRARY_ROOT: RealEstateFolder = {
       size: "864 KB",
       status: "queued",
       updatedAt: "2024-09-28T09:45:00Z",
+    },
+    {
+      id: "file-financial-data",
+      name: "Financial Data Q3.csv",
+      type: "csv",
+      size: "245 KB",
+      status: "indexed",
+      updatedAt: "2024-09-28T14:20:00Z",
+    },
+    {
+      id: "file-tenant-list",
+      name: "Tenant List.csv",
+      type: "csv",
+      size: "156 KB",
+      status: "indexed",
+      updatedAt: "2024-09-28T11:30:00Z",
     },
   ],
   children: [
@@ -1018,6 +1033,11 @@ export function ChatDashboard() {
     isMinimized: false,
     isVisible: false,
   });
+  const [fileToLoad, setFileToLoad] = useState<{
+    id: string;
+    name: string;
+    type: string;
+  } | undefined>(undefined);
 
   // Update folder index when data changes
   useEffect(() => {
@@ -1302,6 +1322,15 @@ export function ChatDashboard() {
     handleOpenFolder(folderId);
   };
 
+  const handleOpenInSpreadsheet = (file: RealEstateFile) => {
+    setFileToLoad({
+      id: file.id,
+      name: file.name,
+      type: file.type,
+    });
+    setActiveNavId("sheets");
+  };
+
   const renderContent = () => {
     switch (activeNavId) {
       case "file-library":
@@ -1321,6 +1350,7 @@ export function ChatDashboard() {
             onSearchChange={setSearchQuery}
             onUpdateFileLibraryData={setFileLibraryData}
             onViewModeChange={setViewMode}
+            onOpenInSpreadsheet={handleOpenInSpreadsheet}
             searchQuery={searchQuery}
             viewMode={viewMode}
           />
@@ -1357,7 +1387,7 @@ export function ChatDashboard() {
         return <ReportSettingsView preferences={REPORT_SETTINGS} />;
       case "sheets":
         return (
-          <SpreadsheetEditor />
+          <SpreadsheetEditor fileToLoad={fileToLoad} />
         );
       case "memo-deal-horizon":
         return (
@@ -1548,6 +1578,7 @@ type FileLibraryViewProps = {
   onSearchChange: (value: string) => void;
   onViewModeChange: (mode: "grid" | "list") => void;
   onUpdateFileLibraryData: (updater: (prev: RealEstateFolder) => RealEstateFolder) => void;
+  onOpenInSpreadsheet: (file: RealEstateFile) => void;
   searchQuery: string;
   viewMode: "grid" | "list";
 };
@@ -1567,6 +1598,7 @@ function FileLibraryView({
   onSearchChange,
   onUpdateFileLibraryData,
   onViewModeChange,
+  onOpenInSpreadsheet,
   searchQuery,
   viewMode,
 }: FileLibraryViewProps) {
@@ -1808,7 +1840,7 @@ function FileLibraryView({
                   />
                 ))}
                 {files.map((file) => (
-                  <FileCard file={file} key={file.id} />
+                  <FileCard file={file} key={file.id} onOpenInSpreadsheet={onOpenInSpreadsheet} />
                 ))}
               </div>
             ) : (
@@ -1822,7 +1854,7 @@ function FileLibraryView({
                   />
                 ))}
                 {files.map((file) => (
-                  <FileRow file={file} key={file.id} />
+                  <FileRow file={file} key={file.id} onOpenInSpreadsheet={onOpenInSpreadsheet} />
                 ))}
               </div>
             )
@@ -3460,9 +3492,18 @@ function SidebarSummary() {
 
 type FileCardProps = {
   file: RealEstateFile;
+  onOpenInSpreadsheet?: (file: RealEstateFile) => void;
 };
 
-function FileCard({ file }: FileCardProps) {
+function FileCard({ file, onOpenInSpreadsheet }: FileCardProps) {
+  const handleOpenInSpreadsheet = () => {
+    if (onOpenInSpreadsheet) {
+      onOpenInSpreadsheet(file);
+    }
+  };
+
+  const canOpenInSpreadsheet = file.type === 'csv' || file.type === 'xlsx';
+
   return (
     <div className="flex flex-col gap-3 rounded-3xl border border-border/60 bg-background/95 p-5 shadow-sm">
       <div className="flex items-start justify-between gap-3">
@@ -3506,6 +3547,16 @@ function FileCard({ file }: FileCardProps) {
             Ready for analysis
           </Badge>
         )}
+        {canOpenInSpreadsheet && file.status === "indexed" && (
+          <Button
+            onClick={handleOpenInSpreadsheet}
+            size="sm"
+            variant="outline"
+            className="w-full mt-2"
+          >
+            Open in Spreadsheet
+          </Button>
+        )}
       </div>
     </div>
   );
@@ -3513,9 +3564,18 @@ function FileCard({ file }: FileCardProps) {
 
 type FileRowProps = {
   file: RealEstateFile;
+  onOpenInSpreadsheet?: (file: RealEstateFile) => void;
 };
 
-function FileRow({ file }: FileRowProps) {
+function FileRow({ file, onOpenInSpreadsheet }: FileRowProps) {
+  const handleOpenInSpreadsheet = () => {
+    if (onOpenInSpreadsheet) {
+      onOpenInSpreadsheet(file);
+    }
+  };
+
+  const canOpenInSpreadsheet = file.type === 'csv' || file.type === 'xlsx';
+
   return (
     <div className="flex items-center justify-between rounded-2xl border border-border/60 bg-background/95 px-4 py-4 shadow-sm">
       <div className="flex items-center gap-3">
@@ -3544,6 +3604,15 @@ function FileRow({ file }: FileRowProps) {
             Ready
           </Badge>
         )}
+        {canOpenInSpreadsheet && file.status === "indexed" && (
+          <Button
+            onClick={handleOpenInSpreadsheet}
+            size="sm"
+            variant="outline"
+          >
+            Open in Spreadsheet
+          </Button>
+        )}
         <Button className="text-muted-foreground" size="icon" variant="ghost">
           ...
         </Button>
@@ -3553,7 +3622,7 @@ function FileRow({ file }: FileRowProps) {
 }
 
 function FileTypeBadge({ type }: { type: RealEstateFile["type"] }) {
-  const label = type === "pdf" ? "PDF" : type === "xlsx" ? "XLSX" : "DOC";
+  const label = type === "pdf" ? "PDF" : type === "xlsx" ? "XLSX" : type === "csv" ? "CSV" : "DOC";
   return (
     <Badge className="text-[11px] uppercase tracking-wide" variant="outline">
       {label}

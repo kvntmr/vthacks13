@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import Spreadsheet from "react-spreadsheet";
 import { useTheme } from "next-themes";
 import { Button } from "./ui/button";
@@ -204,11 +204,26 @@ const generateInitialData = () => {
   return data;
 };
 
-export default function SpreadsheetEditor() {
+interface SpreadsheetEditorProps {
+  fileToLoad?: {
+    id: string;
+    name: string;
+    type: string;
+  };
+}
+
+export default function SpreadsheetEditor({ fileToLoad }: SpreadsheetEditorProps = {}) {
   const [data, setData] = useState(generateInitialData);
   const [selectedCells, setSelectedCells] = useState<any>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { resolvedTheme } = useTheme();
+
+  // Load file data when fileToLoad prop changes
+  useEffect(() => {
+    if (fileToLoad) {
+      loadFileFromAPI(fileToLoad.id, fileToLoad.name);
+    }
+  }, [fileToLoad]);
   // Handle data changes - allow dynamic expansion
   const handleDataChange = useCallback((newData: any) => {
     // Ensure minimum grid size for usability
@@ -242,6 +257,23 @@ export default function SpreadsheetEditor() {
     const file = event.target.files?.[0];
     if (!file) return;
 
+    const fileExtension = file.name.split('.').pop()?.toLowerCase();
+    
+    if (fileExtension === 'csv') {
+      handleCSVFile(file);
+    } else if (fileExtension === 'xlsx' || fileExtension === 'xls') {
+      handleExcelFile(file);
+    } else {
+      alert('Unsupported file type. Please select a CSV or Excel file.');
+    }
+    
+    // Reset the file input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  }, []);
+
+  const handleCSVFile = useCallback((file: File) => {
     const reader = new FileReader();
     reader.onload = (e) => {
       const text = e.target?.result as string;
@@ -262,27 +294,7 @@ export default function SpreadsheetEditor() {
           return;
         }
 
-        // Find the maximum number of columns in the CSV data
-        const maxCols = Math.max(...csvData.map(row => row.length));
-        const numRows = Math.max(csvData.length, 50);
-        const numCols = Math.max(maxCols, 20); // Minimum 20 columns
-
-        // Create a dynamic grid based on CSV data size
-        const newData = [];
-        for (let i = 0; i < numRows; i++) {
-          const row = [];
-          for (let j = 0; j < numCols; j++) {
-            if (i < csvData.length && j < csvData[i].length) {
-              row.push(csvData[i][j]);
-            } else {
-              row.push({ value: "" });
-            }
-          }
-          newData.push(row);
-        }
-
-        setData(newData);
-        alert(`CSV imported successfully! Loaded ${csvData.length} rows and ${maxCols} columns.`);
+        loadDataIntoSpreadsheet(csvData, file.name);
       } catch (error) {
         console.error('Error parsing CSV:', error);
         alert('Error parsing CSV file. Please check the format.');
@@ -290,12 +302,75 @@ export default function SpreadsheetEditor() {
     };
 
     reader.readAsText(file);
-    
-    // Reset the file input
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
-    }
   }, []);
+
+  const handleExcelFile = useCallback((file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const data = e.target?.result;
+      if (!data) return;
+
+      try {
+        // For now, we'll show a message that Excel parsing is not fully implemented
+        // In a real implementation, you would use a library like xlsx or exceljs
+        alert('Excel file parsing is not fully implemented yet. Please convert to CSV format.');
+      } catch (error) {
+        console.error('Error parsing Excel file:', error);
+        alert('Error parsing Excel file. Please check the format.');
+      }
+    };
+
+    reader.readAsArrayBuffer(file);
+  }, []);
+
+  const loadDataIntoSpreadsheet = useCallback((fileData: any[][], fileName: string) => {
+    // Find the maximum number of columns in the data
+    const maxCols = Math.max(...fileData.map(row => row.length));
+    const numRows = Math.max(fileData.length, 50);
+    const numCols = Math.max(maxCols, 20); // Minimum 20 columns
+
+    // Create a dynamic grid based on data size
+    const newData = [];
+    for (let i = 0; i < numRows; i++) {
+      const row = [];
+      for (let j = 0; j < numCols; j++) {
+        if (i < fileData.length && j < fileData[i].length) {
+          row.push(fileData[i][j]);
+        } else {
+          row.push({ value: "" });
+        }
+      }
+      newData.push(row);
+    }
+
+    setData(newData);
+    alert(`${fileName} imported successfully! Loaded ${fileData.length} rows and ${maxCols} columns.`);
+  }, []);
+
+  const loadFileFromAPI = useCallback(async (fileId: string, fileName: string) => {
+    try {
+      const response = await fetch(`/api/files/${fileId}`);
+      if (!response.ok) {
+        throw new Error('Failed to fetch file data');
+      }
+      
+      const fileData = await response.json();
+      
+      if (fileData.data && Array.isArray(fileData.data)) {
+        // Convert the data to the format expected by the spreadsheet
+        const spreadsheetData = fileData.data.map((row: string[]) => 
+          row.map((cell: string) => ({ value: cell }))
+        );
+        
+        loadDataIntoSpreadsheet(spreadsheetData, fileName);
+      } else {
+        alert('No data found in file');
+      }
+    } catch (error) {
+      console.error('Error loading file from API:', error);
+      alert('Error loading file. Please try again.');
+    }
+  }, [loadDataIntoSpreadsheet]);
 
   // Text formatting functions
   const handleBold = useCallback(() => {
@@ -360,7 +435,7 @@ export default function SpreadsheetEditor() {
           <div className="flex items-center gap-1">
             <Button variant="outline" size="sm" onClick={handleImportCSV} className="flex items-center gap-2">
               <Upload className="h-4 w-4" />
-              Import CSV
+              Import File
             </Button>
             <Button variant="outline" size="sm" onClick={handleExportCSV} className="flex items-center gap-2">
               <Download className="h-4 w-4" />
@@ -404,11 +479,11 @@ export default function SpreadsheetEditor() {
         </div>
       </div>
       
-      {/* Hidden file input for CSV import */}
+      {/* Hidden file input for CSV and Excel import */}
       <input
         ref={fileInputRef}
         type="file"
-        accept=".csv"
+        accept=".csv,.xlsx,.xls"
         onChange={handleFileChange}
         style={{ display: 'none' }}
       />
