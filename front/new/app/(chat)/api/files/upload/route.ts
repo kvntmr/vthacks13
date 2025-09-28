@@ -46,6 +46,20 @@ const FileSchema = z.object({
 
 const FILE_UPLOAD_DIR =
   process.env.FILE_UPLOAD_DIR ?? path.join(process.cwd(), "uploads");
+const FILE_SERVICE_BASE_URL =
+  process.env.FILE_SERVICE_BASE_URL ??
+  process.env.NEXT_PUBLIC_FILE_SERVICE_BASE_URL ??
+  process.env.BACKEND_API_URL ??
+  process.env.NEXT_PUBLIC_BACKEND_API_URL ??
+  "";
+const FILE_SERVICE_AUTH_VALUE =
+  process.env.FILE_SERVICE_AUTH_VALUE ??
+  process.env.FILE_SERVICE_API_KEY ??
+  process.env.FILE_SERVICE_AUTH_TOKEN ??
+  "";
+const FILE_SERVICE_AUTH_HEADER =
+  process.env.FILE_SERVICE_AUTH_HEADER ??
+  (FILE_SERVICE_AUTH_VALUE ? "Authorization" : "");
 
 async function ensureUploadDirExists() {
   await fs.mkdir(FILE_UPLOAD_DIR, { recursive: true });
@@ -97,6 +111,25 @@ export async function POST(request: Request) {
 
     try {
       await fs.writeFile(filePath, fileBuffer);
+
+      const processingResult = await maybeProcessFile({
+        filePath: path.resolve(filePath),
+        buffer: fileBuffer,
+        filename: originalFile.name,
+        mimeType: originalFile.type || "application/octet-stream",
+      });
+      let processedJsonPath: string | undefined;
+
+      if (processingResult) {
+        const jsonFilename = `${storedFilename}.json`;
+        processedJsonPath = path.join(FILE_UPLOAD_DIR, jsonFilename);
+        await fs.writeFile(
+          processedJsonPath,
+          JSON.stringify(processingResult, null, 2),
+          "utf-8"
+        );
+      }
+
       return NextResponse.json({
         success: true,
         file: {
@@ -105,6 +138,7 @@ export async function POST(request: Request) {
           mimeType: originalFile.type,
           size: originalFile.size,
           path: filePath,
+          processedJsonPath,
         },
       });
     } catch (_error) {
@@ -133,4 +167,58 @@ function isAllowedFileType(file: File) {
   }
 
   return ALLOWED_EXTENSIONS.has(extension);
+}
+
+async function maybeProcessFile({
+  filePath,
+  buffer,
+  filename,
+  mimeType,
+}: {
+  filePath: string;
+  buffer: Buffer;
+  filename: string;
+  mimeType: string;
+}): Promise<any | undefined> {
+  if (!FILE_SERVICE_BASE_URL) {
+    return undefined;
+  }
+
+  try {
+    const endpoint = new URL("/api/v1/files/process-upload", FILE_SERVICE_BASE_URL);
+    const headers: Record<string, string> = {
+      Accept: "application/json",
+    };
+
+    if (FILE_SERVICE_AUTH_HEADER && FILE_SERVICE_AUTH_VALUE) {
+      headers[FILE_SERVICE_AUTH_HEADER] = FILE_SERVICE_AUTH_VALUE;
+    }
+
+    const formData = new FormData();
+    formData.append("extract_property_data", "true");
+    formData.append(
+      "file",
+      new Blob([buffer], { type: mimeType || "application/octet-stream" }),
+      filename || path.basename(filePath)
+    );
+
+    const response = await fetch(endpoint.toString(), {
+      method: "POST",
+      headers,
+      body: formData,
+    });
+
+    if (!response.ok) {
+      console.warn(
+        `File processing service returned ${response.status}: ${await response.text()}`
+      );
+      return undefined;
+    }
+
+    const payload = await response.json();
+    return payload;
+  } catch (error) {
+    console.warn("Failed to process file via backend:", error);
+    return undefined;
+  }
 }

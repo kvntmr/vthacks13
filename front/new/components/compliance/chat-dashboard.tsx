@@ -123,6 +123,8 @@ type UploadItem = {
   file: File;
   progress: number;
   status: UploadStatus;
+  targetFolderId: string;
+  addToLibrary: boolean;
   error?: string;
 };
 
@@ -1033,6 +1035,7 @@ export function ChatDashboard() {
     isMinimized: false,
     isVisible: false,
   });
+  const uploadControllersRef = useRef<Record<string, AbortController>>({});
   const [fileToLoad, setFileToLoad] = useState<{
     id: string;
     name: string;
@@ -1091,12 +1094,97 @@ export function ChatDashboard() {
   };
 
   // Upload Manager Functions
-  const startUploads = (files: File[]) => {
-    const newUploads: UploadItem[] = files.map(file => ({
-      id: `upload-${Date.now()}-${Math.random()}`,
+  const scheduleUploadManagerCleanup = () => {
+    setTimeout(() => {
+      setUploadManager(prev => {
+        const hasActiveUploads = prev.uploads.some(u => u.status === 'uploading');
+        if (!hasActiveUploads) {
+          return { ...prev, isVisible: false };
+        }
+        return prev;
+      });
+    }, 3000);
+  };
+
+  const appendFileToFolder = (
+    folder: RealEstateFolder,
+    targetId: string,
+    newFile: RealEstateFile
+  ): RealEstateFolder => {
+    if (folder.id === targetId) {
+      const existingIndex = folder.files.findIndex(file => file.id === newFile.id);
+      const updatedFiles = existingIndex >= 0
+        ? folder.files.map(file => (file.id === newFile.id ? newFile : file))
+        : [...folder.files, newFile];
+
+      return {
+        ...folder,
+        files: updatedFiles,
+      };
+    }
+
+    if (!folder.children) {
+      return folder;
+    }
+
+    return {
+      ...folder,
+      children: folder.children.map(child => appendFileToFolder(child, targetId, newFile)),
+    };
+  };
+
+  const inferFileTypeFromName = (fileName: string): RealEstateFile["type"] => {
+    const extension = fileName.split('.').pop()?.toLowerCase() ?? '';
+    if (extension === 'pdf') return 'pdf';
+    if (extension === 'csv') return 'csv';
+    if (extension === 'xlsx' || extension === 'xls') return 'xlsx';
+    return 'doc';
+  };
+
+  const formatFileSizeFromBytes = (bytes: number): string => {
+    if (bytes < 1024) {
+      return `${bytes} B`;
+    }
+    if (bytes < 1024 * 1024) {
+      return `${(bytes / 1024).toFixed(1)} KB`;
+    }
+    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+  };
+
+  const buildRealEstateFileFromUpload = (
+    uploadedFile: { originalName: string; storedName: string; size?: number; processedJsonPath?: string },
+    sourceFile: File
+  ): RealEstateFile => {
+    const displayName = uploadedFile.originalName ?? sourceFile.name;
+    const bytes = typeof uploadedFile.size === 'number' ? uploadedFile.size : sourceFile.size;
+    const status: RealEstateFile["status"] = uploadedFile.processedJsonPath ? 'indexed' : 'queued';
+    const fileId = uploadedFile.storedName
+      ? `file-${uploadedFile.storedName}`
+      : `file-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+
+    return {
+      id: fileId,
+      name: displayName,
+      type: inferFileTypeFromName(displayName),
+      size: formatFileSizeFromBytes(bytes),
+      status,
+      updatedAt: new Date().toISOString(),
+    };
+  };
+
+  const startUploads = (files: File[], options?: { addToLibrary?: boolean }) => {
+    if (files.length === 0) return;
+
+    const addToLibrary = options?.addToLibrary ?? true;
+    const timestamp = Date.now();
+
+    const newUploads: UploadItem[] = files.map((file, index) => ({
+      id: `upload-${timestamp}-${index}-${Math.random().toString(36).slice(2, 9)}`,
       file,
       progress: 0,
       status: 'uploading' as const,
+      targetFolderId: activeFolderId,
+      addToLibrary,
     }));
 
     setUploadManager(prev => ({
@@ -1106,143 +1194,175 @@ export function ChatDashboard() {
       isMinimized: false,
     }));
 
-    // Start mock upload for each file
     newUploads.forEach(upload => {
-      simulateUpload(upload.id);
+      const controller = new AbortController();
+      uploadControllersRef.current[upload.id] = controller;
+      uploadFileToServer(upload, controller);
     });
   };
 
-  const simulateUpload = (uploadId: string) => {
-    const targetFolderId = activeFolderId;
-    // Simulate random upload time between 1-5 seconds
-    const totalTime = Math.random() * 4000 + 1000;
-    const steps = 20;
-    const stepTime = totalTime / steps;
-    let currentStep = 0;
+  async function uploadFileToServer(upload: UploadItem, controller: AbortController) {
+    setUploadManager(prev => ({
+      ...prev,
+      uploads: prev.uploads.map(u =>
+        u.id === upload.id
+          ? { ...u, progress: 10, error: undefined }
+          : u
+      ),
+    }));
 
-    const interval = setInterval(() => {
-      currentStep++;
-      const progress = Math.min((currentStep / steps) * 100, 95); // Cap at 95% until complete
+    const formData = new FormData();
+    formData.append('file', upload.file);
+
+    try {
+      const response = await fetch('/api/files/upload', {
+        method: 'POST',
+        body: formData,
+        signal: controller.signal,
+      });
+
+      if (!response.ok) {
+        const errorMessage = await extractErrorMessage(response);
+        setUploadManager(prev => ({
+          ...prev,
+          uploads: prev.uploads.map(u =>
+            u.id === upload.id
+              ? { ...u, progress: 0, status: 'error', error: errorMessage }
+              : u
+          ),
+        }));
+        return;
+      }
+
+      const data = await response.json();
+
+      if (!data?.success) {
+        const failureMessage = data?.error ? String(data.error) : 'Upload failed';
+        setUploadManager(prev => ({
+          ...prev,
+          uploads: prev.uploads.map(u =>
+            u.id === upload.id
+              ? { ...u, progress: 0, status: 'error', error: failureMessage }
+              : u
+          ),
+        }));
+        return;
+      }
 
       setUploadManager(prev => ({
         ...prev,
         uploads: prev.uploads.map(u =>
-          u.id === uploadId ? { ...u, progress } : u
+          u.id === upload.id
+            ? { ...u, progress: 100, status: 'completed', error: undefined }
+            : u
         ),
       }));
 
-      if (currentStep >= steps) {
-        clearInterval(interval);
-
-        // Randomly simulate error (10% chance)
-        const hasError = Math.random() < 0.1;
-
-        setTimeout(() => {
-          let completedFile: File | null = null;
-
-          setUploadManager(prev => {
-            const uploadEntry = prev.uploads.find(u => u.id === uploadId);
-            if (!hasError && uploadEntry && uploadEntry.status === 'uploading') {
-              completedFile = uploadEntry.file;
-            }
-
-            return {
-              ...prev,
-              uploads: prev.uploads.map(u =>
-                u.id === uploadId
-                  ? {
-                      ...u,
-                      progress: hasError ? u.progress : 100,
-                      status: hasError ? 'error' : 'completed',
-                      error: hasError ? 'Upload failed. Please try again.' : undefined,
-                    }
-                  : u
-              ),
-            };
-          });
-
-          if (!hasError && completedFile) {
-            const fileType = completedFile.name.toLowerCase().endsWith('.pdf')
-              ? 'pdf'
-              : completedFile.name.toLowerCase().endsWith('.xlsx') || completedFile.name.toLowerCase().endsWith('.xls')
-              ? 'xlsx'
-              : 'doc';
-
-            const fileSize = completedFile.size < 1024 * 1024 
-              ? `${(completedFile.size / 1024).toFixed(1)} KB`
-              : `${(completedFile.size / (1024 * 1024)).toFixed(1)} MB`;
-
-            const newFile: RealEstateFile = {
-              id: `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-              name: completedFile.name,
-              type: fileType as "pdf" | "xlsx" | "doc",
-              size: fileSize,
-              status: "queued",
-              updatedAt: new Date().toISOString(),
-            };
-
-            setFileLibraryData(prevData => {
-              const updateFolder = (folder: RealEstateFolder): RealEstateFolder => {
-                if (folder.id === targetFolderId) {
-                  return {
-                    ...folder,
-                    files: [...folder.files, newFile],
-                  };
-                }
-                if (folder.children) {
-                  return {
-                    ...folder,
-                    children: folder.children.map(updateFolder),
-                  };
-                }
-                return folder;
-              };
-
-              return updateFolder(prevData);
-            });
-          }
-
-          // Auto-dismiss after 3 seconds if all uploads are complete
-          setTimeout(() => {
-            setUploadManager(prev => {
-              const activeUploads = prev.uploads.filter(u => u.status === 'uploading');
-              if (activeUploads.length === 0) {
-                return { ...prev, isVisible: false };
-              }
-              return prev;
-            });
-          }, 3000);
-        }, 200);
+      if (upload.addToLibrary && data?.file) {
+        const newFile = buildRealEstateFileFromUpload(data.file, upload.file);
+        setFileLibraryData(prevData => appendFileToFolder(prevData, upload.targetFolderId, newFile));
       }
-    }, stepTime);
-  };
+    } catch (error) {
+      const isAbort = error instanceof DOMException && error.name === 'AbortError';
+
+      setUploadManager(prev => ({
+        ...prev,
+        uploads: prev.uploads.map(u =>
+          u.id === upload.id
+            ? {
+                ...u,
+                progress: 0,
+                status: isAbort ? 'cancelled' : 'error',
+                error: isAbort ? undefined : (error instanceof Error ? error.message : 'Upload failed'),
+              }
+            : u
+        ),
+      }));
+
+      if (!isAbort) {
+        console.error('Upload failed:', error);
+      }
+    } finally {
+      delete uploadControllersRef.current[upload.id];
+      scheduleUploadManagerCleanup();
+    }
+  }
+
+  async function extractErrorMessage(response: Response): Promise<string> {
+    try {
+      const parsed = await response.clone().json();
+      if (parsed && typeof parsed === 'object' && 'error' in parsed) {
+        const message = (parsed as Record<string, unknown>).error;
+        if (typeof message === 'string') return message;
+        return JSON.stringify(message);
+      }
+    } catch (_error) {
+      // fall through to text parsing below
+    }
+
+    try {
+      const text = await response.text();
+      if (text) return text;
+    } catch (_error) {
+      // ignore
+    }
+
+    return response.statusText || 'Upload failed';
+  }
 
   const cancelUpload = (uploadId: string) => {
+    const controller = uploadControllersRef.current[uploadId];
+    if (controller) {
+      controller.abort();
+    }
+
     setUploadManager(prev => ({
       ...prev,
       uploads: prev.uploads.map(u =>
-        u.id === uploadId ? { ...u, status: 'cancelled' } : u
+        u.id === uploadId ? { ...u, status: 'cancelled', progress: 0, error: undefined } : u
       ),
     }));
+
+    scheduleUploadManagerCleanup();
   };
 
   const retryUpload = (uploadId: string) => {
+    const uploadToRetry = uploadManager.uploads.find(u => u.id === uploadId);
+    if (!uploadToRetry) return;
+
+    const controller = new AbortController();
+    uploadControllersRef.current[uploadId] = controller;
+
+    const refreshedUpload: UploadItem = {
+      ...uploadToRetry,
+      progress: 0,
+      status: 'uploading',
+      error: undefined,
+    };
+
     setUploadManager(prev => ({
       ...prev,
       uploads: prev.uploads.map(u =>
-        u.id === uploadId
-          ? { ...u, progress: 0, status: 'uploading', error: undefined }
-          : u
+        u.id === uploadId ? refreshedUpload : u
       ),
     }));
-    simulateUpload(uploadId);
+
+    uploadFileToServer(refreshedUpload, controller);
   };
 
   const removeUpload = (uploadId: string) => {
+    const controller = uploadControllersRef.current[uploadId];
+    if (controller) {
+      controller.abort();
+      delete uploadControllersRef.current[uploadId];
+    }
+
     setUploadManager(prev => ({
       ...prev,
       uploads: prev.uploads.filter(u => u.id !== uploadId),
     }));
+
+    scheduleUploadManagerCleanup();
   };
 
   const toggleMinimize = () => {
@@ -1579,7 +1699,7 @@ type FileLibraryViewProps = {
   folders: RealEstateFolder[];
   isSearching: boolean;
   onBreadcrumbSelect: (id: string) => void;
-  onFileUpload: (files: File[]) => void;
+  onFileUpload: (files: File[], options?: { addToLibrary?: boolean }) => void;
   onFolderOpen: (id: string) => void;
   onSearchChange: (value: string) => void;
   onViewModeChange: (mode: "grid" | "list") => void;
@@ -1616,7 +1736,7 @@ function FileLibraryView({
     if (files.length === 0) return;
 
     // Start uploads using the upload manager
-    onFileUpload(files);
+    onFileUpload(files, { addToLibrary: true });
 
     // Clear the input
     event.target.value = '';
@@ -1627,7 +1747,7 @@ function FileLibraryView({
     if (files.length === 0) return;
 
     // Start uploads using the upload manager for visual feedback
-    onFileUpload(files);
+    onFileUpload(files, { addToLibrary: false });
 
     // Also create the folder structure immediately
     const firstFile = files[0] as any;
@@ -1682,8 +1802,10 @@ function FileLibraryView({
         }
         
         // Add file to the appropriate folder
-        const fileType = file.name.toLowerCase().endsWith('.pdf') ? 'pdf' :
-                        file.name.toLowerCase().endsWith('.xlsx') || file.name.toLowerCase().endsWith('.xls') ? 'xlsx' :
+        const normalizedName = file.name.toLowerCase();
+        const fileType = normalizedName.endsWith('.pdf') ? 'pdf' :
+                        normalizedName.endsWith('.csv') ? 'csv' :
+                        normalizedName.endsWith('.xlsx') || normalizedName.endsWith('.xls') ? 'xlsx' :
                         'doc';
         
         const fileSize = file.size < 1024 * 1024 
