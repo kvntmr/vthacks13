@@ -1,0 +1,118 @@
+{
+  "success": true,
+  "status": "completed",
+  "error_message": null,
+  "file_info": {
+    "filename": "airtravel (1).csv",
+    "file_type": "csv",
+    "file_size": 321,
+    "supported": true
+  },
+  "parsed_content": {
+    "file_path": "airtravel (1).csv",
+    "file_name": "airtravel (1).csv",
+    "file_type": "csv",
+    "data": [
+      [
+        "JAN",
+        "340",
+        "360",
+        "417"
+      ],
+      [
+        "FEB",
+        "318",
+        "342",
+        "391"
+      ],
+      [
+        "MAR",
+        "362",
+        "406",
+        "419"
+      ],
+      [
+        "APR",
+        "348",
+        "396",
+        "461"
+      ],
+      [
+        "MAY",
+        "363",
+        "420",
+        "472"
+      ],
+      [
+        "JUN",
+        "435",
+        "472",
+        "535"
+      ],
+      [
+        "JUL",
+        "491",
+        "548",
+        "622"
+      ],
+      [
+        "AUG",
+        "505",
+        "559",
+        "606"
+      ],
+      [
+        "SEP",
+        "404",
+        "463",
+        "508"
+      ],
+      [
+        "OCT",
+        "359",
+        "407",
+        "461"
+      ],
+      [
+        "NOV",
+        "310",
+        "362",
+        "390"
+      ],
+      [
+        "DEC",
+        "337",
+        "405",
+        "432"
+      ]
+    ],
+    "headers": [
+      "Month",
+      " \"1958\"",
+      " \"1959\"",
+      " \"1960\""
+    ],
+    "extracted_text": "=== CSV FILE: airtravel (1).csv ===\nDimensions: 12 rows × 4 columns\n\nMonth |  \"1958\" |  \"1959\" |  \"1960\"\n-----------------------------------\nJAN | 340 | 360 | 417\nFEB | 318 | 342 | 391\nMAR | 362 | 406 | 419\nAPR | 348 | 396 | 461\nMAY | 363 | 420 | 472\nJUN | 435 | 472 | 535\nJUL | 491 | 548 | 622\nAUG | 505 | 559 | 606\nSEP | 404 | 463 | 508\nOCT | 359 | 407 | 461\nNOV | 310 | 362 | 390\nDEC | 337 | 405 | 432",
+    "metadata": {
+      "file_size_bytes": 321
+    },
+    "processing_summary": {
+      "total_rows": 12,
+      "total_columns": 4,
+      "total_text_length": 404
+    }
+  },
+  "extracted_property_data": {
+    "indexation_carry_forward": false,
+    "special_features": []
+  },
+  "memory_storage": {
+    "document_id": "3894b31d-c69b-4d05-96be-e530821e175b",
+    "stored_successfully": true
+  },
+  "processing_info": {
+    "start_time": "2025-09-28T03:37:13.384792",
+    "end_time": "2025-09-28T03:37:25.426910",
+    "duration_seconds": 12.042118
+  }
+}
