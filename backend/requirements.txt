@@ -20,6 +20,7 @@ pytesseract==0.3.10
 opencv-python==4.8.1.78
 numpy==1.24.3
 aiofiles==23.2.1
+<<<<<<< HEAD
 
 # LangChain and LangGraph
 langchain==0.3.27
@@ -36,3 +37,27 @@ odfpy==1.4.1
 openpyxl==3.1.2
 pandas==2.1.4
 chardet==5.2.0
+
+# Data.gov API Integration Module Dependencies
+
+# Core HTTP client for async requests
+httpx>=0.25.0
+
+# Data manipulation and analysis
+pandas>=2.0.0
+
+# Data validation and serialization
+pydantic>=2.0.0
+
+# Excel file support for pandas
+openpyxl>=3.1.0
+
+# Event loop support for Jupyter notebooks (optional)
+nest-asyncio>=1.5.0
+
+# Type checking (development)
+mypy>=1.5.0
+
+# Testing (optional)
+pytest>=7.0.0
+pytest-asyncio>=0.21.0
