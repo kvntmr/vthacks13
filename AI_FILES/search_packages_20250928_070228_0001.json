@@ -1,0 +1,2974 @@
+{
+  "success": true,
+  "result": {
+    "count": 2592,
+    "facets": {},
+    "results": [
+      {
+        "author": null,
+        "author_email": null,
+        "creator_user_id": "2b785922-9f13-491b-a3c2-2a40acbd80c2",
+        "id": "a1cbf6e9-6a08-4288-8b6b-a3c5666b7c2d",
+        "isopen": false,
+        "license_id": "notspecified",
+        "license_title": "License not specified",
+        "maintainer": "NYC OpenData",
+        "maintainer_email": "no-reply@data.cityofnewyork.us",
+        "metadata_created": "2020-11-10T17:03:16.430697",
+        "metadata_modified": "2025-09-27T21:12:51.960663",
+        "name": "motor-vehicle-collisions-crashes",
+        "notes": "The Motor Vehicle Collisions crash table contains details on the crash event. Each row represents a crash event. The Motor Vehicle Collisions data tables contain information from all police reported motor vehicle collisions in NYC. The police report (MV104-AN) is required to be filled out for collisions where someone is injured or killed, or where there is at least $1000 worth of damage (https://www.nhtsa.gov/sites/nhtsa.dot.gov/files/documents/ny_overlay_mv-104an_rev05_2004.pdf).  It should be noted that the data is preliminary and subject to change when the MV-104AN forms are amended based on revised crash details.For the most accurate, up to date statistics on traffic fatalities, please refer to the <a href=\"https://www1.nyc.gov/site/nypd/stats/traffic-data/traffic-data-collision.page\" style=\"color:#187bcd;\">NYPD Motor Vehicle Collisions page</a> (updated weekly) or <a href=\"http://www.nycvzv.info/\" style=\"color:#187bcd;\">Vision Zero View</a> (updated monthly).\r\n\r\n</p>\r\nDue to success of the CompStat program, NYPD began to ask how to apply the CompStat principles  to other problems.  Other than homicides, the fatal incidents with which police have the most contact with the public are fatal traffic collisions.  Therefore in April 1998, the Department implemented TrafficStat, which uses the CompStat model to work towards improving traffic safety.  Police officers complete form MV-104AN  for all vehicle collisions.  The MV-104AN is a New York State form that has all of the details of a traffic collision.  Before implementing Trafficstat, there was no uniform traffic safety data collection procedure for all of the NYPD precincts.  Therefore, the Police Department implemented the Traffic Accident Management System (TAMS) in July 1999 in order to collect traffic data in a uniform method across the City.  TAMS required the precincts manually enter a few selected MV-104AN fields to collect very basic intersection traffic crash statistics which included the number of accidents, injuries and fatalities. As the years progressed, there grew a need for additional traffic data so that more detailed analyses could be conducted. The Citywide traffic safety initiative, Vision Zero started in the year 2014.  Vision Zero further emphasized the need for the collection of more traffic data in order to work towards the Vision Zero goal, which is to eliminate traffic fatalities.  Therefore, the Department in March 2016 replaced the TAMS with the new Finest Online Records Management System (FORMS).  FORMS enables the police officers to electronically, using a Department cellphone or computer, enter all of the MV-104AN data fields and stores all of the MV-104AN data fields in the Department’s crime data warehouse.  Since all of the MV-104AN data fields are now stored for each traffic collision, detailed traffic safety analyses can be conducted as applicable.",
+        "num_resources": 4,
+        "num_tags": 9,
+        "organization": {
+          "id": "1149ee63-2fff-494e-82e5-9aace9d3b3bf",
+          "name": "city-of-new-york",
+          "title": "City of New York",
+          "type": "organization",
+          "description": "",
+          "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Seal_of_New_York.svg/175px-Seal_of_New_York.svg.png",
+          "created": "2020-11-10T15:26:23.896065",
+          "is_organization": true,
+          "approval_status": "approved",
+          "state": "active"
+        },
+        "owner_org": "1149ee63-2fff-494e-82e5-9aace9d3b3bf",
+        "private": false,
+        "state": "active",
+        "title": "Motor Vehicle Collisions - Crashes",
+        "type": "dataset",
+        "url": null,
+        "version": null,
+        "extras": [
+          {
+            "key": "resource-type",
+            "value": "Dataset"
+          },
+          {
+            "key": "source_hash",
+            "value": "d2b58ae75f00d40fe4dbf527e3a734091b856de57a13778e1d59457088e33fdb"
+          },
+          {
+            "key": "source_datajson_identifier",
+            "value": true
+          },
+          {
+            "key": "source_schema_version",
+            "value": "1.1"
+          },
+          {
+            "key": "accessLevel",
+            "value": "public"
+          },
+          {
+            "key": "identifier",
+            "value": "https://data.cityofnewyork.us/api/views/h9gi-nx95"
+          },
+          {
+            "key": "issued",
+            "value": "2021-04-19"
+          },
+          {
+            "key": "landingPage",
+            "value": "https://data.cityofnewyork.us/d/h9gi-nx95"
+          },
+          {
+            "key": "modified",
+            "value": "2025-09-26"
+          },
+          {
+            "key": "publisher",
+            "value": "data.cityofnewyork.us"
+          },
+          {
+            "key": "theme",
+            "value": [
+              "Public Safety"
+            ]
+          },
+          {
+            "key": "catalog_@context",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+          },
+          {
+            "key": "catalog_@id",
+            "value": "https://data.cityofnewyork.us/data.json"
+          },
+          {
+            "key": "catalog_conformsTo",
+            "value": "https://project-open-data.cio.gov/v1.1/schema"
+          },
+          {
+            "key": "catalog_describedBy",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+          },
+          {
+            "key": "harvest_object_id",
+            "value": "74f31406-9701-4d1e-9954-4c1485fd61fa"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "1696593e-c691-4f61-a696-5dcb9e4c9b4c"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "NYC JSON"
+          }
+        ],
+        "groups": [
+          {
+            "description": "Local Government Topic - for all datasets with state, local, county organizations",
+            "display_name": "Local Government",
+            "id": "7d625e66-9e91-4b47-badd-44ec6f16b62b",
+            "image_display_url": "",
+            "name": "local",
+            "title": "Local Government"
+          }
+        ],
+        "resources": [
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2020-11-10T17:03:16.480722",
+            "description": "",
+            "format": "CSV",
+            "hash": "",
+            "id": "b5a431d2-4832-43a6-9334-86b62bdb033f",
+            "last_modified": null,
+            "metadata_modified": "2020-11-10T17:03:16.480722",
+            "mimetype": "text/csv",
+            "mimetype_inner": null,
+            "name": "Comma Separated Values File",
+            "no_real_name": true,
+            "package_id": "a1cbf6e9-6a08-4288-8b6b-a3c5666b7c2d",
+            "position": 0,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 2246,
+              "recent": 75
+            },
+            "url": "https://data.cityofnewyork.us/api/views/h9gi-nx95/rows.csv?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2020-11-10T17:03:16.480729",
+            "describedBy": "https://data.cityofnewyork.us/api/views/h9gi-nx95/columns.rdf",
+            "describedByType": "application/rdf+xml",
+            "description": "",
+            "format": "RDF",
+            "hash": "",
+            "id": "dc7f0a79-81e4-45a3-b935-6b1275c55e33",
+            "last_modified": null,
+            "metadata_modified": "2020-11-10T17:03:16.480729",
+            "mimetype": "application/rdf+xml",
+            "mimetype_inner": null,
+            "name": "RDF File",
+            "no_real_name": true,
+            "package_id": "a1cbf6e9-6a08-4288-8b6b-a3c5666b7c2d",
+            "position": 1,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 138,
+              "recent": 10
+            },
+            "url": "https://data.cityofnewyork.us/api/views/h9gi-nx95/rows.rdf?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2020-11-10T17:03:16.480732",
+            "describedBy": "https://data.cityofnewyork.us/api/views/h9gi-nx95/columns.json",
+            "describedByType": "application/json",
+            "description": "",
+            "format": "JSON",
+            "hash": "",
+            "id": "7891b3d4-a468-4323-8d0f-95f1b73e303f",
+            "last_modified": null,
+            "metadata_modified": "2020-11-10T17:03:16.480732",
+            "mimetype": "application/json",
+            "mimetype_inner": null,
+            "name": "JSON File",
+            "no_real_name": true,
+            "package_id": "a1cbf6e9-6a08-4288-8b6b-a3c5666b7c2d",
+            "position": 2,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 221,
+              "recent": 15
+            },
+            "url": "https://data.cityofnewyork.us/api/views/h9gi-nx95/rows.json?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2020-11-10T17:03:16.480734",
+            "describedBy": "https://data.cityofnewyork.us/api/views/h9gi-nx95/columns.xml",
+            "describedByType": "application/xml",
+            "description": "",
+            "format": "XML",
+            "hash": "",
+            "id": "cebbc3a5-af27-43d2-80aa-b628f0520eeb",
+            "last_modified": null,
+            "metadata_modified": "2020-11-10T17:03:16.480734",
+            "mimetype": "application/xml",
+            "mimetype_inner": null,
+            "name": "XML File",
+            "no_real_name": true,
+            "package_id": "a1cbf6e9-6a08-4288-8b6b-a3c5666b7c2d",
+            "position": 3,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 257,
+              "recent": 12
+            },
+            "url": "https://data.cityofnewyork.us/api/views/h9gi-nx95/rows.xml?accessType=DOWNLOAD",
+            "url_type": null
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "big-apps",
+            "id": "34ca4d9a-1eb0-485c-97ac-f4b9ab3bf81f",
+            "name": "big-apps",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "bigapps",
+            "id": "fde540c3-a20f-47e4-8f37-7e98f7674047",
+            "name": "bigapps",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "collisions",
+            "id": "a6b4f4f2-6c23-4314-a938-3c119625f2a9",
+            "name": "collisions",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "nycopendata",
+            "id": "e9a90962-9b03-4093-b202-50e3bf2cf9cb",
+            "name": "nycopendata",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "nypd",
+            "id": "f3f11364-96d9-4bda-b4f4-5d6111c39108",
+            "name": "nypd",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "traffic-data",
+            "id": "dc5579fd-2d6b-46f0-89b6-643a711af0ae",
+            "name": "traffic-data",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "vision",
+            "id": "e48c3592-cb7a-4427-a711-2844ee3a5f6a",
+            "name": "vision",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "visionzero",
+            "id": "31c37e4a-86ed-45c5-8761-9b75ada4472b",
+            "name": "visionzero",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "zero",
+            "id": "b1a7173d-651d-4fb4-bb48-475043052ff2",
+            "name": "zero",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      },
+      {
+        "author": null,
+        "author_email": null,
+        "creator_user_id": "2b785922-9f13-491b-a3c2-2a40acbd80c2",
+        "id": "5cb8d78e-54d3-4a36-bb51-190c316829f7",
+        "isopen": false,
+        "license_id": "us-pd",
+        "license_title": "us-pd",
+        "maintainer": "Criminal Justice Information Services Division Federal Bureau of Investigation (USDOJ)",
+        "maintainer_email": "CRIMESTATSINFO@fbi.gov",
+        "metadata_created": "2020-11-10T16:23:03.178004",
+        "metadata_modified": "2025-03-12T15:20:47.260464",
+        "name": "uniform-crime-reporting-ucr-program",
+        "notes": "Federal Bureau of Investigation, Department of Justice - Extraction of crime related data from the FBI's Uniform Crime Reporting (UCR) Program",
+        "num_resources": 5,
+        "num_tags": 12,
+        "organization": {
+          "id": "97ae80aa-2507-4920-808f-99a45dc5ef27",
+          "name": "doj-gov",
+          "title": "Department of Justice",
+          "type": "organization",
+          "description": "",
+          "image_url": "https://raw.githubusercontent.com/GSA/logo/master/justice.png",
+          "created": "2020-11-10T15:11:34.614013",
+          "is_organization": true,
+          "approval_status": "approved",
+          "state": "active"
+        },
+        "owner_org": "97ae80aa-2507-4920-808f-99a45dc5ef27",
+        "private": false,
+        "state": "active",
+        "title": "Uniform Crime Reporting (UCR) Program",
+        "type": "dataset",
+        "url": null,
+        "version": null,
+        "extras": [
+          {
+            "key": "resource-type",
+            "value": "Dataset"
+          },
+          {
+            "key": "source_hash",
+            "value": "44c9b34e86a641dca08fc6995394779d64d1451f20d5563e55ab6fe6cf162cd2"
+          },
+          {
+            "key": "source_datajson_identifier",
+            "value": true
+          },
+          {
+            "key": "source_schema_version",
+            "value": "1.1"
+          },
+          {
+            "key": "accessLevel",
+            "value": "public"
+          },
+          {
+            "key": "accrualPeriodicity",
+            "value": "R/P1Y"
+          },
+          {
+            "key": "bureauCode",
+            "value": [
+              "011:10"
+            ]
+          },
+          {
+            "key": "dataQuality",
+            "value": true
+          },
+          {
+            "key": "identifier",
+            "value": "547"
+          },
+          {
+            "key": "issued",
+            "value": "2017-02-27T00:00:00"
+          },
+          {
+            "key": "landingPage",
+            "value": "https://ucr.fbi.gov/"
+          },
+          {
+            "key": "language",
+            "value": [
+              "eng"
+            ]
+          },
+          {
+            "key": "license",
+            "value": "http://www.usa.gov/publicdomain/label/1.0/"
+          },
+          {
+            "key": "modified",
+            "value": "2017-02-27T00:00:00"
+          },
+          {
+            "key": "programCode",
+            "value": [
+              "011:000"
+            ]
+          },
+          {
+            "key": "publisher",
+            "value": "Federal Bureau of Investigation"
+          },
+          {
+            "key": "theme",
+            "value": [
+              "geospatial"
+            ]
+          },
+          {
+            "key": "aiCategory",
+            "value": "Not AI-ready"
+          },
+          {
+            "key": "internalContactPoint",
+            "value": "{\"@type\": \"vcard:Contact\", \"fn\": \"Loretta Simmons\", \"hasEmail\": \"mailto:Lasimmons@fbi.gov\"}"
+          },
+          {
+            "key": "jcamSystem",
+            "value": "{\"acronym\": \"FBI_NONE\", \"id\": 1, \"name\": \"System not available in CSAM\"}"
+          },
+          {
+            "key": "metadataModified",
+            "value": "5/17/2023 9:08:06 AM"
+          },
+          {
+            "key": "metadata_type",
+            "value": "geospatial"
+          },
+          {
+            "key": "collection_metadata",
+            "value": "true"
+          },
+          {
+            "key": "catalog_@context",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+          },
+          {
+            "key": "catalog_@id",
+            "value": "https://www.justice.gov/data.json"
+          },
+          {
+            "key": "catalog_conformsTo",
+            "value": "https://project-open-data.cio.gov/v1.1/schema"
+          },
+          {
+            "key": "catalog_describedBy",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+          },
+          {
+            "key": "publisher_hierarchy",
+            "value": "Department of Justice > Federal Bureau of Investigation"
+          },
+          {
+            "key": "old-spatial",
+            "value": "United States"
+          },
+          {
+            "key": "harvest_object_id",
+            "value": "0a3cd7af-b1e8-4b59-a638-a04668de4c05"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "3290e90a-116f-42fc-86ac-e65521ef3b68"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "DOJ JSON"
+          },
+          {
+            "key": "spatial",
+            "value": "{\"type\":\"Polygon\",\"coordinates\":[[[-124.733253,24.544245],[-124.733253,49.388611],[-66.954811,49.388611],[-66.954811,24.544245],[-124.733253,24.544245]]]}"
+          }
+        ],
+        "resources": [
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2023-05-23T03:04:27.418513",
+            "description": "Web form to submit requests for earlier Uniform Crime Reporting (UCR) data that is not available in the FBI Crime Data Explorer (CDE) or FBI.gov archive.",
+            "format": "",
+            "hash": "",
+            "id": "047e3753-213d-430d-9817-402e6cc1dde5",
+            "last_modified": null,
+            "metadata_modified": "2023-05-23T03:04:27.347747",
+            "mimetype": "",
+            "mimetype_inner": null,
+            "name": "By Request",
+            "package_id": "5cb8d78e-54d3-4a36-bb51-190c316829f7",
+            "position": 0,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 29,
+              "recent": 8
+            },
+            "url": "https://forms.fbi.gov/assistance-with-uniform-crime-statistics-information",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2023-05-23T03:04:27.418519",
+            "description": "The Crime Data Explorer (CDE) offers downloadable Uniform Crime Reporting (UCR) data files.",
+            "format": "ZIP",
+            "hash": "",
+            "id": "2f7847e1-b73f-4795-8f41-a9cde45ec601",
+            "last_modified": null,
+            "metadata_modified": "2023-05-23T03:04:27.348169",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "Crime Data Explorer",
+            "package_id": "5cb8d78e-54d3-4a36-bb51-190c316829f7",
+            "position": 1,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 897,
+              "recent": 63
+            },
+            "url": "https://cde.ucr.cjis.gov/LATEST/webapp/#/pages/downloads",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2023-05-10T00:11:49.866595",
+            "description": "The Crime Data Explorer (CDE) is an online interactive data tool to access, view, and understand the massive amounts of Uniform Crime Reporting (UCR) data.",
+            "format": "",
+            "hash": "",
+            "id": "7cb14324-b9bf-4011-9dca-c1025a270351",
+            "last_modified": null,
+            "metadata_modified": "2023-05-23T03:04:27.348412",
+            "mimetype": "",
+            "mimetype_inner": null,
+            "name": "Crime Data Explorer Interactive",
+            "package_id": "5cb8d78e-54d3-4a36-bb51-190c316829f7",
+            "position": 2,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 1004,
+              "recent": 4
+            },
+            "url": "https://cde.ucr.cjis.gov/LATEST/webapp/#/pages/home",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2023-05-23T03:04:27.418522",
+            "description": "The FBI Crime Data API is a read-only web service that returns Uniform Crime Reporting (UCR) data as JSON or CSV.",
+            "format": "Api",
+            "hash": "",
+            "id": "e6cbb728-b87a-47e9-80c2-9db5265beef5",
+            "last_modified": null,
+            "metadata_modified": "2023-05-23T03:04:27.348719",
+            "mimetype": "",
+            "mimetype_inner": null,
+            "name": "FBI Crime Data API",
+            "package_id": "5cb8d78e-54d3-4a36-bb51-190c316829f7",
+            "position": 3,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 915,
+              "recent": 66
+            },
+            "url": "https://cde.ucr.cjis.gov/LATEST/webapp/#/pages/docApi",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2023-05-23T03:04:27.418526",
+            "description": "Historical Uniform Crime Reporting (UCR) publications are maintained in an archive on FBI.gov.",
+            "format": "ZIP",
+            "hash": "",
+            "id": "595d0066-f15d-4298-ac8d-19ec1a0adce2",
+            "last_modified": null,
+            "metadata_modified": "2023-05-23T03:04:27.349030",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "FBI.gov archive",
+            "package_id": "5cb8d78e-54d3-4a36-bb51-190c316829f7",
+            "position": 4,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 47,
+              "recent": 4
+            },
+            "url": "https://www.fbi.gov/how-we-can-help-you/more-fbi-services-and-information/ucr/publications",
+            "url_type": null
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "arrested-person",
+            "id": "620131b6-c2af-4c50-b2d5-44a7b5844a8c",
+            "name": "arrested-person",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "arson",
+            "id": "a0c337eb-9d0f-4cf3-9bb7-589a28e73b00",
+            "name": "arson",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "crime-in-the-united-states",
+            "id": "6454ae1f-bd35-4b30-915a-8320cd712f94",
+            "name": "crime-in-the-united-states",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "crime-report",
+            "id": "5d15f0e7-e3b6-4fcd-a41a-4f241649790d",
+            "name": "crime-report",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "crime-statistics",
+            "id": "f9e8bcf2-5b48-443e-86df-de30a50ced2a",
+            "name": "crime-statistics",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "hate-crime",
+            "id": "ecf8025e-34e0-44b4-872b-4f3088a19aea",
+            "name": "hate-crime",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "homicide",
+            "id": "37189d09-2de1-4b8e-b61e-98ff7b7db172",
+            "name": "homicide",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "law-enforcement-officers-killed-and-assaulted",
+            "id": "07a8a04f-bf62-4003-9d97-65ef7e723bd4",
+            "name": "law-enforcement-officers-killed-and-assaulted",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "leoka",
+            "id": "e8efce23-122a-437c-a2b9-b029efe3c0aa",
+            "name": "leoka",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "nationwide-crime",
+            "id": "90f620b0-03d3-4316-ba67-1df93c45110c",
+            "name": "nationwide-crime",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "nibrs",
+            "id": "2d18787a-badd-40f3-bdf4-3810033d7ada",
+            "name": "nibrs",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "police-employees",
+            "id": "20d1f941-1a4f-4adc-b64d-67477bc638fa",
+            "name": "police-employees",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "groups": [],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      },
+      {
+        "author": null,
+        "author_email": null,
+        "creator_user_id": "1ecd1fb1-1be6-46bb-b90d-07a0762ed104",
+        "id": "a8a6d900-9412-4d9f-8e95-189a6080e1d7",
+        "isopen": true,
+        "license_id": "cc-by",
+        "license_title": "Creative Commons Attribution",
+        "license_url": "http://www.opendefinition.org/licenses/cc-by",
+        "maintainer": "DCGISopendata",
+        "maintainer_email": "gisgroup@dc.gov",
+        "metadata_created": "2024-04-30T18:21:43.280707",
+        "metadata_modified": "2025-08-20T04:32:37.148070",
+        "name": "crime-incidents-in-the-last-30-days",
+        "notes": "<div style='text-align:Left;'><p><span>The dataset contains a subset of locations and attributes of incidents reported in the ASAP (Analytical Services Application) crime report database by the District of Columbia Metropolitan Police Department (MPD). Visit </span><a href='https://crimecards.dc.gov:443/' target='_blank' style='text-decoration:underline;' rel='nofollow ugc noopener noreferrer'><span>https://crimecards.dc.gov</span></a><span> for more information. This data is shared via an automated process where addresses are geocoded to the District's Master Address Repository and assigned to the appropriate street block. Block locations for some crime points could not be automatically assigned resulting in 0,0 for x,y coordinates. These can be interactively assigned using the </span><a href='https://mar2.data.dc.gov:443/' target='_blank' style='text-decoration:underline;' rel='nofollow ugc noopener noreferrer'><span>MAR Geocoder</span></a><span>.</span></p><p><span>On February 1 2020, the methodology of geography assignments of crime data was modified to increase accuracy. From January 1 2020 going forward, all crime data will have Ward, ANC, SMD, BID, Neighborhood Cluster, Voting Precinct, Block Group and Census Tract values calculated prior to, rather than after, anonymization to the block level. This change impacts approximately one percent of Ward assignments.</span></p></div>",
+        "num_resources": 7,
+        "num_tags": 12,
+        "organization": {
+          "id": "f2d0ab92-6e70-41ac-b5fd-305d70fbb37f",
+          "name": "district-of-columbia",
+          "title": "District of Columbia",
+          "type": "organization",
+          "description": "Engage with the District of Columbia through government open data.",
+          "image_url": "https://raw.githubusercontent.com/GSA/logo/master/dc.png",
+          "created": "2024-04-25T10:57:11.924623",
+          "is_organization": true,
+          "approval_status": "approved",
+          "state": "active"
+        },
+        "owner_org": "f2d0ab92-6e70-41ac-b5fd-305d70fbb37f",
+        "private": false,
+        "state": "active",
+        "title": "Crime Incidents in the Last 30 Days",
+        "type": "dataset",
+        "url": null,
+        "version": null,
+        "extras": [
+          {
+            "key": "resource-type",
+            "value": "Dataset"
+          },
+          {
+            "key": "source_hash",
+            "value": "41a137e290ebf5d2bf49f55ab6a57aa7df30379324cd98eeef43e16d5bce6ab2"
+          },
+          {
+            "key": "source_datajson_identifier",
+            "value": true
+          },
+          {
+            "key": "source_schema_version",
+            "value": "1.1"
+          },
+          {
+            "key": "accessLevel",
+            "value": "public"
+          },
+          {
+            "key": "identifier",
+            "value": "https://www.arcgis.com/home/item.html?id=dc3289eab3d2400ea49c154863312434&sublayer=8"
+          },
+          {
+            "key": "issued",
+            "value": "2015-04-29T17:24:56.000Z"
+          },
+          {
+            "key": "landingPage",
+            "value": "https://opendata.dc.gov/datasets/DCGIS::crime-incidents-in-the-last-30-days"
+          },
+          {
+            "key": "license",
+            "value": "https://creativecommons.org/licenses/by/4.0"
+          },
+          {
+            "key": "modified",
+            "value": "2025-08-13T13:19:50.000Z"
+          },
+          {
+            "key": "publisher",
+            "value": "Metropolitan Police Department"
+          },
+          {
+            "key": "theme",
+            "value": [
+              "geospatial"
+            ]
+          },
+          {
+            "key": "metadata_type",
+            "value": "geospatial"
+          },
+          {
+            "key": "catalog_@context",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+          },
+          {
+            "key": "catalog_conformsTo",
+            "value": "https://project-open-data.cio.gov/v1.1/schema"
+          },
+          {
+            "key": "catalog_describedBy",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+          },
+          {
+            "key": "old-spatial",
+            "value": "-77.1140,38.8134,-76.9099,38.9949"
+          },
+          {
+            "key": "harvest_object_id",
+            "value": "eea0ebbd-4644-4eef-b867-c1875ac15dd9"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "b05f955a-65d6-4288-9558-15a5ebc74e36"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "DC data"
+          },
+          {
+            "key": "spatial",
+            "value": "{\"type\": \"Polygon\", \"coordinates\": [[[-77.1140, 38.8134], [-77.1140, 38.9949], [-76.9099, 38.9949], [-76.9099, 38.8134], [-77.1140, 38.8134]]]}"
+          }
+        ],
+        "resources": [
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-09-17T20:42:16.802752",
+            "description": "",
+            "format": "HTML",
+            "hash": "",
+            "id": "b197213e-d243-4f75-b193-fe4244480045",
+            "last_modified": null,
+            "metadata_modified": "2024-09-17T20:42:16.771284",
+            "mimetype": "text/html",
+            "mimetype_inner": null,
+            "name": "ArcGIS Hub Dataset",
+            "package_id": "a8a6d900-9412-4d9f-8e95-189a6080e1d7",
+            "position": 0,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 19,
+              "recent": 7
+            },
+            "url": "https://opendata.dc.gov/datasets/DCGIS::crime-incidents-in-the-last-30-days",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-08-20T04:32:37.260674",
+            "description": "",
+            "format": "ArcGIS GeoServices REST API",
+            "hash": "",
+            "id": "34280782-d3c9-4f95-94b7-ea6831f97d5d",
+            "last_modified": null,
+            "metadata_modified": "2025-08-20T04:32:37.175496",
+            "mimetype": "application/json",
+            "mimetype_inner": null,
+            "name": "ArcGIS GeoService",
+            "package_id": "a8a6d900-9412-4d9f-8e95-189a6080e1d7",
+            "position": 1,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 6,
+              "recent": 4
+            },
+            "url": "https://maps2.dcgis.dc.gov/dcgis/rest/services/FEEDS/MPD/FeatureServer/8",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-04-30T18:21:43.282703",
+            "description": "",
+            "format": "CSV",
+            "hash": "",
+            "id": "d1586ef9-da5b-4df4-835c-2805fb925a36",
+            "last_modified": null,
+            "metadata_modified": "2024-04-30T18:21:43.262945",
+            "mimetype": "text/csv",
+            "mimetype_inner": null,
+            "name": "CSV",
+            "package_id": "a8a6d900-9412-4d9f-8e95-189a6080e1d7",
+            "position": 2,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 83,
+              "recent": 36
+            },
+            "url": "https://opendata.dc.gov/api/download/v1/items/dc3289eab3d2400ea49c154863312434/csv?layers=8",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-04-30T18:21:43.282706",
+            "description": "",
+            "format": "ZIP",
+            "hash": "",
+            "id": "3401e2eb-79c1-4682-b035-7cfa7e13046e",
+            "last_modified": null,
+            "metadata_modified": "2024-04-30T18:21:43.263197",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "Shapefile",
+            "package_id": "a8a6d900-9412-4d9f-8e95-189a6080e1d7",
+            "position": 3,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 3,
+              "recent": 3
+            },
+            "url": "https://opendata.dc.gov/api/download/v1/items/dc3289eab3d2400ea49c154863312434/shapefile?layers=8",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-04-30T18:21:43.282704",
+            "description": "",
+            "format": "GeoJSON",
+            "hash": "",
+            "id": "b44185d3-be13-48bd-b4ee-8103f053b007",
+            "last_modified": null,
+            "metadata_modified": "2024-04-30T18:21:43.263085",
+            "mimetype": "application/vnd.geo+json",
+            "mimetype_inner": null,
+            "name": "GeoJSON",
+            "package_id": "a8a6d900-9412-4d9f-8e95-189a6080e1d7",
+            "position": 4,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://opendata.dc.gov/api/download/v1/items/dc3289eab3d2400ea49c154863312434/geojson?layers=8",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-04-30T18:21:43.282708",
+            "description": "",
+            "format": "KML",
+            "hash": "",
+            "id": "81dd0b0a-8c3d-4920-8831-4fc5586afbcd",
+            "last_modified": null,
+            "metadata_modified": "2024-04-30T18:21:43.263310",
+            "mimetype": "application/vnd.google-earth.kml+xml",
+            "mimetype_inner": null,
+            "name": "KML",
+            "package_id": "a8a6d900-9412-4d9f-8e95-189a6080e1d7",
+            "position": 5,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 18,
+              "recent": 13
+            },
+            "url": "https://opendata.dc.gov/api/download/v1/items/dc3289eab3d2400ea49c154863312434/kml?layers=8",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-08-20T04:32:37.260679",
+            "description": "",
+            "format": "ZIP",
+            "hash": "",
+            "id": "f2fc1373-d645-4126-a75e-c2877187824a",
+            "last_modified": null,
+            "metadata_modified": "2025-08-20T04:32:37.175843",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "File Geodatabase",
+            "package_id": "a8a6d900-9412-4d9f-8e95-189a6080e1d7",
+            "position": 6,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 1,
+              "recent": 1
+            },
+            "url": "https://opendata.dc.gov/api/download/v1/items/dc3289eab3d2400ea49c154863312434/filegdb?layers=8",
+            "url_type": null
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "assault",
+            "id": "e632e1ab-e5c6-4532-a16a-d329efada8ee",
+            "name": "assault",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "burglary",
+            "id": "7d506709-e256-42da-9466-7655e1e7f103",
+            "name": "burglary",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "cdw",
+            "id": "9aad40ec-a768-4cc2-bd47-2aed3eaf7ec7",
+            "name": "cdw",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "crime",
+            "id": "df442823-c823-4890-8fca-805427bd8dd9",
+            "name": "crime",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "district-of-columbia",
+            "id": "6e98c173-96cc-47a4-97ea-1e60f831070e",
+            "name": "district-of-columbia",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "feeds",
+            "id": "addeb476-29f2-42c1-a691-5c2c43780c54",
+            "name": "feeds",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "homicide",
+            "id": "37189d09-2de1-4b8e-b61e-98ff7b7db172",
+            "name": "homicide",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mpd",
+            "id": "cab51b7f-6fce-40e3-af54-c809a64a2d4b",
+            "name": "mpd",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "robbery",
+            "id": "6423523f-f4f5-43b3-8986-88e9f7a165a6",
+            "name": "robbery",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "safety",
+            "id": "6ef4ce6e-1dc5-491c-95c9-c9613ca29ca7",
+            "name": "safety",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "theft",
+            "id": "509a0a16-fb42-4c98-aaab-045afda7a6c3",
+            "name": "theft",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "washington-dc",
+            "id": "872312eb-fdc7-4027-8d00-8fab2453b88f",
+            "name": "washington-dc",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "groups": [],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      },
+      {
+        "author": null,
+        "author_email": null,
+        "creator_user_id": "2b785922-9f13-491b-a3c2-2a40acbd80c2",
+        "id": "32b1872e-1faf-477e-99fc-bcad2a69729a",
+        "isopen": false,
+        "license_id": "other-license-specified",
+        "license_title": "other-license-specified",
+        "maintainer": "National Center for Health Statistics",
+        "maintainer_email": "cdcinfo@cdc.gov",
+        "metadata_created": "2020-11-10T16:18:13.493524",
+        "metadata_modified": "2025-04-23T02:39:45.791191",
+        "name": "nchs-leading-causes-of-death-united-states",
+        "notes": "This dataset presents the age-adjusted death rates for the 10 leading causes of death in the United States beginning in 1999.\r\n\r\nData are based on information from all resident death certificates filed in the 50 states and the District of Columbia using demographic and medical characteristics. Age-adjusted death rates (per 100,000 population) are based on the 2000 U.S. standard population. Populations used for computing death rates after 2010 are postcensal estimates based on the 2010 census, estimated as of July 1, 2010. Rates for census years are based on populations enumerated in the corresponding censuses. Rates for non-census years before 2010 are revised using updated intercensal population estimates and may differ from rates previously published.\r\n\r\nCauses of death classified by the International Classification of Diseases, Tenth Revision (ICD–10) are ranked according to the number of deaths assigned to rankable causes. Cause of death statistics are based on the underlying cause of death.\r\n\r\nSOURCES\r\nCDC/NCHS, National Vital Statistics System, mortality data (see http://www.cdc.gov/nchs/deaths.htm); and CDC WONDER (see http://wonder.cdc.gov).\r\n\r\nREFERENCES\r\n\r\n1. National Center for Health Statistics. Vital statistics data available. Mortality multiple cause files. Hyattsville, MD: National Center for Health Statistics. Available from: https://www.cdc.gov/nchs/data_access/vitalstatsonline.htm.\r\n\r\n2. Murphy SL, Xu JQ, Kochanek KD, Curtin SC, and Arias E. Deaths: Final data for 2015. National vital statistics reports; vol 66. no. 6. Hyattsville, MD: National Center for Health Statistics. 2017. Available from: https://www.cdc.gov/nchs/data/nvsr/nvsr66/nvsr66_06.pdf.",
+        "num_resources": 4,
+        "num_tags": 5,
+        "organization": {
+          "id": "2c2fc21f-21d0-4450-af01-cf8c69b44156",
+          "name": "hhs-gov",
+          "title": "U.S. Department of Health & Human Services",
+          "type": "organization",
+          "description": "",
+          "image_url": "https://www.hhs.gov/sites/default/files/web/images/seal_blue_gold_hi_res.jpg",
+          "created": "2020-11-10T14:14:03.176362",
+          "is_organization": true,
+          "approval_status": "approved",
+          "state": "active"
+        },
+        "owner_org": "2c2fc21f-21d0-4450-af01-cf8c69b44156",
+        "private": false,
+        "state": "active",
+        "title": "NCHS - Leading Causes of Death: United States",
+        "type": "dataset",
+        "url": null,
+        "version": null,
+        "extras": [
+          {
+            "key": "resource-type",
+            "value": "Dataset"
+          },
+          {
+            "key": "source_hash",
+            "value": "4d793ce0400c4734dc7039493f07fbb34961f8fbc401610037ad852492684d61"
+          },
+          {
+            "key": "source_datajson_identifier",
+            "value": true
+          },
+          {
+            "key": "source_schema_version",
+            "value": "1.1"
+          },
+          {
+            "key": "accessLevel",
+            "value": "public"
+          },
+          {
+            "key": "bureauCode",
+            "value": [
+              "009:20"
+            ]
+          },
+          {
+            "key": "identifier",
+            "value": "https://data.cdc.gov/api/views/bi63-dtpu"
+          },
+          {
+            "key": "issued",
+            "value": "2015-12-02"
+          },
+          {
+            "key": "landingPage",
+            "value": "https://www.cdc.gov/nchs/data-visualization/mortality-leading-causes/index.htm"
+          },
+          {
+            "key": "license",
+            "value": "https://www.usa.gov/government-works"
+          },
+          {
+            "key": "modified",
+            "value": "2025-04-21"
+          },
+          {
+            "key": "programCode",
+            "value": [
+              "009:020"
+            ]
+          },
+          {
+            "key": "publisher",
+            "value": "Centers for Disease Control and Prevention"
+          },
+          {
+            "key": "temporal",
+            "value": "1999/2017"
+          },
+          {
+            "key": "theme",
+            "value": [
+              "National Center for Health Statistics"
+            ]
+          },
+          {
+            "key": "catalog_@context",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+          },
+          {
+            "key": "catalog_@id",
+            "value": "https://healthdata.gov/data.json"
+          },
+          {
+            "key": "catalog_conformsTo",
+            "value": "https://project-open-data.cio.gov/v1.1/schema"
+          },
+          {
+            "key": "catalog_describedBy",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+          },
+          {
+            "key": "old-spatial",
+            "value": "United States"
+          },
+          {
+            "key": "harvest_object_id",
+            "value": "a6895f7b-c412-4e1f-806e-13797bdffc9a"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "651e43b2-321c-4e4c-b86a-835cfc342cb0"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "Healthdata.gov"
+          },
+          {
+            "key": "spatial",
+            "value": "{\"type\":\"Polygon\",\"coordinates\":[[[-124.733253,24.544245],[-124.733253,49.388611],[-66.954811,49.388611],[-66.954811,24.544245],[-124.733253,24.544245]]]}"
+          }
+        ],
+        "resources": [
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2020-11-10T16:18:13.526964",
+            "description": "",
+            "format": "CSV",
+            "hash": "",
+            "id": "9096aa3c-0d4b-42f1-bb01-284816d92a15",
+            "last_modified": null,
+            "metadata_modified": "2020-11-10T16:18:13.526964",
+            "mimetype": "text/csv",
+            "mimetype_inner": null,
+            "name": "Comma Separated Values File",
+            "no_real_name": true,
+            "package_id": "32b1872e-1faf-477e-99fc-bcad2a69729a",
+            "position": 0,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 554,
+              "recent": 41
+            },
+            "url": "https://data.cdc.gov/api/views/bi63-dtpu/rows.csv?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2020-11-10T16:18:13.526971",
+            "description": "",
+            "format": "RDF",
+            "hash": "",
+            "id": "9ce33178-5981-4188-b632-a44637299071",
+            "last_modified": null,
+            "metadata_modified": "2020-11-10T16:18:13.526971",
+            "mimetype": "application/rdf+xml",
+            "mimetype_inner": null,
+            "name": "RDF File",
+            "no_real_name": true,
+            "package_id": "32b1872e-1faf-477e-99fc-bcad2a69729a",
+            "position": 1,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 29,
+              "recent": 9
+            },
+            "url": "https://data.cdc.gov/api/views/bi63-dtpu/rows.rdf?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2020-11-10T16:18:13.526974",
+            "description": "",
+            "format": "JSON",
+            "hash": "",
+            "id": "1682fdcb-74f3-4cf7-b3a3-8acd57676778",
+            "last_modified": null,
+            "metadata_modified": "2020-11-10T16:18:13.526974",
+            "mimetype": "application/json",
+            "mimetype_inner": null,
+            "name": "JSON File",
+            "no_real_name": true,
+            "package_id": "32b1872e-1faf-477e-99fc-bcad2a69729a",
+            "position": 2,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 46,
+              "recent": 4
+            },
+            "url": "https://data.cdc.gov/api/views/bi63-dtpu/rows.json?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2020-11-10T16:18:13.526977",
+            "description": "",
+            "format": "XML",
+            "hash": "",
+            "id": "43c4e00f-66f8-4625-a9d3-a427190db898",
+            "last_modified": null,
+            "metadata_modified": "2020-11-10T16:18:13.526977",
+            "mimetype": "application/xml",
+            "mimetype_inner": null,
+            "name": "XML File",
+            "no_real_name": true,
+            "package_id": "32b1872e-1faf-477e-99fc-bcad2a69729a",
+            "position": 3,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 55,
+              "recent": 12
+            },
+            "url": "https://data.cdc.gov/api/views/bi63-dtpu/rows.xml?accessType=DOWNLOAD",
+            "url_type": null
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "leading-causes-of-death",
+            "id": "069994dc-e4c0-4583-8828-6b9222a3c19a",
+            "name": "leading-causes-of-death",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mortality",
+            "id": "fe5662a8-6a8a-4742-afe6-7f3ff95cef55",
+            "name": "mortality",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "nchs",
+            "id": "f73d2ccf-de9f-4863-a6b9-f0ea24caa00e",
+            "name": "nchs",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "state",
+            "id": "7f32703c-ff15-4c81-ba7f-ac6f68c9427d",
+            "name": "state",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "united-states",
+            "id": "862eb5b5-773c-400d-bf40-3139b5b902b6",
+            "name": "united-states",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "groups": [],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      },
+      {
+        "author": null,
+        "author_email": null,
+        "creator_user_id": "1ecd1fb1-1be6-46bb-b90d-07a0762ed104",
+        "id": "44ed8078-df52-4a6f-978b-4413a113aaeb",
+        "isopen": true,
+        "license_id": "cc-by",
+        "license_title": "Creative Commons Attribution",
+        "license_url": "http://www.opendefinition.org/licenses/cc-by",
+        "maintainer": "DCGISopendata",
+        "maintainer_email": "gisgroup@dc.gov",
+        "metadata_created": "2025-02-04T23:32:20.302160",
+        "metadata_modified": "2025-08-20T04:32:45.362768",
+        "name": "crime-incidents-in-2025",
+        "notes": "<div style='text-align:Left;'><div><div><p><span>The dataset contains a subset of locations and attributes of incidents reported in the ASAP (Analytical Services Application) crime report database by the District of Columbia Metropolitan Police Department (MPD). Visit </span><a href='https://crimecards.dc.gov' target='_blank' rel='nofollow ugc noopener noreferrer'>crimecards.dc.gov</a><span> for more information. This data is shared via an automated process where addresses are geocoded to the District's Master Address Repository and assigned to the appropriate street block. Block locations for some crime points could not be automatically assigned resulting in 0,0 for x,y coordinates. These can be interactively assigned using the </span><a href='https://mar2.data.dc.gov' target='_blank' rel='nofollow ugc noopener noreferrer'>MAR Geocoder</a><span>.</span></p><p><span>On February 1 2020, the methodology of geography assignments of crime data was modified to increase accuracy. From January 1 2020 going forward, all crime data will have Ward, ANC, SMD, BID, Neighborhood Cluster, Voting Precinct, Block Group and Census Tract values calculated prior to, rather than after, anonymization to the block level. This change impacts approximately one percent of Ward assignments.</span></p></div></div></div>",
+        "num_resources": 7,
+        "num_tags": 12,
+        "organization": {
+          "id": "f2d0ab92-6e70-41ac-b5fd-305d70fbb37f",
+          "name": "district-of-columbia",
+          "title": "District of Columbia",
+          "type": "organization",
+          "description": "Engage with the District of Columbia through government open data.",
+          "image_url": "https://raw.githubusercontent.com/GSA/logo/master/dc.png",
+          "created": "2024-04-25T10:57:11.924623",
+          "is_organization": true,
+          "approval_status": "approved",
+          "state": "active"
+        },
+        "owner_org": "f2d0ab92-6e70-41ac-b5fd-305d70fbb37f",
+        "private": false,
+        "state": "active",
+        "title": "Crime Incidents in 2025",
+        "type": "dataset",
+        "url": null,
+        "version": null,
+        "extras": [
+          {
+            "key": "resource-type",
+            "value": "Dataset"
+          },
+          {
+            "key": "source_hash",
+            "value": "2007d68214bbf65bd79ea7a341bf894e476e354383739bb64bb9e7956a71016f"
+          },
+          {
+            "key": "source_datajson_identifier",
+            "value": true
+          },
+          {
+            "key": "source_schema_version",
+            "value": "1.1"
+          },
+          {
+            "key": "accessLevel",
+            "value": "public"
+          },
+          {
+            "key": "identifier",
+            "value": "https://www.arcgis.com/home/item.html?id=74d924ddc3374e3b977e6f002478cb9b&sublayer=7"
+          },
+          {
+            "key": "issued",
+            "value": "2025-01-06T17:02:34.000Z"
+          },
+          {
+            "key": "landingPage",
+            "value": "https://opendata.dc.gov/datasets/DCGIS::crime-incidents-in-2025"
+          },
+          {
+            "key": "license",
+            "value": "https://creativecommons.org/licenses/by/4.0"
+          },
+          {
+            "key": "modified",
+            "value": "2025-08-13T13:17:40.000Z"
+          },
+          {
+            "key": "publisher",
+            "value": "Metropolitan Police Department"
+          },
+          {
+            "key": "theme",
+            "value": [
+              "geospatial"
+            ]
+          },
+          {
+            "key": "metadata_type",
+            "value": "geospatial"
+          },
+          {
+            "key": "catalog_@context",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+          },
+          {
+            "key": "catalog_conformsTo",
+            "value": "https://project-open-data.cio.gov/v1.1/schema"
+          },
+          {
+            "key": "catalog_describedBy",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+          },
+          {
+            "key": "old-spatial",
+            "value": "-77.1140,38.8134,-76.9099,38.9949"
+          },
+          {
+            "key": "harvest_object_id",
+            "value": "1230b596-66ce-4801-8745-b1122739a2ad"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "b05f955a-65d6-4288-9558-15a5ebc74e36"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "DC data"
+          },
+          {
+            "key": "spatial",
+            "value": "{\"type\": \"Polygon\", \"coordinates\": [[[-77.1140, 38.8134], [-77.1140, 38.9949], [-76.9099, 38.9949], [-76.9099, 38.8134], [-77.1140, 38.8134]]]}"
+          }
+        ],
+        "resources": [
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-02-04T23:32:20.305690",
+            "description": "",
+            "format": "HTML",
+            "hash": "",
+            "id": "ba85a369-c111-4cec-907c-a030c02ddf64",
+            "last_modified": null,
+            "metadata_modified": "2025-02-04T23:32:20.286042",
+            "mimetype": "text/html",
+            "mimetype_inner": null,
+            "name": "ArcGIS Hub Dataset",
+            "package_id": "44ed8078-df52-4a6f-978b-4413a113aaeb",
+            "position": 0,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 13,
+              "recent": 4
+            },
+            "url": "https://opendata.dc.gov/datasets/DCGIS::crime-incidents-in-2025",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-08-20T04:32:45.519958",
+            "description": "",
+            "format": "ArcGIS GeoServices REST API",
+            "hash": "",
+            "id": "6ace77c4-a39b-4fb0-81ef-28f43fcc5e3c",
+            "last_modified": null,
+            "metadata_modified": "2025-08-20T04:32:45.382958",
+            "mimetype": "application/json",
+            "mimetype_inner": null,
+            "name": "ArcGIS GeoService",
+            "package_id": "44ed8078-df52-4a6f-978b-4413a113aaeb",
+            "position": 1,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://maps2.dcgis.dc.gov/dcgis/rest/services/FEEDS/MPD/FeatureServer/7",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-02-04T23:32:20.305697",
+            "description": "",
+            "format": "CSV",
+            "hash": "",
+            "id": "c7c3b9f2-219f-4d28-b6f8-5cd10ef6bc5a",
+            "last_modified": null,
+            "metadata_modified": "2025-02-04T23:32:20.286410",
+            "mimetype": "text/csv",
+            "mimetype_inner": null,
+            "name": "CSV",
+            "package_id": "44ed8078-df52-4a6f-978b-4413a113aaeb",
+            "position": 2,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 55,
+              "recent": 10
+            },
+            "url": "https://opendata.dc.gov/api/download/v1/items/74d924ddc3374e3b977e6f002478cb9b/csv?layers=7",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-02-04T23:32:20.305699",
+            "description": "",
+            "format": "ZIP",
+            "hash": "",
+            "id": "c548bfca-a423-4379-bb0e-2d58b8e14dc2",
+            "last_modified": null,
+            "metadata_modified": "2025-02-04T23:32:20.286521",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "Shapefile",
+            "package_id": "44ed8078-df52-4a6f-978b-4413a113aaeb",
+            "position": 3,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 2,
+              "recent": 2
+            },
+            "url": "https://opendata.dc.gov/api/download/v1/items/74d924ddc3374e3b977e6f002478cb9b/shapefile?layers=7",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-02-04T23:32:20.305700",
+            "description": "",
+            "format": "GeoJSON",
+            "hash": "",
+            "id": "46daeaa0-eeb5-4829-a435-e36546def53f",
+            "last_modified": null,
+            "metadata_modified": "2025-02-04T23:32:20.286631",
+            "mimetype": "application/vnd.geo+json",
+            "mimetype_inner": null,
+            "name": "GeoJSON",
+            "package_id": "44ed8078-df52-4a6f-978b-4413a113aaeb",
+            "position": 4,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 8,
+              "recent": 2
+            },
+            "url": "https://opendata.dc.gov/api/download/v1/items/74d924ddc3374e3b977e6f002478cb9b/geojson?layers=7",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-02-04T23:32:20.305702",
+            "description": "",
+            "format": "KML",
+            "hash": "",
+            "id": "6b24a9df-42ff-4cc0-846b-0d27e6384d90",
+            "last_modified": null,
+            "metadata_modified": "2025-02-04T23:32:20.286741",
+            "mimetype": "application/vnd.google-earth.kml+xml",
+            "mimetype_inner": null,
+            "name": "KML",
+            "package_id": "44ed8078-df52-4a6f-978b-4413a113aaeb",
+            "position": 5,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 18,
+              "recent": 4
+            },
+            "url": "https://opendata.dc.gov/api/download/v1/items/74d924ddc3374e3b977e6f002478cb9b/kml?layers=7",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-08-20T04:32:45.519963",
+            "description": "",
+            "format": "ZIP",
+            "hash": "",
+            "id": "bbe801d0-2942-48d2-bad6-f52ed3486a68",
+            "last_modified": null,
+            "metadata_modified": "2025-08-20T04:32:45.383323",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "File Geodatabase",
+            "package_id": "44ed8078-df52-4a6f-978b-4413a113aaeb",
+            "position": 6,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 2,
+              "recent": 2
+            },
+            "url": "https://opendata.dc.gov/api/download/v1/items/74d924ddc3374e3b977e6f002478cb9b/filegdb?layers=7",
+            "url_type": null
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "assault",
+            "id": "e632e1ab-e5c6-4532-a16a-d329efada8ee",
+            "name": "assault",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "burglary",
+            "id": "7d506709-e256-42da-9466-7655e1e7f103",
+            "name": "burglary",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "cdw",
+            "id": "9aad40ec-a768-4cc2-bd47-2aed3eaf7ec7",
+            "name": "cdw",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "crime",
+            "id": "df442823-c823-4890-8fca-805427bd8dd9",
+            "name": "crime",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "district-of-columbia",
+            "id": "6e98c173-96cc-47a4-97ea-1e60f831070e",
+            "name": "district-of-columbia",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "feeds",
+            "id": "addeb476-29f2-42c1-a691-5c2c43780c54",
+            "name": "feeds",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "homicide",
+            "id": "37189d09-2de1-4b8e-b61e-98ff7b7db172",
+            "name": "homicide",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mpd",
+            "id": "cab51b7f-6fce-40e3-af54-c809a64a2d4b",
+            "name": "mpd",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "robbery",
+            "id": "6423523f-f4f5-43b3-8986-88e9f7a165a6",
+            "name": "robbery",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "safety",
+            "id": "6ef4ce6e-1dc5-491c-95c9-c9613ca29ca7",
+            "name": "safety",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "theft",
+            "id": "509a0a16-fb42-4c98-aaab-045afda7a6c3",
+            "name": "theft",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "washington-dc",
+            "id": "872312eb-fdc7-4027-8d00-8fab2453b88f",
+            "name": "washington-dc",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "groups": [],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      },
+      {
+        "author": null,
+        "author_email": null,
+        "creator_user_id": "1ecd1fb1-1be6-46bb-b90d-07a0762ed104",
+        "id": "547d5506-d2cb-4052-8e9b-220793da1495",
+        "isopen": false,
+        "license_id": "other-license-specified",
+        "license_title": "other-license-specified",
+        "maintainer": "CDPH Office of Health Equity, Health Research and Statistics Unit",
+        "maintainer_email": "opendata@cdph.ca.gov",
+        "metadata_created": "2024-03-30T04:57:18.971825",
+        "metadata_modified": "2025-07-23T20:43:53.579520",
+        "name": "educational-attainment-8c8b5",
+        "notes": "This table contains data on the percent of population age 25 and up with a four-year college degree or higher for California, its regions, counties, county subdivisions, cities, towns, and census tracts. Greater educational attainment has been associated with health-promoting behaviors including consumption of fruits and vegetables and other aspects of healthy eating, engaging in regular physical activity, and refraining from excessive consumption of alcohol and from smoking. Completion of formal education (e.g., high school) is a key pathway to employment and access to healthier and higher paying jobs that can provide food, housing, transportation, health insurance, and other basic necessities for a healthy life. Education is linked with social and psychological factors, including sense of control, social standing and social support. These factors can improve health through reducing stress, influencing health-related behaviors and providing practical and emotional support.  More information on the data table and a data dictionary can be found in the Data and Resources section.  The educational attainment table is part of a series of indicators in the Healthy Communities Data and Indicators Project (HCI) of the Office of Health Equity. The goal of HCI is to enhance public health by providing data, a standardized set of statistical measures, and tools that a broad array of sectors can use for planning healthy communities and evaluating the impact of plans, projects, policy, and environmental changes on community health. The creation of healthy social, economic, and physical environments that promote healthy behaviors and healthy outcomes requires coordination and collaboration across multiple sectors, including transportation, housing, education, agriculture and others. Statistical metrics, or indicators, are needed to help local, regional, and state public health and partner agencies assess community environments and plan for healthy communities that optimize public health. More information on HCI can be found here: https://www.cdph.ca.gov/Programs/OHE/CDPH%20Document%20Library/Accessible%202%20CDPH_Healthy_Community_Indicators1pager5-16-12.pdf  \r\n\r\nThe format of the educational attainment table is based on the standardized data format for all HCI indicators. As a result, this data table contains certain variables used in the HCI project (e.g., indicator ID, and indicator definition). Some of these variables may contain the same value for all observations.",
+        "num_resources": 6,
+        "num_tags": 6,
+        "organization": {
+          "id": "ae56c24b-46d3-4688-965e-94bdc208164f",
+          "name": "ca-gov",
+          "title": "State of California",
+          "type": "organization",
+          "description": "State of California",
+          "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Seal_of_California.svg/250px-Seal_of_California.svg.png",
+          "created": "2020-11-10T14:12:32.792144",
+          "is_organization": true,
+          "approval_status": "approved",
+          "state": "active"
+        },
+        "owner_org": "ae56c24b-46d3-4688-965e-94bdc208164f",
+        "private": false,
+        "state": "active",
+        "title": "Educational Attainment",
+        "type": "dataset",
+        "url": null,
+        "version": null,
+        "extras": [
+          {
+            "key": "resource-type",
+            "value": "Dataset"
+          },
+          {
+            "key": "source_hash",
+            "value": "77badfb0122ed19fbeb05e5292c8d460861785c24a0ab903ba4e235b61384f39"
+          },
+          {
+            "key": "source_datajson_identifier",
+            "value": true
+          },
+          {
+            "key": "source_schema_version",
+            "value": "1.1"
+          },
+          {
+            "key": "accessLevel",
+            "value": "public"
+          },
+          {
+            "key": "identifier",
+            "value": "f4797048-34b7-4933-bddb-79d89be02e11"
+          },
+          {
+            "key": "issued",
+            "value": "2017-06-16T22:33:23.920602"
+          },
+          {
+            "key": "license",
+            "value": "http://www.opendefinition.org/licenses/cc-by"
+          },
+          {
+            "key": "modified",
+            "value": "2025-04-21T17:44:10.817163"
+          },
+          {
+            "key": "publisher",
+            "value": "California Department of Public Health"
+          },
+          {
+            "key": "theme",
+            "value": [
+              "Health and Human Services"
+            ]
+          },
+          {
+            "key": "catalog_conformsTo",
+            "value": "https://project-open-data.cio.gov/v1.1/schema"
+          },
+          {
+            "key": "catalog_describedBy",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+          },
+          {
+            "key": "catalog_@context",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+          },
+          {
+            "key": "harvest_object_id",
+            "value": "57321d50-90c8-4259-a08f-dd04c0e7c462"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "3ba8a0c1-5dc2-4897-940f-81922d3cf8bc"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "State of California"
+          }
+        ],
+        "resources": [
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-03-30T04:57:18.976731",
+            "description": "This table contains data on the percent of population age 25 and up with a foru-year college degree or higher for California, its regions, counties, county subdivisions, cities, towns, and census tracts. More information on HCI can be found here: https://www.cdph.ca.gov/Programs/OHE/CDPH%20Document%20Library/Accessible%202%20CDPH_Healthy_Community_Indicators1pager5-16-12.pdf",
+            "format": "PDF",
+            "hash": "",
+            "id": "0c6e87a0-8b93-4850-ae7e-ce274783ad3f",
+            "last_modified": null,
+            "metadata_modified": "2024-03-30T04:57:18.961021",
+            "mimetype": "application/pdf",
+            "mimetype_inner": null,
+            "name": "Educational Attainment Narrative and Examples",
+            "package_id": "547d5506-d2cb-4052-8e9b-220793da1495",
+            "position": 0,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 71,
+              "recent": 14
+            },
+            "url": "https://data.chhs.ca.gov/dataset/91f51139-e3e2-4cbe-ae7d-fe15b01b86f4/resource/eaa34b73-a4ad-475b-b220-cdef6e6627ee/download/hcieducationaattainmentnarrative3558-8-17-ada.pdf",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-07-23T15:41:25.286237",
+            "description": "hci_educational_attainment_355_ca_re_co_cd_pl_ct_total2018-06-12-ada_bh.csv",
+            "format": "CSV",
+            "hash": "",
+            "id": "339c3715-9746-431d-82b1-ff4d07e78da8",
+            "last_modified": null,
+            "metadata_modified": "2025-07-23T15:41:25.271881",
+            "mimetype": "text/csv",
+            "mimetype_inner": null,
+            "name": "Educational Attainment Indicator 355",
+            "package_id": "547d5506-d2cb-4052-8e9b-220793da1495",
+            "position": 1,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 20,
+              "recent": 12
+            },
+            "url": "https://data.chhs.ca.gov/dataset/91f51139-e3e2-4cbe-ae7d-fe15b01b86f4/resource/ad8277be-9e97-4904-9954-006ba8e35dd8/download/hci_educational_attainment_355_ca_re_co_cd_pl_ct_total2018-06-12-ada_bh.csv",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-03-30T04:57:18.976737",
+            "describedBy": "https://data.ca.gov/api/action/datastore_search?resource_id=89173c56-1bf1-44d7-bebc-46f265f52337&limit=0",
+            "describedByType": "application/json",
+            "description": "Data dictionary for educational attainment data file",
+            "format": "XLS",
+            "hash": "",
+            "id": "f0a96fb0-e85e-4aff-8873-409beae2fc68",
+            "last_modified": null,
+            "metadata_modified": "2024-11-26T23:55:34.351878",
+            "mimetype": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "mimetype_inner": null,
+            "name": "Educational Attainment-Data Dictionary",
+            "package_id": "547d5506-d2cb-4052-8e9b-220793da1495",
+            "position": 2,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 16,
+              "recent": 1
+            },
+            "url": "https://data.chhs.ca.gov/dataset/91f51139-e3e2-4cbe-ae7d-fe15b01b86f4/resource/bc0cd6fb-169a-4b7d-9d76-086765539493/download/datadictionaryform-hcieducationalattainment.xlsx",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-03-30T04:57:18.976739",
+            "description": "educational-attainment-mldflt.zip",
+            "format": "ZIP",
+            "hash": "",
+            "id": "04af3bc5-4184-4329-9e5a-88e167d44ee8",
+            "last_modified": null,
+            "metadata_modified": "2024-11-26T23:55:34.351952",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "All resource data",
+            "package_id": "547d5506-d2cb-4052-8e9b-220793da1495",
+            "position": 3,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 30,
+              "recent": 2
+            },
+            "url": "https://data.chhs.ca.gov/dataset/91f51139-e3e2-4cbe-ae7d-fe15b01b86f4/resource/0db78047-77ae-4b15-ba09-773c14339f3c/download/educational-attainment-mldflt.zip",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-03-30T04:57:18.976741",
+            "description": "HCI-Education.aspx",
+            "format": "",
+            "hash": "",
+            "id": "48bd1ffb-005e-4230-9f1c-fea20c1513d0",
+            "last_modified": null,
+            "metadata_modified": "2024-11-26T23:55:34.352024",
+            "mimetype": "",
+            "mimetype_inner": null,
+            "name": "Chart: Education Attainment",
+            "package_id": "547d5506-d2cb-4052-8e9b-220793da1495",
+            "position": 4,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 15,
+              "recent": 2
+            },
+            "url": "https://www.cdph.ca.gov/Programs/OHE/Pages/HCI-Education.aspx",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-03-30T04:57:18.976742",
+            "description": "",
+            "format": "",
+            "hash": "",
+            "id": "e611b4d7-5db9-4634-a529-8beae440c23e",
+            "last_modified": null,
+            "metadata_modified": "2024-03-30T04:57:18.961700",
+            "mimetype": "",
+            "mimetype_inner": null,
+            "name": "ESRI StoryMap: Educational Attainment",
+            "package_id": "547d5506-d2cb-4052-8e9b-220793da1495",
+            "position": 5,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 4,
+              "recent": 2
+            },
+            "url": "https://cdphdata.maps.arcgis.com/apps/MapSeries/index.html?appid=60d8e7937d344c31a5274a04164087c9",
+            "url_type": null
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "california-department-of-public-health",
+            "id": "d4756420-c655-4032-a56f-587649f556de",
+            "name": "california-department-of-public-health",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "education",
+            "id": "62c3cc27-f242-47b5-a9be-4e0c756e841f",
+            "name": "education",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "educational-attainment",
+            "id": "c5f3fed6-337d-4263-869d-4efbe60c11d5",
+            "name": "educational-attainment",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "hci",
+            "id": "286dae8e-4c83-41cb-b8bb-42c8145a43b9",
+            "name": "hci",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "healthy-community-indicator",
+            "id": "e6e4e4a2-717a-4f77-b540-8bfbb6538af7",
+            "name": "healthy-community-indicator",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "social-determinants-of-health",
+            "id": "62186c5f-4c86-4a02-b23a-9d0d526cbb10",
+            "name": "social-determinants-of-health",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "groups": [],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      },
+      {
+        "author": null,
+        "author_email": null,
+        "creator_user_id": "1ecd1fb1-1be6-46bb-b90d-07a0762ed104",
+        "id": "87dbbdaf-8ea8-427d-acd8-8915231cca65",
+        "isopen": false,
+        "license_id": "other-license-specified",
+        "license_title": "other-license-specified",
+        "maintainer": "Office of Health Equity, Healthy Places Team",
+        "maintainer_email": "opendata@cdph.ca.gov",
+        "metadata_created": "2025-07-23T21:36:42.751861",
+        "metadata_modified": "2025-07-24T17:18:37.473133",
+        "name": "violent-crime-rate-94cb9",
+        "notes": "This table contains data on the rate of violent crime (crimes per 1,000 population) for California, its regions, counties, cities and towns. Crime and population data are from the Federal Bureau of Investigations, Uniform Crime Reports. Rates above the city/town level include data from city, university and college, county, state, tribal, and federal law enforcement agencies.  The table is part of a series of indicators in the Healthy Communities Data and Indicators Project of the Office of Health Equity. Ten percent of all deaths in young California adults aged 15-44 years are related to assault and homicide. In 2010, California law enforcement agencies reported 1,809 murders, 8,331 rapes, and over 95,000 aggravated assaults. African Americans in California are 11 times more likely to die of assault and homicide than Whites. More information about the data table and a data dictionary can be found in the About/Attachments section.",
+        "num_resources": 4,
+        "num_tags": 15,
+        "organization": {
+          "id": "ae56c24b-46d3-4688-965e-94bdc208164f",
+          "name": "ca-gov",
+          "title": "State of California",
+          "type": "organization",
+          "description": "State of California",
+          "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Seal_of_California.svg/250px-Seal_of_California.svg.png",
+          "created": "2020-11-10T14:12:32.792144",
+          "is_organization": true,
+          "approval_status": "approved",
+          "state": "active"
+        },
+        "owner_org": "ae56c24b-46d3-4688-965e-94bdc208164f",
+        "private": false,
+        "state": "active",
+        "title": "Violent Crime Rate",
+        "type": "dataset",
+        "url": null,
+        "version": null,
+        "extras": [
+          {
+            "key": "resource-type",
+            "value": "Dataset"
+          },
+          {
+            "key": "source_hash",
+            "value": "a72fe738eb5c53fe8081e6eabf2b78fc754004f0271c43213fdefaf59681ed3c"
+          },
+          {
+            "key": "source_datajson_identifier",
+            "value": true
+          },
+          {
+            "key": "source_schema_version",
+            "value": "1.1"
+          },
+          {
+            "key": "accessLevel",
+            "value": "public"
+          },
+          {
+            "key": "identifier",
+            "value": "666c5721-735e-434f-8a5e-dc520b3150c4"
+          },
+          {
+            "key": "issued",
+            "value": "2017-06-16T22:37:41.117706"
+          },
+          {
+            "key": "license",
+            "value": "http://www.opendefinition.org/licenses/cc-by"
+          },
+          {
+            "key": "modified",
+            "value": "2024-08-29T04:05:32.108074"
+          },
+          {
+            "key": "publisher",
+            "value": "California Department of Public Health"
+          },
+          {
+            "key": "theme",
+            "value": [
+              "Health and Human Services"
+            ]
+          },
+          {
+            "key": "catalog_conformsTo",
+            "value": "https://project-open-data.cio.gov/v1.1/schema"
+          },
+          {
+            "key": "catalog_describedBy",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+          },
+          {
+            "key": "catalog_@context",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+          },
+          {
+            "key": "datagov_dedupe_retained",
+            "value": "20250724164837"
+          },
+          {
+            "key": "harvest_object_id",
+            "value": "acbe047c-914e-4d39-be1e-dcd942c2cb11"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "3ba8a0c1-5dc2-4897-940f-81922d3cf8bc"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "State of California"
+          }
+        ],
+        "resources": [
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-07-23T21:36:42.753956",
+            "description": "hci_crime_752-narrative_examples-10-30-15-ada.pdf",
+            "format": "PDF",
+            "hash": "",
+            "id": "32b3245b-84b7-48ac-a3f2-c7d4b12916d0",
+            "last_modified": null,
+            "metadata_modified": "2025-07-24T17:18:37.479651",
+            "mimetype": "application/pdf",
+            "mimetype_inner": null,
+            "name": "Violent Crime Narrative",
+            "package_id": "87dbbdaf-8ea8-427d-acd8-8915231cca65",
+            "position": 0,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 290,
+              "recent": 12
+            },
+            "url": "https://data.chhs.ca.gov/dataset/99bc1fea-c55c-4377-bad8-f00832fd195d/resource/5a6d5fe9-36e6-4aca-ba4c-bf6edc682cf5/download/hci_crime_752-narrative_examples-10-30-15-ada.pdf",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-07-23T21:36:42.753960",
+            "describedBy": "https://data.ca.gov/api/action/datastore_search?resource_id=358f23e6-f0f9-45e1-864c-fbad0f0b84b3&limit=0",
+            "describedByType": "application/json",
+            "description": "This table contains data on the rate of violent crime (crimes per 1,000 population) for California, its regions, counties, cities and towns. Crime and population data are from the Federal Bureau of Investigations, Uniform Crime Reports. Rates above the city/town level include data from city, university and college, county, state, tribal, and federal law enforcement agencies.  The table is part of a series of indicators in the Healthy Communities Data and Indicators Project of the Office of Health Equity (http://www.cdph.ca.gov/programs/Pages/HealthyCommunityIndicators.aspx).  Ten percent of all deaths in young California adults aged 15-44 years are related to assault and homicide. In 2010, California law enforcement agencies reported 1,809 murders, 8,331 rapes, and over 95,000 aggravated assaults. African Americans in California are 11 times more likely to die of assault and homicide than Whites. More information about the data table and a data dictionary can be found in the About/Attachments section.",
+            "format": "XLS",
+            "hash": "",
+            "id": "d114bfc1-1cf8-4ab4-b82c-5fe5244f495d",
+            "last_modified": null,
+            "metadata_modified": "2025-07-24T17:18:37.479800",
+            "mimetype": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "mimetype_inner": null,
+            "name": "Violent Crime Rate California 2000-2013",
+            "package_id": "87dbbdaf-8ea8-427d-acd8-8915231cca65",
+            "position": 1,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 425,
+              "recent": 22
+            },
+            "url": "https://data.chhs.ca.gov/dataset/99bc1fea-c55c-4377-bad8-f00832fd195d/resource/bc09f211-200c-4c4c-aa13-d2e89c0d5577/download/hci_crime_752_pl_co_re_ca_2000-2013_21oct15-ada.xlsx",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-07-23T21:36:42.753963",
+            "describedBy": "https://data.ca.gov/api/action/datastore_search?resource_id=adf9c3ac-8d1b-4a96-8744-c6a8010d865b&limit=0",
+            "describedByType": "application/json",
+            "description": "violentcrimedatadictionary.xlsx",
+            "format": "XLS",
+            "hash": "",
+            "id": "4fe5dac6-062b-4127-874f-3bd9b7576d91",
+            "last_modified": null,
+            "metadata_modified": "2025-07-24T17:18:37.479921",
+            "mimetype": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "mimetype_inner": null,
+            "name": "Violent Crime - Data Dictionary",
+            "package_id": "87dbbdaf-8ea8-427d-acd8-8915231cca65",
+            "position": 2,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 109,
+              "recent": 6
+            },
+            "url": "https://data.chhs.ca.gov/dataset/99bc1fea-c55c-4377-bad8-f00832fd195d/resource/86cd9392-4d4c-40a1-8b7f-0ac247c8b841/download/violentcrimedatadictionary.xlsx",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-07-23T21:36:42.753966",
+            "description": "violent-crime-rate-california-2006-2010-tk4rpbsn.zip",
+            "format": "ZIP",
+            "hash": "",
+            "id": "abf1c473-88eb-474d-8c1a-2d4952390ad5",
+            "last_modified": null,
+            "metadata_modified": "2025-07-24T17:18:37.480040",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "All resource data",
+            "package_id": "87dbbdaf-8ea8-427d-acd8-8915231cca65",
+            "position": 3,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 60,
+              "recent": 1
+            },
+            "url": "https://data.chhs.ca.gov/dataset/99bc1fea-c55c-4377-bad8-f00832fd195d/resource/c9a0afc7-0310-4aeb-acd9-658ecedcc8f7/download/violent-crime-rate-california-2006-2010-tk4rpbsn.zip",
+            "url_type": null
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "agravated-assualt",
+            "id": "ccd1f591-ec55-44fd-9b54-7f2b7fe07b02",
+            "name": "agravated-assualt",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "california-department-of-public-health",
+            "id": "d4756420-c655-4032-a56f-587649f556de",
+            "name": "california-department-of-public-health",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "crime",
+            "id": "df442823-c823-4890-8fca-805427bd8dd9",
+            "name": "crime",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "crime-data",
+            "id": "7fb56318-7ab7-4439-9cda-0751ff07298a",
+            "name": "crime-data",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "healthy-community-indicator",
+            "id": "e6e4e4a2-717a-4f77-b540-8bfbb6538af7",
+            "name": "healthy-community-indicator",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "homicide",
+            "id": "37189d09-2de1-4b8e-b61e-98ff7b7db172",
+            "name": "homicide",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "manslaughter",
+            "id": "9dddf9bd-ba01-4430-8d4d-d9d35d619622",
+            "name": "manslaughter",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "murder",
+            "id": "aab0acef-ca19-4f28-a7ba-f4023473a15c",
+            "name": "murder",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "rape",
+            "id": "8517b810-cb56-4f3c-af8b-011e8aaf7238",
+            "name": "rape",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "robbery",
+            "id": "6423523f-f4f5-43b3-8986-88e9f7a165a6",
+            "name": "robbery",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "sexual-assualt",
+            "id": "6a713902-9048-4f34-bda2-d84653850433",
+            "name": "sexual-assualt",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "social-determinants-of-health",
+            "id": "62186c5f-4c86-4a02-b23a-9d0d526cbb10",
+            "name": "social-determinants-of-health",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "uniform-crime-report",
+            "id": "906caefe-7efa-4eba-a615-ce2bec7efd19",
+            "name": "uniform-crime-report",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "violence",
+            "id": "50e0bb44-355f-43f1-addc-ede7730fe312",
+            "name": "violence",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "violent-crimes",
+            "id": "7eca6a02-2178-420c-9476-2fbf63939bea",
+            "name": "violent-crimes",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "groups": [],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      },
+      {
+        "author": null,
+        "author_email": null,
+        "creator_user_id": "2b785922-9f13-491b-a3c2-2a40acbd80c2",
+        "id": "3abe6859-c766-4313-9747-4acab2ebb70a",
+        "isopen": false,
+        "license_id": "us-pd",
+        "license_title": "us-pd",
+        "maintainer": "Bureau of Transportation Statistics",
+        "maintainer_email": "answers@dot.gov",
+        "metadata_created": "2020-11-12T12:40:44.348800",
+        "metadata_modified": "2025-01-16T20:39:51.069313",
+        "name": "amtrak-on-time-performance",
+        "notes": "Customer on-time performance is the percentage of customers who arrive at their detraining stations on time. An Acela train is late when it arrives at a station more than 10 minutes after its scheduled time; a Northeast Regional or State-Supported train is late when it arrives more than 15 minutes after its scheduled time. For years before FY 2018, on-time performance is the percentage of total train arrivals on-time at each station, with every arrival weighted equally. Amtrak reports system performance in monthly Host Railroad Reports.",
+        "num_resources": 0,
+        "num_tags": 1,
+        "organization": {
+          "id": "c549d5ce-2b93-4397-ab76-aa2b31d9983a",
+          "name": "dot-gov",
+          "title": "Department of Transportation",
+          "type": "organization",
+          "description": "",
+          "image_url": "https://upload.wikimedia.org/wikipedia/commons/8/81/US_DOT_Triskelion.png",
+          "created": "2020-11-10T14:13:01.158937",
+          "is_organization": true,
+          "approval_status": "approved",
+          "state": "active"
+        },
+        "owner_org": "c549d5ce-2b93-4397-ab76-aa2b31d9983a",
+        "private": false,
+        "state": "active",
+        "title": "Amtrak On-Time Performance",
+        "type": "dataset",
+        "url": null,
+        "version": null,
+        "extras": [
+          {
+            "key": "resource-type",
+            "value": "Dataset"
+          },
+          {
+            "key": "source_hash",
+            "value": "9f02b1e45257fd2023dfcb6a009f4f1701eecfc6b91549bc6c77843a81933978"
+          },
+          {
+            "key": "source_datajson_identifier",
+            "value": true
+          },
+          {
+            "key": "source_schema_version",
+            "value": "1.1"
+          },
+          {
+            "key": "accessLevel",
+            "value": "public"
+          },
+          {
+            "key": "bureauCode",
+            "value": [
+              "021:00"
+            ]
+          },
+          {
+            "key": "identifier",
+            "value": "https://data.transportation.gov/api/views/98fi-ujit"
+          },
+          {
+            "key": "issued",
+            "value": "2025-01-16"
+          },
+          {
+            "key": "landingPage",
+            "value": "https://data.transportation.gov/d/98fi-ujit"
+          },
+          {
+            "key": "language",
+            "value": [
+              "en-US"
+            ]
+          },
+          {
+            "key": "license",
+            "value": "http://www.usa.gov/publicdomain/label/1.0/"
+          },
+          {
+            "key": "modified",
+            "value": "2025-01-16"
+          },
+          {
+            "key": "programCode",
+            "value": [
+              "021:053"
+            ]
+          },
+          {
+            "key": "publisher",
+            "value": "Bureau of Transportation Statistics"
+          },
+          {
+            "key": "theme",
+            "value": [
+              "Research and Statistics"
+            ]
+          },
+          {
+            "key": "catalog_@context",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+          },
+          {
+            "key": "catalog_@id",
+            "value": "https://data.transportation.gov/data.json"
+          },
+          {
+            "key": "catalog_conformsTo",
+            "value": "https://project-open-data.cio.gov/v1.1/schema"
+          },
+          {
+            "key": "catalog_describedBy",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+          },
+          {
+            "key": "harvest_object_id",
+            "value": "12d4263c-dc69-4a70-b1d7-5cbfb1fffcfa"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "a776e4b7-8221-443c-85ed-c5ee5db0c360"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "DOT Socrata Data.json"
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "monthly-transportation-statistics",
+            "id": "74b9f7cf-f007-4374-b4e2-8d50d38a81c2",
+            "name": "monthly-transportation-statistics",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "resources": [],
+        "groups": [],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      },
+      {
+        "author": null,
+        "author_email": null,
+        "creator_user_id": "2b785922-9f13-491b-a3c2-2a40acbd80c2",
+        "id": "e5b54022-a98f-42f6-9213-ad86ea99ea84",
+        "isopen": false,
+        "license_id": "other-license-specified",
+        "license_title": "other-license-specified",
+        "maintainer": "Lilian Ingster",
+        "maintainer_email": "HealthData@hhs.gov",
+        "metadata_created": "2020-11-10T16:20:00.629572",
+        "metadata_modified": "2025-02-03T22:09:30.682720",
+        "name": "national-death-index",
+        "notes": "<p>The National Death Index (NDI) is a centralized database of death record information on file in state vital statistics offices. Working with these state offices, the National Center for Health Statistics (NCHS) established the NDI as a resource to aid epidemiologists and other health and medical investigators with their mortality ascertainment activities.</p>\n<p>Assists investigators in determining whether persons in their studies have died and, if so, provide the names of the states in which those deaths occurred, the dates of death, and the corresponding death certificate numbers. Investigators can then make arrangements with the appropriate state offices to obtain copies of death certificates or specific statistical information such as manner of death or educational level. Cause of death codes may also be obtained using the NDI Plus service.</p>\n<p>Records from 1979 through 2011 are currently available and contain a standard set of identifying information on each death. Death records are added to the NDI file annually, approximately 12 months after the end of a particular calendar year. 2012 should be available summer 2014. Early Release Program for 2013 is now available.</p>\n<p>The NDI service is available to investigators solely for statistical purposes in medical and health research. The service is not accessible to organizations or the general public for legal, administrative, or genealogy purposes.</p>",
+        "num_resources": 0,
+        "num_tags": 2,
+        "organization": {
+          "id": "2c2fc21f-21d0-4450-af01-cf8c69b44156",
+          "name": "hhs-gov",
+          "title": "U.S. Department of Health & Human Services",
+          "type": "organization",
+          "description": "",
+          "image_url": "https://www.hhs.gov/sites/default/files/web/images/seal_blue_gold_hi_res.jpg",
+          "created": "2020-11-10T14:14:03.176362",
+          "is_organization": true,
+          "approval_status": "approved",
+          "state": "active"
+        },
+        "owner_org": "2c2fc21f-21d0-4450-af01-cf8c69b44156",
+        "private": false,
+        "state": "active",
+        "title": "National Death Index",
+        "type": "dataset",
+        "url": null,
+        "version": null,
+        "extras": [
+          {
+            "key": "resource-type",
+            "value": "Dataset"
+          },
+          {
+            "key": "source_hash",
+            "value": "5b3a68eeced931ec1ed37bdf8dc41f5776faa699e70df77973df6e7936a8793b"
+          },
+          {
+            "key": "source_datajson_identifier",
+            "value": true
+          },
+          {
+            "key": "source_schema_version",
+            "value": "1.1"
+          },
+          {
+            "key": "accessLevel",
+            "value": "public"
+          },
+          {
+            "key": "bureauCode",
+            "value": [
+              "009:20"
+            ]
+          },
+          {
+            "key": "dataQuality",
+            "value": true
+          },
+          {
+            "key": "identifier",
+            "value": "a725dbdf-f804-4120-884f-af16b67028f3"
+          },
+          {
+            "key": "issued",
+            "value": "2015-02-22"
+          },
+          {
+            "key": "landingPage",
+            "value": "https://www.cdc.gov/nchs/ndi/index.html"
+          },
+          {
+            "key": "license",
+            "value": "https://opendatacommons.org/licenses/odbl/1.0/"
+          },
+          {
+            "key": "modified",
+            "value": "2025-01-31"
+          },
+          {
+            "key": "programCode",
+            "value": [
+              "009:048"
+            ]
+          },
+          {
+            "key": "publisher",
+            "value": "Centers for Disease Control and Prevention, Department of Health & Human Services"
+          },
+          {
+            "key": "temporal",
+            "value": "1979-01-01T00:00:00-05:00/2011-01-01T00:00:00-05:00"
+          },
+          {
+            "key": "describedBy",
+            "value": "http://www.cdc.gov/nchs/ndi.htm"
+          },
+          {
+            "key": "catalog_@context",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+          },
+          {
+            "key": "catalog_@id",
+            "value": "https://healthdata.gov/data.json"
+          },
+          {
+            "key": "catalog_conformsTo",
+            "value": "https://project-open-data.cio.gov/v1.1/schema"
+          },
+          {
+            "key": "catalog_describedBy",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+          },
+          {
+            "key": "harvest_object_id",
+            "value": "0fa6cdcb-06a6-4bd6-8082-1bdf19b3abb7"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "651e43b2-321c-4e4c-b86a-835cfc342cb0"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "Healthdata.gov"
+          }
+        ],
+        "groups": [
+          {
+            "description": "",
+            "display_name": "Climate",
+            "id": "16e15f51-d96e-4051-9124-75665abdc6ff",
+            "image_display_url": "",
+            "name": "climate5434",
+            "title": "Climate"
+          },
+          {
+            "description": "The purpose of this data collection is to gather Federally-managed datasets relevant to the health of older adults in and outside the context of the coronavirus pandemic (COVID-19). Older adults reside at the intersection of key demographic and health challenges, including those resulting from the pandemic. Insights from data on the older adult population – before, during, and after COVID-19 – is also needed to better understand the impact of the pandemic on the health of this growing population segment.",
+            "display_name": "Older Adults Health Data Collection",
+            "id": "ceed603b-3aa5-4276-9eaf-92e52e549814",
+            "image_display_url": "https://data.gov/app/themes/roots-nextdatagov/assets/img/topic-medical.png",
+            "name": "older-adults-health-data",
+            "title": "Older Adults Health Data Collection"
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "population-statistics",
+            "id": "24ce6389-0eb6-4b66-9820-eefb96f4a9df",
+            "name": "population-statistics",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "vital-statistics-us-births-and-deaths",
+            "id": "8e28e893-0a26-4ae4-9df8-f861f8c115e2",
+            "name": "vital-statistics-us-births-and-deaths",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "resources": [],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      },
+      {
+        "author": null,
+        "author_email": null,
+        "creator_user_id": "2b785922-9f13-491b-a3c2-2a40acbd80c2",
+        "id": "aa2c447c-5e77-4791-81d5-15630312f667",
+        "isopen": false,
+        "license_id": "us-pd",
+        "license_title": "us-pd",
+        "maintainer": "Ask BJS Bureau of Justice Statistics (USDOJ)",
+        "maintainer_email": "askbjs@usdoj.gov",
+        "metadata_created": "2021-08-18T20:08:09.209569",
+        "metadata_modified": "2025-03-12T15:23:17.469902",
+        "name": "uniform-crime-reporting-program-data-series-16edb",
+        "notes": "Investigator(s): Federal Bureau of Investigation\r\nSince 1930, the Federal Bureau of Investigation (FBI) has compiled the Uniform Crime Reports (UCR) to serve as periodic nationwide assessments of reported crimes not available elsewhere in the criminal justice system. With the 1977 data, the title was expanded to Uniform Crime Reporting Program Data. Each year, participating law enforcement agencies contribute reports to the FBI either directly or through their state reporting programs. ICPSR archives the UCR data as five separate components: (1) summary data, (2) county-level data, (3) incident-level data (National Incident-Based Reporting System [NIBRS]), (4) hate crime data, and (5) various, mostly nonrecurring, data collections. Summary data are reported in four types of files: (a) Offenses Known and Clearances by Arrest, (b) Property Stolen and Recovered, (c) Supplementary Homicide Reports (SHR), and (d) Police Employee (LEOKA) Data (Law Enforcement Officers Killed or Assaulted). The county-level data provide counts of arrests and offenses aggregated to the county level. County populations are also reported. In the late 1970s, new ways to look at crime were studied. The UCR program was subsequently expanded to capture incident-level data with the implementation of the National Incident-Based Reporting System. The NIBRS data focus on various aspects of a crime incident. The gathering of hate crime data by the UCR program was begun in 1990. Hate crimes are defined as crimes that manifest evidence of prejudice based on race, religion, sexual orientation, or ethnicity. In September 1994, disabilities, both physical and mental, were added to the list. The fifth component of ICPSR's UCR holdings is comprised of various collections, many of which are nonrecurring and prepared by individual researchers. These collections go beyond the scope of the standard UCR collections provided by the FBI, either by including data for a range of years or by focusing on other aspects of analysis.\r\nNACJD has produced resource guides on UCR and on NIBRS data.\r\n\r\n ",
+        "num_resources": 1,
+        "num_tags": 7,
+        "organization": {
+          "id": "97ae80aa-2507-4920-808f-99a45dc5ef27",
+          "name": "doj-gov",
+          "title": "Department of Justice",
+          "type": "organization",
+          "description": "",
+          "image_url": "https://raw.githubusercontent.com/GSA/logo/master/justice.png",
+          "created": "2020-11-10T15:11:34.614013",
+          "is_organization": true,
+          "approval_status": "approved",
+          "state": "active"
+        },
+        "owner_org": "97ae80aa-2507-4920-808f-99a45dc5ef27",
+        "private": false,
+        "state": "active",
+        "title": "Uniform Crime Reporting Program Data Series",
+        "type": "dataset",
+        "url": null,
+        "version": null,
+        "extras": [
+          {
+            "key": "resource-type",
+            "value": "Dataset"
+          },
+          {
+            "key": "source_hash",
+            "value": "daaa3ed083ae3b88c42125ff824b4991d136016d1bc763121567509611fc9c5c"
+          },
+          {
+            "key": "source_datajson_identifier",
+            "value": true
+          },
+          {
+            "key": "source_schema_version",
+            "value": "1.1"
+          },
+          {
+            "key": "accessLevel",
+            "value": "public"
+          },
+          {
+            "key": "bureauCode",
+            "value": [
+              "011:21"
+            ]
+          },
+          {
+            "key": "identifier",
+            "value": "2167"
+          },
+          {
+            "key": "issued",
+            "value": "1984-03-18T00:00:00"
+          },
+          {
+            "key": "language",
+            "value": [
+              "eng"
+            ]
+          },
+          {
+            "key": "license",
+            "value": "http://www.usa.gov/publicdomain/label/1.0/"
+          },
+          {
+            "key": "modified",
+            "value": "2019-01-17T00:00:00"
+          },
+          {
+            "key": "programCode",
+            "value": [
+              "011:061"
+            ]
+          },
+          {
+            "key": "publisher",
+            "value": "Bureau of Justice Statistics"
+          },
+          {
+            "key": "aiCategory",
+            "value": "Not AI-ready"
+          },
+          {
+            "key": "internalContactPoint",
+            "value": "{\"@type\": \"vcard:Contact\", \"fn\": \"Ask BJS Bureau of Justice Statistics (USDOJ)\", \"hasEmail\": \"mailto:askbjs@usdoj.gov\"}"
+          },
+          {
+            "key": "jcamSystem",
+            "value": "{\"acronym\": \"OJP_EXT\", \"id\": 8, \"name\": \"External system not available in CSAM\"}"
+          },
+          {
+            "key": "metadataModified",
+            "value": "12/5/2022 10:02:49 AM"
+          },
+          {
+            "key": "sourceIdentifier",
+            "value": "https://www.icpsr.umich.edu/web/ICPSR/series/57"
+          },
+          {
+            "key": "collection_metadata",
+            "value": "true"
+          },
+          {
+            "key": "catalog_@context",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+          },
+          {
+            "key": "catalog_@id",
+            "value": "https://www.justice.gov/data.json"
+          },
+          {
+            "key": "catalog_conformsTo",
+            "value": "https://project-open-data.cio.gov/v1.1/schema"
+          },
+          {
+            "key": "catalog_describedBy",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+          },
+          {
+            "key": "publisher_hierarchy",
+            "value": "Office of Justice Programs > Bureau of Justice Statistics"
+          },
+          {
+            "key": "harvest_object_id",
+            "value": "a21e3c9b-9138-4d73-b7f4-483bde1c22af"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "3290e90a-116f-42fc-86ac-e65521ef3b68"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "DOJ JSON"
+          }
+        ],
+        "resources": [
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2021-08-18T20:08:09.221069",
+            "description": "",
+            "format": "",
+            "hash": "",
+            "id": "4eda0e8a-7492-4b4a-8a7c-6d2123e5e903",
+            "last_modified": null,
+            "metadata_modified": "2021-08-18T20:08:09.221069",
+            "mimetype": "",
+            "mimetype_inner": null,
+            "name": "Uniform Crime Reporting Program Data Series",
+            "package_id": "aa2c447c-5e77-4791-81d5-15630312f667",
+            "position": 0,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 85,
+              "recent": 5
+            },
+            "url": "https://www.icpsr.umich.edu/web/ICPSR/series/57",
+            "url_type": null
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "arrests",
+            "id": "509c88ba-e01e-41a6-97d0-a307dcf4d9f9",
+            "name": "arrests",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "crime-rates",
+            "id": "e25f8952-b053-4dac-8202-1758e6fceec3",
+            "name": "crime-rates",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "crime-reporting",
+            "id": "cb11b4f8-bec5-4582-887c-fdd25c2e8d9f",
+            "name": "crime-reporting",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "crime-statistics",
+            "id": "f9e8bcf2-5b48-443e-86df-de30a50ced2a",
+            "name": "crime-statistics",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "law-enforcement",
+            "id": "c7de583e-e2ca-4e1a-99f9-d0bdb8acd910",
+            "name": "law-enforcement",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "offenses",
+            "id": "1cf91929-cc62-4f20-9211-25a554b7cc53",
+            "name": "offenses",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "uniform-crime-reports",
+            "id": "8d67e4e1-14a7-43b2-b328-a6c5a0fd0378",
+            "name": "uniform-crime-reports",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "groups": [],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      }
+    ],
+    "sort": "views_recent desc",
+    "search_facets": {}
+  },
+  "help": "https://catalog.data.gov/api/3/action/help_show?name=package_search",
+  "query_params": {
+    "q": "crime statistics in DC",
+    "rows": 10,
+    "start": 0
+  },
+  "endpoint": "https://catalog.data.gov/api/3/action/package_search",
+  "_metadata": {
+    "saved_at": "2025-09-28T07:02:28.552708",
+    "data_source": "data.gov",
+    "saved_by": "tooling.py"
+  }
+}

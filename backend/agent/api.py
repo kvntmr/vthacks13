@@ -299,21 +299,22 @@ async def query_agent_sync(
     agent: RealEstateAgent = Depends(get_agent)
 ) -> QueryResponse:
     """
-    Synchronous version of the query endpoint.
+    Query endpoint for real estate analysis.
     
-    This endpoint uses the synchronous query method, which may be more suitable
-    for environments where async handling is challenging.
+    This endpoint processes real estate queries using the agent's async method
+    in a proper async context.
     """
     try:
-        # Process the query using the synchronous method
-        result = agent.query_sync(request.question)
+        # Process the query using the async method
+        result = await agent.query(request.question)
         
         # Prepare the response
         response_data = {
             "success": result["success"],
             "response": result["response"],
             "message_count": result.get("message_count"),
-            "error": result.get("error")
+            "error": result.get("error"),
+            "metadata": None  # Default to None
         }
         
         # Add metadata if requested
@@ -339,7 +340,9 @@ async def query_agent_sync(
         return QueryResponse(
             success=False,
             response=f"An error occurred while processing your query: {str(e)}",
-            error=str(e)
+            message_count=None,
+            error=str(e),
+            metadata=None
         )
 
 

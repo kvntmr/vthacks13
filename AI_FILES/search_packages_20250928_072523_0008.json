@@ -1,0 +1,3996 @@
+{
+  "success": true,
+  "result": {
+    "count": 5213,
+    "facets": {},
+    "results": [
+      {
+        "author": null,
+        "author_email": null,
+        "creator_user_id": "2b785922-9f13-491b-a3c2-2a40acbd80c2",
+        "id": "844dbad1-ee1e-44b8-9799-34cb7ed24640",
+        "isopen": false,
+        "license_id": "other-license-specified",
+        "license_title": "other-license-specified",
+        "maintainer": "Department of Licensing",
+        "maintainer_email": "no-reply@data.wa.gov",
+        "metadata_created": "2020-11-10T17:20:33.031886",
+        "metadata_modified": "2025-09-20T20:23:47.638613",
+        "name": "electric-vehicle-population-data",
+        "notes": "This dataset shows the Battery Electric Vehicles (BEVs) and Plug-in Hybrid Electric Vehicles (PHEVs) that are currently registered through Washington State Department of Licensing (DOL).",
+        "num_resources": 4,
+        "num_tags": 35,
+        "organization": {
+          "id": "bccbad82-abc4-4712-bd29-3e194e7a8042",
+          "name": "state-of-washington",
+          "title": "State of Washington",
+          "type": "organization",
+          "description": "Washington Technology Solutions (WaTech) provides the state of Washington Open Data Program for all state agencies to publish public data at https://data.wa.gov. Washington state agencies, library systems, school districts, and small local government entities publish more than 2,500 datasets, visualizations, and data stories that people access nearly three million times per month. Data topics include campaign contributions, public health, licensed professionals, environment, social services, vehicle licensing and registration, public safety, and more.",
+          "image_url": "https://raw.githubusercontent.com/GSA/logo/refs/heads/master/wa-opendata.png",
+          "created": "2020-11-10T15:27:34.605650",
+          "is_organization": true,
+          "approval_status": "approved",
+          "state": "active"
+        },
+        "owner_org": "bccbad82-abc4-4712-bd29-3e194e7a8042",
+        "private": false,
+        "state": "active",
+        "title": "Electric Vehicle Population Data",
+        "type": "dataset",
+        "url": null,
+        "version": null,
+        "extras": [
+          {
+            "key": "resource-type",
+            "value": "Dataset"
+          },
+          {
+            "key": "source_hash",
+            "value": "cb3451e29c0f8a370bc923e6284c3eb6bbaddb591bd8221fd8ece2698478d63a"
+          },
+          {
+            "key": "source_datajson_identifier",
+            "value": true
+          },
+          {
+            "key": "source_schema_version",
+            "value": "1.1"
+          },
+          {
+            "key": "accessLevel",
+            "value": "public"
+          },
+          {
+            "key": "identifier",
+            "value": "https://data.wa.gov/api/views/f6w7-q2d2"
+          },
+          {
+            "key": "issued",
+            "value": "2023-10-19"
+          },
+          {
+            "key": "landingPage",
+            "value": "https://data.wa.gov/d/f6w7-q2d2"
+          },
+          {
+            "key": "license",
+            "value": "http://opendatacommons.org/licenses/odbl/1.0/"
+          },
+          {
+            "key": "modified",
+            "value": "2025-09-16"
+          },
+          {
+            "key": "publisher",
+            "value": "data.wa.gov"
+          },
+          {
+            "key": "theme",
+            "value": [
+              "Transportation"
+            ]
+          },
+          {
+            "key": "catalog_@context",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+          },
+          {
+            "key": "catalog_@id",
+            "value": "https://data.wa.gov/data.json"
+          },
+          {
+            "key": "catalog_conformsTo",
+            "value": "https://project-open-data.cio.gov/v1.1/schema"
+          },
+          {
+            "key": "catalog_describedBy",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+          },
+          {
+            "key": "harvest_object_id",
+            "value": "ce4146f0-eb39-4044-b623-9a2201e8651c"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "1c33d1cb-2f69-4f1b-835e-453790f38dc7"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "WA JSON"
+          }
+        ],
+        "groups": [
+          {
+            "description": "Local Government Topic - for all datasets with state, local, county organizations",
+            "display_name": "Local Government",
+            "id": "7d625e66-9e91-4b47-badd-44ec6f16b62b",
+            "image_display_url": "",
+            "name": "local",
+            "title": "Local Government"
+          }
+        ],
+        "resources": [
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2020-11-10T17:20:33.040452",
+            "description": "",
+            "format": "CSV",
+            "hash": "",
+            "id": "fa51be35-691f-45d2-9f3e-535877965e69",
+            "last_modified": null,
+            "metadata_modified": "2020-11-10T17:20:33.040452",
+            "mimetype": "text/csv",
+            "mimetype_inner": null,
+            "name": "Comma Separated Values File",
+            "no_real_name": true,
+            "package_id": "844dbad1-ee1e-44b8-9799-34cb7ed24640",
+            "position": 0,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 10051,
+              "recent": 316
+            },
+            "url": "https://data.wa.gov/api/views/f6w7-q2d2/rows.csv?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2020-11-10T17:20:33.040463",
+            "describedBy": "https://data.wa.gov/api/views/f6w7-q2d2/columns.rdf",
+            "describedByType": "application/rdf+xml",
+            "description": "",
+            "format": "RDF",
+            "hash": "",
+            "id": "cb5a9adb-b9f1-44f5-aa3f-7f3c768da5d3",
+            "last_modified": null,
+            "metadata_modified": "2020-11-10T17:20:33.040463",
+            "mimetype": "application/rdf+xml",
+            "mimetype_inner": null,
+            "name": "RDF File",
+            "no_real_name": true,
+            "package_id": "844dbad1-ee1e-44b8-9799-34cb7ed24640",
+            "position": 1,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 801,
+              "recent": 38
+            },
+            "url": "https://data.wa.gov/api/views/f6w7-q2d2/rows.rdf?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2020-11-10T17:20:33.040469",
+            "describedBy": "https://data.wa.gov/api/views/f6w7-q2d2/columns.json",
+            "describedByType": "application/json",
+            "description": "",
+            "format": "JSON",
+            "hash": "",
+            "id": "8abbca4e-2f1c-4249-989f-b96201dd4710",
+            "last_modified": null,
+            "metadata_modified": "2020-11-10T17:20:33.040469",
+            "mimetype": "application/json",
+            "mimetype_inner": null,
+            "name": "JSON File",
+            "no_real_name": true,
+            "package_id": "844dbad1-ee1e-44b8-9799-34cb7ed24640",
+            "position": 2,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 1495,
+              "recent": 53
+            },
+            "url": "https://data.wa.gov/api/views/f6w7-q2d2/rows.json?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2020-11-10T17:20:33.040475",
+            "describedBy": "https://data.wa.gov/api/views/f6w7-q2d2/columns.xml",
+            "describedByType": "application/xml",
+            "description": "",
+            "format": "XML",
+            "hash": "",
+            "id": "28944bc8-9b8a-4956-a0bb-c18214825bc0",
+            "last_modified": null,
+            "metadata_modified": "2020-11-10T17:20:33.040475",
+            "mimetype": "application/xml",
+            "mimetype_inner": null,
+            "name": "XML File",
+            "no_real_name": true,
+            "package_id": "844dbad1-ee1e-44b8-9799-34cb7ed24640",
+            "position": 3,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 1397,
+              "recent": 45
+            },
+            "url": "https://data.wa.gov/api/views/f6w7-q2d2/rows.xml?accessType=DOWNLOAD",
+            "url_type": null
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "bev",
+            "id": "e46a30cc-3fb6-4121-8fab-7d1c4f48a3d0",
+            "name": "bev",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "bevs",
+            "id": "0a7d7dc0-87d9-400b-bece-1b3cdf911cc7",
+            "name": "bevs",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "bolt",
+            "id": "94d779a5-5dad-4189-9fdb-7d79c38f2d39",
+            "name": "bolt",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "car",
+            "id": "ec28b117-4c39-4f46-a40f-56980e8d5d6b",
+            "name": "car",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "cars",
+            "id": "6a347584-8b3f-48b6-923f-eeadeee03352",
+            "name": "cars",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "chevrolet",
+            "id": "d14ccd5e-86c3-427d-b667-21da0e0f2c44",
+            "name": "chevrolet",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "chevy",
+            "id": "110fda1a-d852-4ddc-9c12-b8186d59c5fc",
+            "name": "chevy",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "clean-energy",
+            "id": "7947184c-09d1-4423-b9b4-2bf9c5db3fb0",
+            "name": "clean-energy",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "department-of-licensing",
+            "id": "e453df41-a4b0-4b8b-89cb-99e52ace004c",
+            "name": "department-of-licensing",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "dol",
+            "id": "b381d4d7-e643-4fee-8567-850d74a27bee",
+            "name": "dol",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "dol_open_data",
+            "id": "121c3b0f-94d3-48bf-8fac-b636c1e6ef52",
+            "name": "dol_open_data",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "electric",
+            "id": "904b07dc-1b20-4726-a208-8eb0a3417191",
+            "name": "electric",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "energy",
+            "id": "7c35fe0d-a745-4f8a-aff7-961189fe994f",
+            "name": "energy",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "environment",
+            "id": "3bd6bde0-008b-457e-bb8f-acac11012cb4",
+            "name": "environment",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "ev",
+            "id": "294e1d6e-0ff8-4668-9831-37e666cbb670",
+            "name": "ev",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "evs",
+            "id": "af03be63-1832-45ac-a1c6-6d466c2e629e",
+            "name": "evs",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "green-report",
+            "id": "b1700d67-9081-489c-88e9-da4d423e040a",
+            "name": "green-report",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "hybrid",
+            "id": "b6b42582-ccc2-4922-8cdb-cd69a641c5a7",
+            "name": "hybrid",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "hybrids",
+            "id": "f11a3351-4892-4083-81d9-ef44ce807c9f",
+            "name": "hybrids",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "leaf",
+            "id": "f1872466-b3ad-44fd-8f41-63229dd33f8b",
+            "name": "leaf",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "model-3",
+            "id": "0b577574-d43c-4897-864f-5cb133c282e9",
+            "name": "model-3",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "nhtsa",
+            "id": "fe7bd889-95be-41c2-814f-19e1d55b9e57",
+            "name": "nhtsa",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "nissan",
+            "id": "aa503cef-c088-493b-9e2a-fe248dae7ded",
+            "name": "nissan",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "phev",
+            "id": "bf34f706-4218-44ed-8cf1-ca2c48e08627",
+            "name": "phev",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "phevs",
+            "id": "2c68e4e1-7190-4913-9f13-721e3d4b131f",
+            "name": "phevs",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "plug-in",
+            "id": "63330a0f-2b47-4032-bf11-1d33caa85f1b",
+            "name": "plug-in",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "plug-ins",
+            "id": "66d7dabb-10b1-42d7-af1b-882f5fa708c0",
+            "name": "plug-ins",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "population",
+            "id": "3ae740f7-3b7e-4610-9040-4c9da2a5ba08",
+            "name": "population",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "rao_ev",
+            "id": "9c80ff85-4019-43e1-b6de-f0129c5f1d24",
+            "name": "rao_ev",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "rao_open_data",
+            "id": "8df4b1ca-269c-483d-967c-971d3ab344d5",
+            "name": "rao_open_data",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "rao_veh",
+            "id": "60b45717-017c-47fe-9031-350b10a8a512",
+            "name": "rao_veh",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "tesla",
+            "id": "31c8eb68-c128-4122-ac1c-7a86f37dbbb1",
+            "name": "tesla",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "vehicle",
+            "id": "59b4fa07-a92a-4c9d-9adc-712fba80faeb",
+            "name": "vehicle",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "vehicles",
+            "id": "87e53c4b-152f-4b92-916b-96e2378ec3d7",
+            "name": "vehicles",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "volt",
+            "id": "ddee2eba-7fae-4361-94f5-852f1387fc07",
+            "name": "volt",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      },
+      {
+        "author": null,
+        "author_email": null,
+        "creator_user_id": "1ecd1fb1-1be6-46bb-b90d-07a0762ed104",
+        "id": "a8a6d900-9412-4d9f-8e95-189a6080e1d7",
+        "isopen": true,
+        "license_id": "cc-by",
+        "license_title": "Creative Commons Attribution",
+        "license_url": "http://www.opendefinition.org/licenses/cc-by",
+        "maintainer": "DCGISopendata",
+        "maintainer_email": "gisgroup@dc.gov",
+        "metadata_created": "2024-04-30T18:21:43.280707",
+        "metadata_modified": "2025-08-20T04:32:37.148070",
+        "name": "crime-incidents-in-the-last-30-days",
+        "notes": "<div style='text-align:Left;'><p><span>The dataset contains a subset of locations and attributes of incidents reported in the ASAP (Analytical Services Application) crime report database by the District of Columbia Metropolitan Police Department (MPD). Visit </span><a href='https://crimecards.dc.gov:443/' target='_blank' style='text-decoration:underline;' rel='nofollow ugc noopener noreferrer'><span>https://crimecards.dc.gov</span></a><span> for more information. This data is shared via an automated process where addresses are geocoded to the District's Master Address Repository and assigned to the appropriate street block. Block locations for some crime points could not be automatically assigned resulting in 0,0 for x,y coordinates. These can be interactively assigned using the </span><a href='https://mar2.data.dc.gov:443/' target='_blank' style='text-decoration:underline;' rel='nofollow ugc noopener noreferrer'><span>MAR Geocoder</span></a><span>.</span></p><p><span>On February 1 2020, the methodology of geography assignments of crime data was modified to increase accuracy. From January 1 2020 going forward, all crime data will have Ward, ANC, SMD, BID, Neighborhood Cluster, Voting Precinct, Block Group and Census Tract values calculated prior to, rather than after, anonymization to the block level. This change impacts approximately one percent of Ward assignments.</span></p></div>",
+        "num_resources": 7,
+        "num_tags": 12,
+        "organization": {
+          "id": "f2d0ab92-6e70-41ac-b5fd-305d70fbb37f",
+          "name": "district-of-columbia",
+          "title": "District of Columbia",
+          "type": "organization",
+          "description": "Engage with the District of Columbia through government open data.",
+          "image_url": "https://raw.githubusercontent.com/GSA/logo/master/dc.png",
+          "created": "2024-04-25T10:57:11.924623",
+          "is_organization": true,
+          "approval_status": "approved",
+          "state": "active"
+        },
+        "owner_org": "f2d0ab92-6e70-41ac-b5fd-305d70fbb37f",
+        "private": false,
+        "state": "active",
+        "title": "Crime Incidents in the Last 30 Days",
+        "type": "dataset",
+        "url": null,
+        "version": null,
+        "extras": [
+          {
+            "key": "resource-type",
+            "value": "Dataset"
+          },
+          {
+            "key": "source_hash",
+            "value": "41a137e290ebf5d2bf49f55ab6a57aa7df30379324cd98eeef43e16d5bce6ab2"
+          },
+          {
+            "key": "source_datajson_identifier",
+            "value": true
+          },
+          {
+            "key": "source_schema_version",
+            "value": "1.1"
+          },
+          {
+            "key": "accessLevel",
+            "value": "public"
+          },
+          {
+            "key": "identifier",
+            "value": "https://www.arcgis.com/home/item.html?id=dc3289eab3d2400ea49c154863312434&sublayer=8"
+          },
+          {
+            "key": "issued",
+            "value": "2015-04-29T17:24:56.000Z"
+          },
+          {
+            "key": "landingPage",
+            "value": "https://opendata.dc.gov/datasets/DCGIS::crime-incidents-in-the-last-30-days"
+          },
+          {
+            "key": "license",
+            "value": "https://creativecommons.org/licenses/by/4.0"
+          },
+          {
+            "key": "modified",
+            "value": "2025-08-13T13:19:50.000Z"
+          },
+          {
+            "key": "publisher",
+            "value": "Metropolitan Police Department"
+          },
+          {
+            "key": "theme",
+            "value": [
+              "geospatial"
+            ]
+          },
+          {
+            "key": "metadata_type",
+            "value": "geospatial"
+          },
+          {
+            "key": "catalog_@context",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+          },
+          {
+            "key": "catalog_conformsTo",
+            "value": "https://project-open-data.cio.gov/v1.1/schema"
+          },
+          {
+            "key": "catalog_describedBy",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+          },
+          {
+            "key": "old-spatial",
+            "value": "-77.1140,38.8134,-76.9099,38.9949"
+          },
+          {
+            "key": "harvest_object_id",
+            "value": "eea0ebbd-4644-4eef-b867-c1875ac15dd9"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "b05f955a-65d6-4288-9558-15a5ebc74e36"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "DC data"
+          },
+          {
+            "key": "spatial",
+            "value": "{\"type\": \"Polygon\", \"coordinates\": [[[-77.1140, 38.8134], [-77.1140, 38.9949], [-76.9099, 38.9949], [-76.9099, 38.8134], [-77.1140, 38.8134]]]}"
+          }
+        ],
+        "resources": [
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-09-17T20:42:16.802752",
+            "description": "",
+            "format": "HTML",
+            "hash": "",
+            "id": "b197213e-d243-4f75-b193-fe4244480045",
+            "last_modified": null,
+            "metadata_modified": "2024-09-17T20:42:16.771284",
+            "mimetype": "text/html",
+            "mimetype_inner": null,
+            "name": "ArcGIS Hub Dataset",
+            "package_id": "a8a6d900-9412-4d9f-8e95-189a6080e1d7",
+            "position": 0,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 19,
+              "recent": 7
+            },
+            "url": "https://opendata.dc.gov/datasets/DCGIS::crime-incidents-in-the-last-30-days",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-08-20T04:32:37.260674",
+            "description": "",
+            "format": "ArcGIS GeoServices REST API",
+            "hash": "",
+            "id": "34280782-d3c9-4f95-94b7-ea6831f97d5d",
+            "last_modified": null,
+            "metadata_modified": "2025-08-20T04:32:37.175496",
+            "mimetype": "application/json",
+            "mimetype_inner": null,
+            "name": "ArcGIS GeoService",
+            "package_id": "a8a6d900-9412-4d9f-8e95-189a6080e1d7",
+            "position": 1,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 6,
+              "recent": 4
+            },
+            "url": "https://maps2.dcgis.dc.gov/dcgis/rest/services/FEEDS/MPD/FeatureServer/8",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-04-30T18:21:43.282703",
+            "description": "",
+            "format": "CSV",
+            "hash": "",
+            "id": "d1586ef9-da5b-4df4-835c-2805fb925a36",
+            "last_modified": null,
+            "metadata_modified": "2024-04-30T18:21:43.262945",
+            "mimetype": "text/csv",
+            "mimetype_inner": null,
+            "name": "CSV",
+            "package_id": "a8a6d900-9412-4d9f-8e95-189a6080e1d7",
+            "position": 2,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 83,
+              "recent": 36
+            },
+            "url": "https://opendata.dc.gov/api/download/v1/items/dc3289eab3d2400ea49c154863312434/csv?layers=8",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-04-30T18:21:43.282706",
+            "description": "",
+            "format": "ZIP",
+            "hash": "",
+            "id": "3401e2eb-79c1-4682-b035-7cfa7e13046e",
+            "last_modified": null,
+            "metadata_modified": "2024-04-30T18:21:43.263197",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "Shapefile",
+            "package_id": "a8a6d900-9412-4d9f-8e95-189a6080e1d7",
+            "position": 3,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 3,
+              "recent": 3
+            },
+            "url": "https://opendata.dc.gov/api/download/v1/items/dc3289eab3d2400ea49c154863312434/shapefile?layers=8",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-04-30T18:21:43.282704",
+            "description": "",
+            "format": "GeoJSON",
+            "hash": "",
+            "id": "b44185d3-be13-48bd-b4ee-8103f053b007",
+            "last_modified": null,
+            "metadata_modified": "2024-04-30T18:21:43.263085",
+            "mimetype": "application/vnd.geo+json",
+            "mimetype_inner": null,
+            "name": "GeoJSON",
+            "package_id": "a8a6d900-9412-4d9f-8e95-189a6080e1d7",
+            "position": 4,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://opendata.dc.gov/api/download/v1/items/dc3289eab3d2400ea49c154863312434/geojson?layers=8",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-04-30T18:21:43.282708",
+            "description": "",
+            "format": "KML",
+            "hash": "",
+            "id": "81dd0b0a-8c3d-4920-8831-4fc5586afbcd",
+            "last_modified": null,
+            "metadata_modified": "2024-04-30T18:21:43.263310",
+            "mimetype": "application/vnd.google-earth.kml+xml",
+            "mimetype_inner": null,
+            "name": "KML",
+            "package_id": "a8a6d900-9412-4d9f-8e95-189a6080e1d7",
+            "position": 5,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 18,
+              "recent": 13
+            },
+            "url": "https://opendata.dc.gov/api/download/v1/items/dc3289eab3d2400ea49c154863312434/kml?layers=8",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-08-20T04:32:37.260679",
+            "description": "",
+            "format": "ZIP",
+            "hash": "",
+            "id": "f2fc1373-d645-4126-a75e-c2877187824a",
+            "last_modified": null,
+            "metadata_modified": "2025-08-20T04:32:37.175843",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "File Geodatabase",
+            "package_id": "a8a6d900-9412-4d9f-8e95-189a6080e1d7",
+            "position": 6,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 1,
+              "recent": 1
+            },
+            "url": "https://opendata.dc.gov/api/download/v1/items/dc3289eab3d2400ea49c154863312434/filegdb?layers=8",
+            "url_type": null
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "assault",
+            "id": "e632e1ab-e5c6-4532-a16a-d329efada8ee",
+            "name": "assault",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "burglary",
+            "id": "7d506709-e256-42da-9466-7655e1e7f103",
+            "name": "burglary",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "cdw",
+            "id": "9aad40ec-a768-4cc2-bd47-2aed3eaf7ec7",
+            "name": "cdw",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "crime",
+            "id": "df442823-c823-4890-8fca-805427bd8dd9",
+            "name": "crime",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "district-of-columbia",
+            "id": "6e98c173-96cc-47a4-97ea-1e60f831070e",
+            "name": "district-of-columbia",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "feeds",
+            "id": "addeb476-29f2-42c1-a691-5c2c43780c54",
+            "name": "feeds",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "homicide",
+            "id": "37189d09-2de1-4b8e-b61e-98ff7b7db172",
+            "name": "homicide",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mpd",
+            "id": "cab51b7f-6fce-40e3-af54-c809a64a2d4b",
+            "name": "mpd",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "robbery",
+            "id": "6423523f-f4f5-43b3-8986-88e9f7a165a6",
+            "name": "robbery",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "safety",
+            "id": "6ef4ce6e-1dc5-491c-95c9-c9613ca29ca7",
+            "name": "safety",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "theft",
+            "id": "509a0a16-fb42-4c98-aaab-045afda7a6c3",
+            "name": "theft",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "washington-dc",
+            "id": "872312eb-fdc7-4027-8d00-8fab2453b88f",
+            "name": "washington-dc",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "groups": [],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      },
+      {
+        "author": null,
+        "author_email": null,
+        "creator_user_id": "1ecd1fb1-1be6-46bb-b90d-07a0762ed104",
+        "id": "77b88dc7-5411-4287-8d5e-f14ad4c84f00",
+        "isopen": false,
+        "license_id": null,
+        "license_title": null,
+        "maintainer": null,
+        "maintainer_email": null,
+        "metadata_created": "2025-02-25T05:40:16.412123",
+        "metadata_modified": "2025-02-25T05:40:16.412130",
+        "name": "walkability-index8",
+        "notes": "The Walkability Index dataset characterizes every Census 2019 block group in the U.S. based on its relative walkability. Walkability depends upon characteristics of the built environment that influence the likelihood of walking being used as a mode of travel. The Walkability Index is based on the EPA's previous data product, the Smart Location Database (SLD). Block group data from the SLD was the only input into the Walkability Index, and consisted of four variables from the SLD weighted in a formula to create the new Walkability Index. This dataset shares the SLD's block group boundary definitions from Census 2019. The methodology describing the process of creating the Walkability Index can be found in the documents located at https://edg.epa.gov/EPADataCommons/public/OA/WalkabilityIndex.zip. You can also learn more about the Smart Location Database at https://www.epa.gov/smartgrowth/smart-location-mapping.",
+        "num_resources": 4,
+        "num_tags": 64,
+        "organization": {
+          "id": "82b85475-f85d-404a-b95b-89d1a42e9f6b",
+          "name": "epa-gov",
+          "title": "U.S. Environmental Protection Agency",
+          "type": "organization",
+          "description": "Our mission is to protect human health and the environment. ",
+          "image_url": "https://edg.epa.gov/EPALogo.svg",
+          "created": "2020-11-10T15:10:42.298896",
+          "is_organization": true,
+          "approval_status": "approved",
+          "state": "active"
+        },
+        "owner_org": "82b85475-f85d-404a-b95b-89d1a42e9f6b",
+        "private": false,
+        "state": "active",
+        "title": "Walkability Index",
+        "type": "dataset",
+        "url": null,
+        "version": null,
+        "extras": [
+          {
+            "key": "guid",
+            "value": "{251AFDD9-23A7-4068-9B27-A3048A7E6012}"
+          },
+          {
+            "key": "spatial_harvester",
+            "value": true
+          },
+          {
+            "key": "spatial-reference-system",
+            "value": ""
+          },
+          {
+            "key": "dataset-reference-date",
+            "value": "[{\"type\": \"publication\", \"value\": \"2021-05-13\"}]"
+          },
+          {
+            "key": "metadata-language",
+            "value": "eng; USA"
+          },
+          {
+            "key": "metadata-date",
+            "value": "2024-03-05"
+          },
+          {
+            "key": "coupled-resource",
+            "value": "[]"
+          },
+          {
+            "key": "contact-email",
+            "value": "thomas.john@epa.gov"
+          },
+          {
+            "key": "frequency-of-update",
+            "value": "irregular"
+          },
+          {
+            "key": "spatial-data-service-type",
+            "value": ""
+          },
+          {
+            "key": "progress",
+            "value": "completed"
+          },
+          {
+            "key": "resource-type",
+            "value": "dataset"
+          },
+          {
+            "key": "licence",
+            "value": "[\"https://edg.epa.gov/EPA_Data_License.html\"]"
+          },
+          {
+            "key": "licence_url",
+            "value": "https://edg.epa.gov/EPA_Data_License.html"
+          },
+          {
+            "key": "access_constraints",
+            "value": "[\"Use Constraints: None. Please check sources, scale, accuracy, currentness and other available information. Please confirm that you are using the most recent copy of both data and metadata. Acknowledgement of the EPA would be appreciated.\", \"Access Constraints: None.\"]"
+          },
+          {
+            "key": "temporal-extent-begin",
+            "value": "2019-01-01"
+          },
+          {
+            "key": "temporal-extent-end",
+            "value": "9999-01-01"
+          },
+          {
+            "key": "responsible-party",
+            "value": "[{\"name\": \"U.S. Environmental Protection Agency, Office of Sustainable Communities\", \"roles\": [\"pointOfContact\"]}]"
+          },
+          {
+            "key": "bbox-east-long",
+            "value": "180.000000"
+          },
+          {
+            "key": "bbox-north-lat",
+            "value": "90.000000"
+          },
+          {
+            "key": "bbox-south-lat",
+            "value": "2.969871"
+          },
+          {
+            "key": "bbox-west-long",
+            "value": "-180.000000"
+          },
+          {
+            "key": "lineage",
+            "value": "This lineage was generated by the FGDC CSDGM to 19139 transformation"
+          },
+          {
+            "key": "metadata_type",
+            "value": "geospatial"
+          },
+          {
+            "key": "old-spatial",
+            "value": "{\"type\": \"Polygon\", \"coordinates\": [[[-180.0, 2.969871], [180.0, 2.969871], [180.0, 90.0], [-180.0, 90.0], [-180.0, 2.969871]]]}"
+          },
+          {
+            "key": "spatial",
+            "value": "{\"type\": \"Polygon\", \"coordinates\": [[[-180.0, 2.969871], [180.0, 2.969871], [180.0, 90.0], [-180.0, 90.0], [-180.0, 2.969871]]]}"
+          },
+          {
+            "key": "harvest_object_id",
+            "value": "b4a7d49d-3346-4d1d-8c8a-9e21e4426fa2"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "9b3cd81e-5515-4bb7-ad3c-5ae44de9b4bd"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "Environmental Dataset Gateway ISO Geospatial Metadata"
+          }
+        ],
+        "resources": [
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-02-25T05:40:16.416097",
+            "description": "The URL providing direct access to the downloadable dataset. ",
+            "format": "ZIP",
+            "hash": "",
+            "id": "89b876c2-934f-4d06-b895-6949edfcb53c",
+            "last_modified": null,
+            "metadata_modified": "2025-02-25T05:40:16.344531",
+            "mimetype": null,
+            "mimetype_inner": null,
+            "name": "Download",
+            "package_id": "77b88dc7-5411-4287-8d5e-f14ad4c84f00",
+            "position": 0,
+            "resource_locator_function": "download",
+            "resource_locator_protocol": "download",
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 581,
+              "recent": 39
+            },
+            "url": "https://edg.epa.gov/EPADataCommons/public/OA/WalkabilityIndex.zip",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-02-25T05:40:16.416101",
+            "description": "The endpoint of a web service to access the dataset (REST endpoint, WMS GetCapabilities URL, or a SOAP WSDL endpoint).",
+            "format": "CSV",
+            "hash": "",
+            "id": "356986ec-b9ab-4fdf-8838-7262a08502e3",
+            "last_modified": null,
+            "metadata_modified": "2025-02-25T05:40:16.344651",
+            "mimetype": null,
+            "mimetype_inner": null,
+            "name": "API",
+            "package_id": "77b88dc7-5411-4287-8d5e-f14ad4c84f00",
+            "position": 1,
+            "resource_locator_function": "webMapService",
+            "resource_locator_protocol": "ESRI:ArcGIS",
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 712,
+              "recent": 20
+            },
+            "url": "https://edg.epa.gov/EPADataCommons/public/OA/EPA_SmartLocationDatabase_V3_Jan_2021_Final.csv",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-02-25T05:40:16.416103",
+            "description": "URL for accessing related documents such as data dictionary, technical information about a dataset, developer documentation, etc. ",
+            "format": "Esri REST",
+            "hash": "",
+            "id": "d2fb5474-8a6b-4bc7-99d9-6bf528afa366",
+            "last_modified": null,
+            "metadata_modified": "2025-02-25T05:40:16.344751",
+            "mimetype": null,
+            "mimetype_inner": null,
+            "name": "Documentation",
+            "package_id": "77b88dc7-5411-4287-8d5e-f14ad4c84f00",
+            "position": 2,
+            "resource_locator_function": "information",
+            "resource_locator_protocol": "information",
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 186,
+              "recent": 5
+            },
+            "url": "https://geodata.epa.gov/arcgis/rest/services/OA/WalkabilityIndex/MapServer",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-02-25T05:40:16.416104",
+            "description": "Alternative landing page used to redirect user to a contextual, Agency-hosted \"homepage\" for the Dataset or API",
+            "format": "",
+            "hash": "",
+            "id": "12683467-e443-4832-a84a-790d35bde0fc",
+            "last_modified": null,
+            "metadata_modified": "2025-02-25T05:40:16.344834",
+            "mimetype": null,
+            "mimetype_inner": null,
+            "name": "Home Page",
+            "package_id": "77b88dc7-5411-4287-8d5e-f14ad4c84f00",
+            "position": 3,
+            "resource_locator_function": "information",
+            "resource_locator_protocol": "information",
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 127,
+              "recent": 4
+            },
+            "url": "https://www.epa.gov/smartgrowth/national-walkability-index-user-guide-and-methodology",
+            "url_type": null
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "alabama",
+            "id": "0f1013b3-b565-4a57-971a-15d1d02cb453",
+            "name": "alabama",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "alaska",
+            "id": "5aa6034d-aead-4175-a8df-15f33abffb71",
+            "name": "alaska",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "american samoa",
+            "id": "6355bd1f-be89-4899-a925-8cb7f0590df6",
+            "name": "american samoa",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "arizona",
+            "id": "505b3704-0140-4a4b-b0ca-1d68829851c9",
+            "name": "arizona",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "arkansas",
+            "id": "caffc820-98d1-44a6-bc7a-701da018ff7a",
+            "name": "arkansas",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "california",
+            "id": "364760b8-6576-42af-b0c5-278dec4415e7",
+            "name": "california",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "canada",
+            "id": "f59758c7-95d8-4393-b4bf-f3e432117044",
+            "name": "canada",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "chesapeake bay",
+            "id": "9d8a9f7c-1fe0-4e17-8ddc-0991f16ecf88",
+            "name": "chesapeake bay",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "chesapeake bay watershed",
+            "id": "e568fd12-da70-480f-8832-c239f52a9099",
+            "name": "chesapeake bay watershed",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "colorado",
+            "id": "02cae6f6-bfd0-4d5a-ac43-698a632b7012",
+            "name": "colorado",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "connecticut",
+            "id": "b87a549e-fe7d-421f-a96a-5a0a9a2547a7",
+            "name": "connecticut",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "delaware",
+            "id": "1c68f29a-f1d6-4ac8-9d8a-edd75c0d65bf",
+            "name": "delaware",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "environment",
+            "id": "3bd6bde0-008b-457e-bb8f-acac11012cb4",
+            "name": "environment",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "florida",
+            "id": "9ac17e70-a9bc-456a-b4ba-a4f23a7b4515",
+            "name": "florida",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "georgia",
+            "id": "751d0569-f06b-45a4-a19c-581f717c3876",
+            "name": "georgia",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "hawaii",
+            "id": "6d7213ac-9176-4c8c-b7ab-153307561d15",
+            "name": "hawaii",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "health",
+            "id": "3b24c0fa-1ddf-4dc3-965f-93a79d68ab18",
+            "name": "health",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "human",
+            "id": "b134b1c5-7cd6-489b-ac82-d412c017919b",
+            "name": "human",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "idaho",
+            "id": "709c7640-bcac-4d2b-816e-0deeada031e3",
+            "name": "idaho",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "illinois",
+            "id": "b22bba38-b111-4cec-83e1-3720eb887c59",
+            "name": "illinois",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "indiana",
+            "id": "dc758550-afd7-493b-bbcf-f6b647678ad1",
+            "name": "indiana",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "iowa",
+            "id": "43272faa-b2d3-46fd-ba7b-b3e7582062a8",
+            "name": "iowa",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "kansas",
+            "id": "a731b321-7e6e-4c3e-b915-550070d6be23",
+            "name": "kansas",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "kentucky",
+            "id": "c6015bab-7219-4a8d-986f-c957b8d0f013",
+            "name": "kentucky",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "land",
+            "id": "899e1294-851a-4804-95fa-e0c5a45f19fc",
+            "name": "land",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "louisiana",
+            "id": "305ec236-ebfd-4b12-a6ab-56f1135f1234",
+            "name": "louisiana",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "maine",
+            "id": "83003ab0-f0fa-4960-9be1-b98e691148c3",
+            "name": "maine",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "maryland",
+            "id": "06574e84-3757-495b-80eb-ad96d6a3999c",
+            "name": "maryland",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "massachusetts",
+            "id": "83049095-7426-42f3-b8cb-1559280b3c3c",
+            "name": "massachusetts",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mexico",
+            "id": "229c9fd2-440e-45a2-a5ec-44c1cb16aa4d",
+            "name": "mexico",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "michigan",
+            "id": "7e3e25fb-13c6-4b73-9faa-d3228cf62369",
+            "name": "michigan",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "minnesota",
+            "id": "025f2afd-89e5-4009-ad27-d49310b1a06f",
+            "name": "minnesota",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mississippi",
+            "id": "37adc9a7-1801-4365-916f-97cadf73a5c3",
+            "name": "mississippi",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "missouri",
+            "id": "125d9fc9-9663-4731-b769-ce68216be9b2",
+            "name": "missouri",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "montana",
+            "id": "bfc4a41a-32c3-4f6f-8102-93d5e9b970c8",
+            "name": "montana",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "nebraska",
+            "id": "896efe62-1f24-4d57-aad8-29dfa5e63525",
+            "name": "nebraska",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "nevada",
+            "id": "2830ad14-05eb-44b7-8533-96336d133990",
+            "name": "nevada",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "new hampshire",
+            "id": "7aa744b5-8d2d-4419-a84f-c071e5f4f04a",
+            "name": "new hampshire",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "new jersey",
+            "id": "620d3fad-abba-4063-988f-6cc0448cfe9f",
+            "name": "new jersey",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "new mexico",
+            "id": "e79c2ba6-bd42-4b31-8289-93fcc1554d07",
+            "name": "new mexico",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "new york",
+            "id": "940de59b-e4bf-478d-b975-1f6fb5f998fa",
+            "name": "new york",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "north carolina",
+            "id": "96b50168-d0eb-40d9-acfd-cea55965cb93",
+            "name": "north carolina",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "north dakota",
+            "id": "a836e403-5d94-49d2-b173-dab02f668f16",
+            "name": "north dakota",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "ohio",
+            "id": "00c7081e-4155-4a54-9432-0905da42e744",
+            "name": "ohio",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "oklahoma",
+            "id": "bbf16c39-b456-45e5-81bc-980ae4a42275",
+            "name": "oklahoma",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "oregon",
+            "id": "128ded42-1a99-48a5-8f7a-7c244eb2e0f7",
+            "name": "oregon",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "pennsylvania",
+            "id": "d7d26f14-e389-42ac-8fb7-cec913b033aa",
+            "name": "pennsylvania",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "puerto rico",
+            "id": "682abee0-3e87-45c5-8e27-6d447a92b426",
+            "name": "puerto rico",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "recreation",
+            "id": "ecae1244-a7d8-45c1-a161-ecaa1fa4c638",
+            "name": "recreation",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "rhode island",
+            "id": "e3fbcd62-efe9-421e-923a-31213a880d9e",
+            "name": "rhode island",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "south carolina",
+            "id": "95cd2a53-c794-4460-8623-ff5556af019f",
+            "name": "south carolina",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "south dakota",
+            "id": "b4e6cfd5-b0cd-4589-aa5f-f034f7d13498",
+            "name": "south dakota",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "tennessee",
+            "id": "bc5ae4d2-3fef-4cf9-9e55-08819c2b91d0",
+            "name": "tennessee",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "texas",
+            "id": "41f19b7c-6fe6-4041-9229-fcba0278a6c9",
+            "name": "texas",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "transportation",
+            "id": "9de63758-c817-4198-8946-25300ec44352",
+            "name": "transportation",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "united states",
+            "id": "e91ed835-c966-4d60-a3a1-9f6f774f8a1c",
+            "name": "united states",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "utah",
+            "id": "51a1d813-a630-4490-9ce5-015334c39826",
+            "name": "utah",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "vermont",
+            "id": "69e03fb4-857a-4fed-ad39-436f1005bb6a",
+            "name": "vermont",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "virginia",
+            "id": "9eba7ccb-8234-4f34-9f78-a51ea87bf46d",
+            "name": "virginia",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "washington",
+            "id": "75eae539-9b91-4cf6-b3ac-f9383fd16373",
+            "name": "washington",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "washington dc",
+            "id": "1875d308-ac89-4fce-833f-5f1bccce6632",
+            "name": "washington dc",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "west virginia",
+            "id": "871dd60b-0be4-44cb-9d0f-f276ab2e31c0",
+            "name": "west virginia",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "wisconsin",
+            "id": "467fd4c1-1bba-45c3-b24c-dcd0869fd0dc",
+            "name": "wisconsin",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "wyoming",
+            "id": "99cbf63b-3249-4862-8246-4641ce50f2b8",
+            "name": "wyoming",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "groups": [],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      },
+      {
+        "author": null,
+        "author_email": null,
+        "creator_user_id": "2b785922-9f13-491b-a3c2-2a40acbd80c2",
+        "id": "71b27167-9c74-4895-9750-bb8bc7af3e1c",
+        "isopen": false,
+        "license_id": "notspecified",
+        "license_title": "License not specified",
+        "maintainer": "Jacob Shepard",
+        "maintainer_email": "no-reply@data.wa.gov",
+        "metadata_created": "2020-11-10T17:19:49.214735",
+        "metadata_modified": "2025-01-03T21:20:55.110967",
+        "name": "business-lookup",
+        "notes": "The Business Lookup provides public information related to all current active accounts and five years of closed accounts for business licenses, excise tax accounts, and reseller permits issued by the Washington State Department of Revenue (DOR). It allows for search by business name, trade name, owners and officers, reseller permit number, unified business identifier (UBI), license number, street address, city, state, county, and endorsements issued through DOR's Business Licensing Service.",
+        "num_resources": 1,
+        "num_tags": 12,
+        "organization": {
+          "id": "bccbad82-abc4-4712-bd29-3e194e7a8042",
+          "name": "state-of-washington",
+          "title": "State of Washington",
+          "type": "organization",
+          "description": "Washington Technology Solutions (WaTech) provides the state of Washington Open Data Program for all state agencies to publish public data at https://data.wa.gov. Washington state agencies, library systems, school districts, and small local government entities publish more than 2,500 datasets, visualizations, and data stories that people access nearly three million times per month. Data topics include campaign contributions, public health, licensed professionals, environment, social services, vehicle licensing and registration, public safety, and more.",
+          "image_url": "https://raw.githubusercontent.com/GSA/logo/refs/heads/master/wa-opendata.png",
+          "created": "2020-11-10T15:27:34.605650",
+          "is_organization": true,
+          "approval_status": "approved",
+          "state": "active"
+        },
+        "owner_org": "bccbad82-abc4-4712-bd29-3e194e7a8042",
+        "private": false,
+        "state": "active",
+        "title": "Business Lookup",
+        "type": "dataset",
+        "url": null,
+        "version": null,
+        "extras": [
+          {
+            "key": "resource-type",
+            "value": "Dataset"
+          },
+          {
+            "key": "source_hash",
+            "value": "6f5fce5a9603f151274781f5cfc544c4254ee23511ced9630c1507f95a708519"
+          },
+          {
+            "key": "source_datajson_identifier",
+            "value": true
+          },
+          {
+            "key": "source_schema_version",
+            "value": "1.1"
+          },
+          {
+            "key": "accessLevel",
+            "value": "public"
+          },
+          {
+            "key": "identifier",
+            "value": "https://data.wa.gov/api/views/4wur-kfnr"
+          },
+          {
+            "key": "issued",
+            "value": "2016-04-07"
+          },
+          {
+            "key": "landingPage",
+            "value": "https://data.wa.gov/d/4wur-kfnr"
+          },
+          {
+            "key": "modified",
+            "value": "2025-01-02"
+          },
+          {
+            "key": "publisher",
+            "value": "data.wa.gov"
+          },
+          {
+            "key": "theme",
+            "value": [
+              "Consumer Protection"
+            ]
+          },
+          {
+            "key": "catalog_@context",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+          },
+          {
+            "key": "catalog_@id",
+            "value": "https://data.wa.gov/data.json"
+          },
+          {
+            "key": "catalog_conformsTo",
+            "value": "https://project-open-data.cio.gov/v1.1/schema"
+          },
+          {
+            "key": "catalog_describedBy",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+          },
+          {
+            "key": "harvest_object_id",
+            "value": "329e2185-7234-40c3-9f93-f670a12e32dc"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "1c33d1cb-2f69-4f1b-835e-453790f38dc7"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "WA JSON"
+          }
+        ],
+        "groups": [
+          {
+            "description": "Local Government Topic - for all datasets with state, local, county organizations",
+            "display_name": "Local Government",
+            "id": "7d625e66-9e91-4b47-badd-44ec6f16b62b",
+            "image_display_url": "",
+            "name": "local",
+            "title": "Local Government"
+          }
+        ],
+        "resources": [
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-08-16T18:43:02.789709",
+            "description": "Search tool for business lookups. Desktop format for computers with full size browsers.",
+            "format": "HTML",
+            "hash": "",
+            "id": "eff2f7c5-37c5-4ee3-bc3a-a83226cdcee3",
+            "last_modified": null,
+            "metadata_modified": "2024-09-13T19:05:32.658539",
+            "mimetype": "text/html",
+            "mimetype_inner": null,
+            "name": "BLS Business Lookup",
+            "package_id": "71b27167-9c74-4895-9750-bb8bc7af3e1c",
+            "position": 0,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 231,
+              "recent": 15
+            },
+            "url": "https://secure.dor.wa.gov/gteunauth/?Link=Lookup",
+            "url_type": null
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "business-licenses",
+            "id": "2acccb66-c342-4f96-8902-d600d21d1520",
+            "name": "business-licenses",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "business-names",
+            "id": "c1387765-5b18-4485-be8e-19fd066522cb",
+            "name": "business-names",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "business-officers",
+            "id": "86bf1066-6303-4e09-8662-11ed26860eff",
+            "name": "business-officers",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "business-owners",
+            "id": "7e70de30-0b6d-4b38-839c-63c2ec15633d",
+            "name": "business-owners",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "business-registrations",
+            "id": "9de5fbba-0b03-4e70-acc4-0af25e03acdc",
+            "name": "business-registrations",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "businesses",
+            "id": "579d47e2-0186-4002-aead-a3b939750722",
+            "name": "businesses",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "companies",
+            "id": "07b0e9c4-2c7d-4add-8345-0962ff37503d",
+            "name": "companies",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "corporations",
+            "id": "268a37d5-43e7-4ced-ad05-bfdd6f477bcc",
+            "name": "corporations",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "reseller-permits",
+            "id": "61aff547-cbb9-4bd3-a669-4ea09728c360",
+            "name": "reseller-permits",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "tax-accounts",
+            "id": "c99d70b6-2da1-4fb0-af87-0786344380d3",
+            "name": "tax-accounts",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "trade-names",
+            "id": "9e29c901-ae2e-4c68-a4e7-4fbca9da8932",
+            "name": "trade-names",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "unified-business-identifiers-ubi",
+            "id": "f455186f-bb62-4911-a3a3-5e2de01ad45a",
+            "name": "unified-business-identifiers-ubi",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      },
+      {
+        "author": null,
+        "author_email": null,
+        "creator_user_id": "1ecd1fb1-1be6-46bb-b90d-07a0762ed104",
+        "id": "44ed8078-df52-4a6f-978b-4413a113aaeb",
+        "isopen": true,
+        "license_id": "cc-by",
+        "license_title": "Creative Commons Attribution",
+        "license_url": "http://www.opendefinition.org/licenses/cc-by",
+        "maintainer": "DCGISopendata",
+        "maintainer_email": "gisgroup@dc.gov",
+        "metadata_created": "2025-02-04T23:32:20.302160",
+        "metadata_modified": "2025-08-20T04:32:45.362768",
+        "name": "crime-incidents-in-2025",
+        "notes": "<div style='text-align:Left;'><div><div><p><span>The dataset contains a subset of locations and attributes of incidents reported in the ASAP (Analytical Services Application) crime report database by the District of Columbia Metropolitan Police Department (MPD). Visit </span><a href='https://crimecards.dc.gov' target='_blank' rel='nofollow ugc noopener noreferrer'>crimecards.dc.gov</a><span> for more information. This data is shared via an automated process where addresses are geocoded to the District's Master Address Repository and assigned to the appropriate street block. Block locations for some crime points could not be automatically assigned resulting in 0,0 for x,y coordinates. These can be interactively assigned using the </span><a href='https://mar2.data.dc.gov' target='_blank' rel='nofollow ugc noopener noreferrer'>MAR Geocoder</a><span>.</span></p><p><span>On February 1 2020, the methodology of geography assignments of crime data was modified to increase accuracy. From January 1 2020 going forward, all crime data will have Ward, ANC, SMD, BID, Neighborhood Cluster, Voting Precinct, Block Group and Census Tract values calculated prior to, rather than after, anonymization to the block level. This change impacts approximately one percent of Ward assignments.</span></p></div></div></div>",
+        "num_resources": 7,
+        "num_tags": 12,
+        "organization": {
+          "id": "f2d0ab92-6e70-41ac-b5fd-305d70fbb37f",
+          "name": "district-of-columbia",
+          "title": "District of Columbia",
+          "type": "organization",
+          "description": "Engage with the District of Columbia through government open data.",
+          "image_url": "https://raw.githubusercontent.com/GSA/logo/master/dc.png",
+          "created": "2024-04-25T10:57:11.924623",
+          "is_organization": true,
+          "approval_status": "approved",
+          "state": "active"
+        },
+        "owner_org": "f2d0ab92-6e70-41ac-b5fd-305d70fbb37f",
+        "private": false,
+        "state": "active",
+        "title": "Crime Incidents in 2025",
+        "type": "dataset",
+        "url": null,
+        "version": null,
+        "extras": [
+          {
+            "key": "resource-type",
+            "value": "Dataset"
+          },
+          {
+            "key": "source_hash",
+            "value": "2007d68214bbf65bd79ea7a341bf894e476e354383739bb64bb9e7956a71016f"
+          },
+          {
+            "key": "source_datajson_identifier",
+            "value": true
+          },
+          {
+            "key": "source_schema_version",
+            "value": "1.1"
+          },
+          {
+            "key": "accessLevel",
+            "value": "public"
+          },
+          {
+            "key": "identifier",
+            "value": "https://www.arcgis.com/home/item.html?id=74d924ddc3374e3b977e6f002478cb9b&sublayer=7"
+          },
+          {
+            "key": "issued",
+            "value": "2025-01-06T17:02:34.000Z"
+          },
+          {
+            "key": "landingPage",
+            "value": "https://opendata.dc.gov/datasets/DCGIS::crime-incidents-in-2025"
+          },
+          {
+            "key": "license",
+            "value": "https://creativecommons.org/licenses/by/4.0"
+          },
+          {
+            "key": "modified",
+            "value": "2025-08-13T13:17:40.000Z"
+          },
+          {
+            "key": "publisher",
+            "value": "Metropolitan Police Department"
+          },
+          {
+            "key": "theme",
+            "value": [
+              "geospatial"
+            ]
+          },
+          {
+            "key": "metadata_type",
+            "value": "geospatial"
+          },
+          {
+            "key": "catalog_@context",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+          },
+          {
+            "key": "catalog_conformsTo",
+            "value": "https://project-open-data.cio.gov/v1.1/schema"
+          },
+          {
+            "key": "catalog_describedBy",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+          },
+          {
+            "key": "old-spatial",
+            "value": "-77.1140,38.8134,-76.9099,38.9949"
+          },
+          {
+            "key": "harvest_object_id",
+            "value": "1230b596-66ce-4801-8745-b1122739a2ad"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "b05f955a-65d6-4288-9558-15a5ebc74e36"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "DC data"
+          },
+          {
+            "key": "spatial",
+            "value": "{\"type\": \"Polygon\", \"coordinates\": [[[-77.1140, 38.8134], [-77.1140, 38.9949], [-76.9099, 38.9949], [-76.9099, 38.8134], [-77.1140, 38.8134]]]}"
+          }
+        ],
+        "resources": [
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-02-04T23:32:20.305690",
+            "description": "",
+            "format": "HTML",
+            "hash": "",
+            "id": "ba85a369-c111-4cec-907c-a030c02ddf64",
+            "last_modified": null,
+            "metadata_modified": "2025-02-04T23:32:20.286042",
+            "mimetype": "text/html",
+            "mimetype_inner": null,
+            "name": "ArcGIS Hub Dataset",
+            "package_id": "44ed8078-df52-4a6f-978b-4413a113aaeb",
+            "position": 0,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 13,
+              "recent": 4
+            },
+            "url": "https://opendata.dc.gov/datasets/DCGIS::crime-incidents-in-2025",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-08-20T04:32:45.519958",
+            "description": "",
+            "format": "ArcGIS GeoServices REST API",
+            "hash": "",
+            "id": "6ace77c4-a39b-4fb0-81ef-28f43fcc5e3c",
+            "last_modified": null,
+            "metadata_modified": "2025-08-20T04:32:45.382958",
+            "mimetype": "application/json",
+            "mimetype_inner": null,
+            "name": "ArcGIS GeoService",
+            "package_id": "44ed8078-df52-4a6f-978b-4413a113aaeb",
+            "position": 1,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://maps2.dcgis.dc.gov/dcgis/rest/services/FEEDS/MPD/FeatureServer/7",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-02-04T23:32:20.305697",
+            "description": "",
+            "format": "CSV",
+            "hash": "",
+            "id": "c7c3b9f2-219f-4d28-b6f8-5cd10ef6bc5a",
+            "last_modified": null,
+            "metadata_modified": "2025-02-04T23:32:20.286410",
+            "mimetype": "text/csv",
+            "mimetype_inner": null,
+            "name": "CSV",
+            "package_id": "44ed8078-df52-4a6f-978b-4413a113aaeb",
+            "position": 2,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 55,
+              "recent": 10
+            },
+            "url": "https://opendata.dc.gov/api/download/v1/items/74d924ddc3374e3b977e6f002478cb9b/csv?layers=7",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-02-04T23:32:20.305699",
+            "description": "",
+            "format": "ZIP",
+            "hash": "",
+            "id": "c548bfca-a423-4379-bb0e-2d58b8e14dc2",
+            "last_modified": null,
+            "metadata_modified": "2025-02-04T23:32:20.286521",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "Shapefile",
+            "package_id": "44ed8078-df52-4a6f-978b-4413a113aaeb",
+            "position": 3,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 2,
+              "recent": 2
+            },
+            "url": "https://opendata.dc.gov/api/download/v1/items/74d924ddc3374e3b977e6f002478cb9b/shapefile?layers=7",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-02-04T23:32:20.305700",
+            "description": "",
+            "format": "GeoJSON",
+            "hash": "",
+            "id": "46daeaa0-eeb5-4829-a435-e36546def53f",
+            "last_modified": null,
+            "metadata_modified": "2025-02-04T23:32:20.286631",
+            "mimetype": "application/vnd.geo+json",
+            "mimetype_inner": null,
+            "name": "GeoJSON",
+            "package_id": "44ed8078-df52-4a6f-978b-4413a113aaeb",
+            "position": 4,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 8,
+              "recent": 2
+            },
+            "url": "https://opendata.dc.gov/api/download/v1/items/74d924ddc3374e3b977e6f002478cb9b/geojson?layers=7",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-02-04T23:32:20.305702",
+            "description": "",
+            "format": "KML",
+            "hash": "",
+            "id": "6b24a9df-42ff-4cc0-846b-0d27e6384d90",
+            "last_modified": null,
+            "metadata_modified": "2025-02-04T23:32:20.286741",
+            "mimetype": "application/vnd.google-earth.kml+xml",
+            "mimetype_inner": null,
+            "name": "KML",
+            "package_id": "44ed8078-df52-4a6f-978b-4413a113aaeb",
+            "position": 5,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 18,
+              "recent": 4
+            },
+            "url": "https://opendata.dc.gov/api/download/v1/items/74d924ddc3374e3b977e6f002478cb9b/kml?layers=7",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-08-20T04:32:45.519963",
+            "description": "",
+            "format": "ZIP",
+            "hash": "",
+            "id": "bbe801d0-2942-48d2-bad6-f52ed3486a68",
+            "last_modified": null,
+            "metadata_modified": "2025-08-20T04:32:45.383323",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "File Geodatabase",
+            "package_id": "44ed8078-df52-4a6f-978b-4413a113aaeb",
+            "position": 6,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 2,
+              "recent": 2
+            },
+            "url": "https://opendata.dc.gov/api/download/v1/items/74d924ddc3374e3b977e6f002478cb9b/filegdb?layers=7",
+            "url_type": null
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "assault",
+            "id": "e632e1ab-e5c6-4532-a16a-d329efada8ee",
+            "name": "assault",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "burglary",
+            "id": "7d506709-e256-42da-9466-7655e1e7f103",
+            "name": "burglary",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "cdw",
+            "id": "9aad40ec-a768-4cc2-bd47-2aed3eaf7ec7",
+            "name": "cdw",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "crime",
+            "id": "df442823-c823-4890-8fca-805427bd8dd9",
+            "name": "crime",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "district-of-columbia",
+            "id": "6e98c173-96cc-47a4-97ea-1e60f831070e",
+            "name": "district-of-columbia",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "feeds",
+            "id": "addeb476-29f2-42c1-a691-5c2c43780c54",
+            "name": "feeds",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "homicide",
+            "id": "37189d09-2de1-4b8e-b61e-98ff7b7db172",
+            "name": "homicide",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mpd",
+            "id": "cab51b7f-6fce-40e3-af54-c809a64a2d4b",
+            "name": "mpd",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "robbery",
+            "id": "6423523f-f4f5-43b3-8986-88e9f7a165a6",
+            "name": "robbery",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "safety",
+            "id": "6ef4ce6e-1dc5-491c-95c9-c9613ca29ca7",
+            "name": "safety",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "theft",
+            "id": "509a0a16-fb42-4c98-aaab-045afda7a6c3",
+            "name": "theft",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "washington-dc",
+            "id": "872312eb-fdc7-4027-8d00-8fab2453b88f",
+            "name": "washington-dc",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "groups": [],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      },
+      {
+        "author": null,
+        "author_email": null,
+        "creator_user_id": "1ecd1fb1-1be6-46bb-b90d-07a0762ed104",
+        "id": "cb6a67f2-7211-4f6e-addf-0ccb4ac14d47",
+        "isopen": false,
+        "license_id": "other-license-specified",
+        "license_title": "other-license-specified",
+        "maintainer": "CRDC Team",
+        "maintainer_email": "ocrdata@ed.gov",
+        "metadata_created": "2024-10-01T04:27:44.321279",
+        "metadata_modified": "2024-10-01T04:27:44.321285",
+        "name": "civil-rights-data-collection-crdc",
+        "notes": "Since 1968, OCR has collected civil rights data related to students' access and barriers to educational opportunity from early childhood through grade 12. These data are collected from all public schools and districts, as well as long-term secure juvenile justice facilities, charter schools, alternative schools, and special education schools that focus primarily on serving the educational needs of students with disabilities under IDEA or section 504 of the Rehabilitation Act.\r\n\r\nThe CRDC collects information about student enrollment; access to courses, programs and school staff; and school climate factors, such as bullying, harassment and student discipline. Most data collected by the CRDC are disaggregated by race, ethnicity, sex, disability, and English Learners.\r\n\r\nOriginally known as the Elementary and Secondary School Civil Rights Survey, OCR began by collecting data every year from 1968 to 1974 from a sample of school districts and their schools. Over time, the schedule and approach to data collection has changed. Since the 2011-12 collection, the CRDC has been administered every two years to all public school districts and schools in the 50 states and Washington, D.C., and OCR added the Commonwealth of Puerto Rico for the 2017-18 CRDC. Due to the COVID-19 pandemic that resulted in school closures nationwide, OCR postponed the 2019-20 CRDC and instead collected data from the 2020-21 school year.",
+        "num_resources": 0,
+        "num_tags": 11,
+        "organization": {
+          "id": "217e855b-cd64-4ebc-958b-abbbb0f57ac2",
+          "name": "ed-gov",
+          "title": "Department of Education",
+          "type": "organization",
+          "description": "",
+          "image_url": "https://raw.githubusercontent.com/GSA/logo/refs/heads/master/ed.png",
+          "created": "2020-11-10T15:11:46.307254",
+          "is_organization": true,
+          "approval_status": "approved",
+          "state": "active"
+        },
+        "owner_org": "217e855b-cd64-4ebc-958b-abbbb0f57ac2",
+        "private": false,
+        "state": "active",
+        "title": "Civil Rights Data Collection (CRDC)",
+        "type": "dataset",
+        "url": null,
+        "version": null,
+        "extras": [
+          {
+            "key": "resource-type",
+            "value": "Dataset"
+          },
+          {
+            "key": "source_hash",
+            "value": "cb1322d9b3256aeeb4944b4287a48a66e6ea7a1d5e06ab6c0516cc1f0dc9fbd4"
+          },
+          {
+            "key": "source_datajson_identifier",
+            "value": true
+          },
+          {
+            "key": "source_schema_version",
+            "value": "1.1"
+          },
+          {
+            "key": "accessLevel",
+            "value": "public"
+          },
+          {
+            "key": "accrualPeriodicity",
+            "value": "R/P2Y"
+          },
+          {
+            "key": "bureauCode",
+            "value": [
+              "018:00"
+            ]
+          },
+          {
+            "key": "identifier",
+            "value": "4ac6fe16-957d-4e2b-bbcb-1680c9f6939c"
+          },
+          {
+            "key": "landingPage",
+            "value": "https://civilrightsdata.ed.gov/data"
+          },
+          {
+            "key": "license",
+            "value": "http://www.opendefinition.org/licenses/cc-by"
+          },
+          {
+            "key": "modified",
+            "value": "2024-09-29T17:01:20.530145"
+          },
+          {
+            "key": "programCode",
+            "value": [
+              "018:000"
+            ]
+          },
+          {
+            "key": "publisher",
+            "value": "Office for Civil Rights (OCR)"
+          },
+          {
+            "key": "collection_metadata",
+            "value": "true"
+          },
+          {
+            "key": "catalog_conformsTo",
+            "value": "https://project-open-data.cio.gov/v1.1/schema"
+          },
+          {
+            "key": "catalog_describedBy",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+          },
+          {
+            "key": "catalog_@context",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+          },
+          {
+            "key": "catalog_@id",
+            "value": "https://data.ed.gov/data.json"
+          },
+          {
+            "key": "publisher_hierarchy",
+            "value": "U.S. Government > U.S. Department of Education > Office of the Secretary (OS) > Office for Civil Rights (OCR)"
+          },
+          {
+            "key": "harvest_object_id",
+            "value": "293a1197-03fb-47a4-9e8d-b6667e73d111"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "2a5c4dd8-eda9-4f03-abc3-fff8cfb80fc6"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "Education JSON"
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "advanced-placement",
+            "id": "421e2b99-1d47-424c-8cf7-463274203604",
+            "name": "advanced-placement",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "civil-rights",
+            "id": "47e6beb6-164a-4cbc-ad53-09d49516070d",
+            "name": "civil-rights",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "course-taking",
+            "id": "c29cc6b0-9ab8-446c-b378-15781a0d60fc",
+            "name": "course-taking",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "data",
+            "id": "f40f62db-7210-448e-9a77-a028a7e32621",
+            "name": "data",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "discrimination",
+            "id": "922a8b54-5776-41b7-a93f-6b1ef11ef44b",
+            "name": "discrimination",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "education-of-children-with-disabilities",
+            "id": "428e1a64-668e-4538-b877-fc2f6cb464c5",
+            "name": "education-of-children-with-disabilities",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "elementary-and-secondary",
+            "id": "5213d405-b761-4ecb-becd-23accd623d29",
+            "name": "elementary-and-secondary",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "minority-groups",
+            "id": "5aff20f2-f230-4c6d-a071-a4fa40ca89c2",
+            "name": "minority-groups",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "ocr",
+            "id": "54a2e81a-0800-42d1-8a29-cc9d8053a5b6",
+            "name": "ocr",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "office-for-civil-rights-ocr",
+            "id": "fd54d223-e24e-43b9-88a1-dcd0eed3828b",
+            "name": "office-for-civil-rights-ocr",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "race",
+            "id": "e0eea0d9-9219-4b8f-afae-533236f435b9",
+            "name": "race",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "resources": [],
+        "groups": [],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      },
+      {
+        "author": null,
+        "author_email": null,
+        "creator_user_id": "1ecd1fb1-1be6-46bb-b90d-07a0762ed104",
+        "id": "87dbbdaf-8ea8-427d-acd8-8915231cca65",
+        "isopen": false,
+        "license_id": "other-license-specified",
+        "license_title": "other-license-specified",
+        "maintainer": "Office of Health Equity, Healthy Places Team",
+        "maintainer_email": "opendata@cdph.ca.gov",
+        "metadata_created": "2025-07-23T21:36:42.751861",
+        "metadata_modified": "2025-07-24T17:18:37.473133",
+        "name": "violent-crime-rate-94cb9",
+        "notes": "This table contains data on the rate of violent crime (crimes per 1,000 population) for California, its regions, counties, cities and towns. Crime and population data are from the Federal Bureau of Investigations, Uniform Crime Reports. Rates above the city/town level include data from city, university and college, county, state, tribal, and federal law enforcement agencies.  The table is part of a series of indicators in the Healthy Communities Data and Indicators Project of the Office of Health Equity. Ten percent of all deaths in young California adults aged 15-44 years are related to assault and homicide. In 2010, California law enforcement agencies reported 1,809 murders, 8,331 rapes, and over 95,000 aggravated assaults. African Americans in California are 11 times more likely to die of assault and homicide than Whites. More information about the data table and a data dictionary can be found in the About/Attachments section.",
+        "num_resources": 4,
+        "num_tags": 15,
+        "organization": {
+          "id": "ae56c24b-46d3-4688-965e-94bdc208164f",
+          "name": "ca-gov",
+          "title": "State of California",
+          "type": "organization",
+          "description": "State of California",
+          "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Seal_of_California.svg/250px-Seal_of_California.svg.png",
+          "created": "2020-11-10T14:12:32.792144",
+          "is_organization": true,
+          "approval_status": "approved",
+          "state": "active"
+        },
+        "owner_org": "ae56c24b-46d3-4688-965e-94bdc208164f",
+        "private": false,
+        "state": "active",
+        "title": "Violent Crime Rate",
+        "type": "dataset",
+        "url": null,
+        "version": null,
+        "extras": [
+          {
+            "key": "resource-type",
+            "value": "Dataset"
+          },
+          {
+            "key": "source_hash",
+            "value": "a72fe738eb5c53fe8081e6eabf2b78fc754004f0271c43213fdefaf59681ed3c"
+          },
+          {
+            "key": "source_datajson_identifier",
+            "value": true
+          },
+          {
+            "key": "source_schema_version",
+            "value": "1.1"
+          },
+          {
+            "key": "accessLevel",
+            "value": "public"
+          },
+          {
+            "key": "identifier",
+            "value": "666c5721-735e-434f-8a5e-dc520b3150c4"
+          },
+          {
+            "key": "issued",
+            "value": "2017-06-16T22:37:41.117706"
+          },
+          {
+            "key": "license",
+            "value": "http://www.opendefinition.org/licenses/cc-by"
+          },
+          {
+            "key": "modified",
+            "value": "2024-08-29T04:05:32.108074"
+          },
+          {
+            "key": "publisher",
+            "value": "California Department of Public Health"
+          },
+          {
+            "key": "theme",
+            "value": [
+              "Health and Human Services"
+            ]
+          },
+          {
+            "key": "catalog_conformsTo",
+            "value": "https://project-open-data.cio.gov/v1.1/schema"
+          },
+          {
+            "key": "catalog_describedBy",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+          },
+          {
+            "key": "catalog_@context",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+          },
+          {
+            "key": "datagov_dedupe_retained",
+            "value": "20250724164837"
+          },
+          {
+            "key": "harvest_object_id",
+            "value": "acbe047c-914e-4d39-be1e-dcd942c2cb11"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "3ba8a0c1-5dc2-4897-940f-81922d3cf8bc"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "State of California"
+          }
+        ],
+        "resources": [
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-07-23T21:36:42.753956",
+            "description": "hci_crime_752-narrative_examples-10-30-15-ada.pdf",
+            "format": "PDF",
+            "hash": "",
+            "id": "32b3245b-84b7-48ac-a3f2-c7d4b12916d0",
+            "last_modified": null,
+            "metadata_modified": "2025-07-24T17:18:37.479651",
+            "mimetype": "application/pdf",
+            "mimetype_inner": null,
+            "name": "Violent Crime Narrative",
+            "package_id": "87dbbdaf-8ea8-427d-acd8-8915231cca65",
+            "position": 0,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 290,
+              "recent": 12
+            },
+            "url": "https://data.chhs.ca.gov/dataset/99bc1fea-c55c-4377-bad8-f00832fd195d/resource/5a6d5fe9-36e6-4aca-ba4c-bf6edc682cf5/download/hci_crime_752-narrative_examples-10-30-15-ada.pdf",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-07-23T21:36:42.753960",
+            "describedBy": "https://data.ca.gov/api/action/datastore_search?resource_id=358f23e6-f0f9-45e1-864c-fbad0f0b84b3&limit=0",
+            "describedByType": "application/json",
+            "description": "This table contains data on the rate of violent crime (crimes per 1,000 population) for California, its regions, counties, cities and towns. Crime and population data are from the Federal Bureau of Investigations, Uniform Crime Reports. Rates above the city/town level include data from city, university and college, county, state, tribal, and federal law enforcement agencies.  The table is part of a series of indicators in the Healthy Communities Data and Indicators Project of the Office of Health Equity (http://www.cdph.ca.gov/programs/Pages/HealthyCommunityIndicators.aspx).  Ten percent of all deaths in young California adults aged 15-44 years are related to assault and homicide. In 2010, California law enforcement agencies reported 1,809 murders, 8,331 rapes, and over 95,000 aggravated assaults. African Americans in California are 11 times more likely to die of assault and homicide than Whites. More information about the data table and a data dictionary can be found in the About/Attachments section.",
+            "format": "XLS",
+            "hash": "",
+            "id": "d114bfc1-1cf8-4ab4-b82c-5fe5244f495d",
+            "last_modified": null,
+            "metadata_modified": "2025-07-24T17:18:37.479800",
+            "mimetype": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "mimetype_inner": null,
+            "name": "Violent Crime Rate California 2000-2013",
+            "package_id": "87dbbdaf-8ea8-427d-acd8-8915231cca65",
+            "position": 1,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 425,
+              "recent": 22
+            },
+            "url": "https://data.chhs.ca.gov/dataset/99bc1fea-c55c-4377-bad8-f00832fd195d/resource/bc09f211-200c-4c4c-aa13-d2e89c0d5577/download/hci_crime_752_pl_co_re_ca_2000-2013_21oct15-ada.xlsx",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-07-23T21:36:42.753963",
+            "describedBy": "https://data.ca.gov/api/action/datastore_search?resource_id=adf9c3ac-8d1b-4a96-8744-c6a8010d865b&limit=0",
+            "describedByType": "application/json",
+            "description": "violentcrimedatadictionary.xlsx",
+            "format": "XLS",
+            "hash": "",
+            "id": "4fe5dac6-062b-4127-874f-3bd9b7576d91",
+            "last_modified": null,
+            "metadata_modified": "2025-07-24T17:18:37.479921",
+            "mimetype": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "mimetype_inner": null,
+            "name": "Violent Crime - Data Dictionary",
+            "package_id": "87dbbdaf-8ea8-427d-acd8-8915231cca65",
+            "position": 2,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 109,
+              "recent": 6
+            },
+            "url": "https://data.chhs.ca.gov/dataset/99bc1fea-c55c-4377-bad8-f00832fd195d/resource/86cd9392-4d4c-40a1-8b7f-0ac247c8b841/download/violentcrimedatadictionary.xlsx",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-07-23T21:36:42.753966",
+            "description": "violent-crime-rate-california-2006-2010-tk4rpbsn.zip",
+            "format": "ZIP",
+            "hash": "",
+            "id": "abf1c473-88eb-474d-8c1a-2d4952390ad5",
+            "last_modified": null,
+            "metadata_modified": "2025-07-24T17:18:37.480040",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "All resource data",
+            "package_id": "87dbbdaf-8ea8-427d-acd8-8915231cca65",
+            "position": 3,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 60,
+              "recent": 1
+            },
+            "url": "https://data.chhs.ca.gov/dataset/99bc1fea-c55c-4377-bad8-f00832fd195d/resource/c9a0afc7-0310-4aeb-acd9-658ecedcc8f7/download/violent-crime-rate-california-2006-2010-tk4rpbsn.zip",
+            "url_type": null
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "agravated-assualt",
+            "id": "ccd1f591-ec55-44fd-9b54-7f2b7fe07b02",
+            "name": "agravated-assualt",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "california-department-of-public-health",
+            "id": "d4756420-c655-4032-a56f-587649f556de",
+            "name": "california-department-of-public-health",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "crime",
+            "id": "df442823-c823-4890-8fca-805427bd8dd9",
+            "name": "crime",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "crime-data",
+            "id": "7fb56318-7ab7-4439-9cda-0751ff07298a",
+            "name": "crime-data",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "healthy-community-indicator",
+            "id": "e6e4e4a2-717a-4f77-b540-8bfbb6538af7",
+            "name": "healthy-community-indicator",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "homicide",
+            "id": "37189d09-2de1-4b8e-b61e-98ff7b7db172",
+            "name": "homicide",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "manslaughter",
+            "id": "9dddf9bd-ba01-4430-8d4d-d9d35d619622",
+            "name": "manslaughter",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "murder",
+            "id": "aab0acef-ca19-4f28-a7ba-f4023473a15c",
+            "name": "murder",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "rape",
+            "id": "8517b810-cb56-4f3c-af8b-011e8aaf7238",
+            "name": "rape",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "robbery",
+            "id": "6423523f-f4f5-43b3-8986-88e9f7a165a6",
+            "name": "robbery",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "sexual-assualt",
+            "id": "6a713902-9048-4f34-bda2-d84653850433",
+            "name": "sexual-assualt",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "social-determinants-of-health",
+            "id": "62186c5f-4c86-4a02-b23a-9d0d526cbb10",
+            "name": "social-determinants-of-health",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "uniform-crime-report",
+            "id": "906caefe-7efa-4eba-a615-ce2bec7efd19",
+            "name": "uniform-crime-report",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "violence",
+            "id": "50e0bb44-355f-43f1-addc-ede7730fe312",
+            "name": "violence",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "violent-crimes",
+            "id": "7eca6a02-2178-420c-9476-2fbf63939bea",
+            "name": "violent-crimes",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "groups": [],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      },
+      {
+        "author": null,
+        "author_email": null,
+        "creator_user_id": "2b785922-9f13-491b-a3c2-2a40acbd80c2",
+        "id": "655517cc-7811-4179-8139-5b7bc0e3f68e",
+        "isopen": false,
+        "license_id": "other-license-specified",
+        "license_title": "other-license-specified",
+        "maintainer": "Todd Solomon",
+        "maintainer_email": "todd.solomon@dot.gov",
+        "metadata_created": "2020-11-12T12:44:46.119982",
+        "metadata_modified": "2023-12-07T18:26:33.668572",
+        "name": "daily-transit-ridership",
+        "notes": "Includes New York City MTA Subway, San Francisco BART Rail, Washington Metropolitan Area Transit Authority Bus and Rail",
+        "num_resources": 4,
+        "num_tags": 3,
+        "organization": {
+          "id": "c549d5ce-2b93-4397-ab76-aa2b31d9983a",
+          "name": "dot-gov",
+          "title": "Department of Transportation",
+          "type": "organization",
+          "description": "",
+          "image_url": "https://upload.wikimedia.org/wikipedia/commons/8/81/US_DOT_Triskelion.png",
+          "created": "2020-11-10T14:13:01.158937",
+          "is_organization": true,
+          "approval_status": "approved",
+          "state": "active"
+        },
+        "owner_org": "c549d5ce-2b93-4397-ab76-aa2b31d9983a",
+        "private": false,
+        "state": "active",
+        "title": "Daily Transit Ridership",
+        "type": "dataset",
+        "url": null,
+        "version": null,
+        "extras": [
+          {
+            "key": "resource-type",
+            "value": "Dataset"
+          },
+          {
+            "key": "source_hash",
+            "value": "34cd38ba7e8a4d6682a8cc31e037239f56347416407836dfacdcd05eae880b5b"
+          },
+          {
+            "key": "source_datajson_identifier",
+            "value": true
+          },
+          {
+            "key": "source_schema_version",
+            "value": "1.1"
+          },
+          {
+            "key": "accessLevel",
+            "value": "public"
+          },
+          {
+            "key": "accrualPeriodicity",
+            "value": "R/P1W"
+          },
+          {
+            "key": "bureauCode",
+            "value": [
+              "021:04"
+            ]
+          },
+          {
+            "key": "identifier",
+            "value": "https://data.transportation.gov/api/views/dc74-f8qd"
+          },
+          {
+            "key": "issued",
+            "value": "2021-12-16"
+          },
+          {
+            "key": "landingPage",
+            "value": "https://data.transportation.gov/d/dc74-f8qd"
+          },
+          {
+            "key": "language",
+            "value": [
+              "en-US"
+            ]
+          },
+          {
+            "key": "license",
+            "value": "https://www.usa.gov/government-works"
+          },
+          {
+            "key": "modified",
+            "value": "2022-10-25"
+          },
+          {
+            "key": "programCode",
+            "value": [
+              "021:042"
+            ]
+          },
+          {
+            "key": "publisher",
+            "value": "Bureau of Transportation Statistics"
+          },
+          {
+            "key": "theme",
+            "value": [
+              "Transit"
+            ]
+          },
+          {
+            "key": "phone",
+            "value": "2023660573"
+          },
+          {
+            "key": "catalog_@context",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+          },
+          {
+            "key": "catalog_@id",
+            "value": "https://data.transportation.gov/data.json"
+          },
+          {
+            "key": "catalog_conformsTo",
+            "value": "https://project-open-data.cio.gov/v1.1/schema"
+          },
+          {
+            "key": "catalog_describedBy",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+          },
+          {
+            "key": "harvest_object_id",
+            "value": "8f61cd66-899c-4c72-a83b-c3bf9f6b296d"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "a776e4b7-8221-443c-85ed-c5ee5db0c360"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "DOT Socrata Data.json"
+          }
+        ],
+        "resources": [
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2020-11-12T12:44:46.139211",
+            "description": "",
+            "format": "CSV",
+            "hash": "",
+            "id": "74234d4c-f20f-4068-980a-c650bd0fffed",
+            "last_modified": null,
+            "metadata_modified": "2020-11-12T12:44:46.139211",
+            "mimetype": "text/csv",
+            "mimetype_inner": null,
+            "name": "Comma Separated Values File",
+            "no_real_name": true,
+            "package_id": "655517cc-7811-4179-8139-5b7bc0e3f68e",
+            "position": 0,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 39,
+              "recent": 11
+            },
+            "url": "https://data.transportation.gov/api/views/dc74-f8qd/rows.csv?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2020-11-12T12:44:46.139218",
+            "describedBy": "https://data.transportation.gov/api/views/dc74-f8qd/columns.rdf",
+            "describedByType": "application/rdf+xml",
+            "description": "",
+            "format": "RDF",
+            "hash": "",
+            "id": "5767b953-cebd-44d6-a7f7-344c4b2f40e9",
+            "last_modified": null,
+            "metadata_modified": "2020-11-12T12:44:46.139218",
+            "mimetype": "application/rdf+xml",
+            "mimetype_inner": null,
+            "name": "RDF File",
+            "no_real_name": true,
+            "package_id": "655517cc-7811-4179-8139-5b7bc0e3f68e",
+            "position": 1,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 2,
+              "recent": 2
+            },
+            "url": "https://data.transportation.gov/api/views/dc74-f8qd/rows.rdf?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2020-11-12T12:44:46.139221",
+            "describedBy": "https://data.transportation.gov/api/views/dc74-f8qd/columns.json",
+            "describedByType": "application/json",
+            "description": "",
+            "format": "JSON",
+            "hash": "",
+            "id": "3087abf1-babe-4511-9b14-4b83646dcd70",
+            "last_modified": null,
+            "metadata_modified": "2020-11-12T12:44:46.139221",
+            "mimetype": "application/json",
+            "mimetype_inner": null,
+            "name": "JSON File",
+            "no_real_name": true,
+            "package_id": "655517cc-7811-4179-8139-5b7bc0e3f68e",
+            "position": 2,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 3,
+              "recent": 2
+            },
+            "url": "https://data.transportation.gov/api/views/dc74-f8qd/rows.json?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2020-11-12T12:44:46.139224",
+            "describedBy": "https://data.transportation.gov/api/views/dc74-f8qd/columns.xml",
+            "describedByType": "application/xml",
+            "description": "",
+            "format": "XML",
+            "hash": "",
+            "id": "f5152653-dd72-4527-a93e-a072bf729812",
+            "last_modified": null,
+            "metadata_modified": "2020-11-12T12:44:46.139224",
+            "mimetype": "application/xml",
+            "mimetype_inner": null,
+            "name": "XML File",
+            "no_real_name": true,
+            "package_id": "655517cc-7811-4179-8139-5b7bc0e3f68e",
+            "position": 3,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://data.transportation.gov/api/views/dc74-f8qd/rows.xml?accessType=DOWNLOAD",
+            "url_type": null
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "public-transit",
+            "id": "19c5dfad-a04c-4d6a-8ece-15a85089a19f",
+            "name": "public-transit",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "transit",
+            "id": "5d6c0388-b480-435e-a172-e5fdaeca0b3a",
+            "name": "transit",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "transit-ridership",
+            "id": "33ad52a5-181b-4c7e-a3e1-ac72bbe9f39c",
+            "name": "transit-ridership",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "groups": [],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      },
+      {
+        "author": null,
+        "author_email": null,
+        "creator_user_id": "1ecd1fb1-1be6-46bb-b90d-07a0762ed104",
+        "id": "e7ff93e1-5527-4d77-acc9-9f358a8f3e33",
+        "isopen": true,
+        "license_id": "cc-by",
+        "license_title": "Creative Commons Attribution",
+        "license_url": "http://www.opendefinition.org/licenses/cc-by",
+        "maintainer": "DCGISopendata",
+        "maintainer_email": "gisgroup@dc.gov",
+        "metadata_created": "2024-04-30T17:45:55.595469",
+        "metadata_modified": "2025-05-28T02:42:17.127504",
+        "name": "atm-banking",
+        "notes": "<div style='text-align:Left;'><div><div><p><span>The Chief Technology Office (OCTO) has captured the majority of ATM banking locations in the District of Columbia.</span></p></div></div></div>",
+        "num_resources": 7,
+        "num_tags": 9,
+        "organization": {
+          "id": "f2d0ab92-6e70-41ac-b5fd-305d70fbb37f",
+          "name": "district-of-columbia",
+          "title": "District of Columbia",
+          "type": "organization",
+          "description": "Engage with the District of Columbia through government open data.",
+          "image_url": "https://raw.githubusercontent.com/GSA/logo/master/dc.png",
+          "created": "2024-04-25T10:57:11.924623",
+          "is_organization": true,
+          "approval_status": "approved",
+          "state": "active"
+        },
+        "owner_org": "f2d0ab92-6e70-41ac-b5fd-305d70fbb37f",
+        "private": false,
+        "state": "active",
+        "title": "ATM Banking",
+        "type": "dataset",
+        "url": null,
+        "version": null,
+        "extras": [
+          {
+            "key": "resource-type",
+            "value": "Dataset"
+          },
+          {
+            "key": "source_hash",
+            "value": "8426853d418ef9a8866d4dd2cbaf7950a83f5410c54e89dd8c715771d73c1965"
+          },
+          {
+            "key": "source_datajson_identifier",
+            "value": true
+          },
+          {
+            "key": "source_schema_version",
+            "value": "1.1"
+          },
+          {
+            "key": "accessLevel",
+            "value": "public"
+          },
+          {
+            "key": "identifier",
+            "value": "https://www.arcgis.com/home/item.html?id=5555b90602a94d9c85d63ee62a860c6e&sublayer=31"
+          },
+          {
+            "key": "issued",
+            "value": "2015-12-09T19:37:26.000Z"
+          },
+          {
+            "key": "landingPage",
+            "value": "https://opendata.dc.gov/datasets/DCGIS::atm-banking"
+          },
+          {
+            "key": "license",
+            "value": "https://creativecommons.org/licenses/by/4.0"
+          },
+          {
+            "key": "modified",
+            "value": "2025-05-16T00:00:00.000Z"
+          },
+          {
+            "key": "publisher",
+            "value": "City of Washington, DC"
+          },
+          {
+            "key": "theme",
+            "value": [
+              "geospatial"
+            ]
+          },
+          {
+            "key": "metadata_type",
+            "value": "geospatial"
+          },
+          {
+            "key": "catalog_@context",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+          },
+          {
+            "key": "catalog_conformsTo",
+            "value": "https://project-open-data.cio.gov/v1.1/schema"
+          },
+          {
+            "key": "catalog_describedBy",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+          },
+          {
+            "key": "old-spatial",
+            "value": "-77.0972,38.8210,-76.9114,38.9845"
+          },
+          {
+            "key": "harvest_object_id",
+            "value": "423d0959-db46-416c-aec7-044d897b3446"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "b05f955a-65d6-4288-9558-15a5ebc74e36"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "DC data"
+          },
+          {
+            "key": "spatial",
+            "value": "{\"type\": \"Polygon\", \"coordinates\": [[[-77.0972, 38.8210], [-77.0972, 38.9845], [-76.9114, 38.9845], [-76.9114, 38.8210], [-77.0972, 38.8210]]]}"
+          }
+        ],
+        "resources": [
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-09-17T20:28:59.588747",
+            "description": "",
+            "format": "HTML",
+            "hash": "",
+            "id": "85d766fe-a353-469b-8c5d-ec55b3e14813",
+            "last_modified": null,
+            "metadata_modified": "2024-09-17T20:28:59.550919",
+            "mimetype": "text/html",
+            "mimetype_inner": null,
+            "name": "ArcGIS Hub Dataset",
+            "package_id": "e7ff93e1-5527-4d77-acc9-9f358a8f3e33",
+            "position": 0,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://opendata.dc.gov/datasets/DCGIS::atm-banking",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-04-30T17:45:55.601302",
+            "description": "",
+            "format": "ArcGIS GeoServices REST API",
+            "hash": "",
+            "id": "95a77b55-55e6-4dfe-9ed8-5d5247c6cab0",
+            "last_modified": null,
+            "metadata_modified": "2024-04-30T17:45:55.576562",
+            "mimetype": "application/json",
+            "mimetype_inner": null,
+            "name": "ArcGIS GeoService",
+            "package_id": "e7ff93e1-5527-4d77-acc9-9f358a8f3e33",
+            "position": 1,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://maps2.dcgis.dc.gov/dcgis/rest/services/DCGIS_DATA/Business_Goods_and_Service_WebMercator/MapServer/31",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-09-17T20:28:59.588751",
+            "description": "",
+            "format": "OGC WMS",
+            "hash": "",
+            "id": "d8836bc2-7ab3-4ebf-8c08-8c4b4e739d5f",
+            "last_modified": null,
+            "metadata_modified": "2024-09-17T20:28:59.551167",
+            "mimetype": "application/vnd.ogc.wms_xml",
+            "mimetype_inner": null,
+            "name": "OGC WMS",
+            "package_id": "e7ff93e1-5527-4d77-acc9-9f358a8f3e33",
+            "position": 2,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 6,
+              "recent": 4
+            },
+            "url": "https://maps2.dcgis.dc.gov/dcgis/services/DCGIS_DATA/Business_Goods_and_Service_WebMercator/MapServer/WMSServer?request=GetCapabilities&service=WMS",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-04-30T17:45:55.601305",
+            "description": "",
+            "format": "CSV",
+            "hash": "",
+            "id": "d062857e-31e5-4d76-9f92-d778c3a3b363",
+            "last_modified": null,
+            "metadata_modified": "2024-04-30T17:45:55.576686",
+            "mimetype": "text/csv",
+            "mimetype_inner": null,
+            "name": "CSV",
+            "package_id": "e7ff93e1-5527-4d77-acc9-9f358a8f3e33",
+            "position": 3,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 8,
+              "recent": 1
+            },
+            "url": "https://opendata.dc.gov/api/download/v1/items/5555b90602a94d9c85d63ee62a860c6e/csv?layers=31",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-04-30T17:45:55.601310",
+            "description": "",
+            "format": "ZIP",
+            "hash": "",
+            "id": "9a15e95b-c6d0-4d89-819b-642e33e0e46f",
+            "last_modified": null,
+            "metadata_modified": "2024-04-30T17:45:55.576928",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "Shapefile",
+            "package_id": "e7ff93e1-5527-4d77-acc9-9f358a8f3e33",
+            "position": 4,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://opendata.dc.gov/api/download/v1/items/5555b90602a94d9c85d63ee62a860c6e/shapefile?layers=31",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-04-30T17:45:55.601307",
+            "description": "",
+            "format": "GeoJSON",
+            "hash": "",
+            "id": "5d8b991b-16da-4c25-98c7-002598008af3",
+            "last_modified": null,
+            "metadata_modified": "2024-04-30T17:45:55.576812",
+            "mimetype": "application/vnd.geo+json",
+            "mimetype_inner": null,
+            "name": "GeoJSON",
+            "package_id": "e7ff93e1-5527-4d77-acc9-9f358a8f3e33",
+            "position": 5,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://opendata.dc.gov/api/download/v1/items/5555b90602a94d9c85d63ee62a860c6e/geojson?layers=31",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-04-30T17:45:55.601313",
+            "description": "",
+            "format": "KML",
+            "hash": "",
+            "id": "a9457a0a-a182-4465-9e17-bd9326c9fe7b",
+            "last_modified": null,
+            "metadata_modified": "2024-04-30T17:45:55.577084",
+            "mimetype": "application/vnd.google-earth.kml+xml",
+            "mimetype_inner": null,
+            "name": "KML",
+            "package_id": "e7ff93e1-5527-4d77-acc9-9f358a8f3e33",
+            "position": 6,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 1,
+              "recent": 1
+            },
+            "url": "https://opendata.dc.gov/api/download/v1/items/5555b90602a94d9c85d63ee62a860c6e/kml?layers=31",
+            "url_type": null
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "atm",
+            "id": "a7fbdf16-7d14-4361-af33-4fa842fc3841",
+            "name": "atm",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "bank",
+            "id": "dd8445bd-2d0b-4222-badc-8abffce96bb4",
+            "name": "bank",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "business",
+            "id": "f73abeb4-5a8a-4d5b-85c1-d327c903e2a3",
+            "name": "business",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "credit-union",
+            "id": "a1f70e00-d0d4-491b-96eb-f6e8462b486f",
+            "name": "credit-union",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "dc",
+            "id": "b9f8e2d8-8d39-4019-b726-c308b028f8d4",
+            "name": "dc",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "economic",
+            "id": "02b4642f-3517-40d7-8c9b-55116d046575",
+            "name": "economic",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "money",
+            "id": "9b43a485-e5e7-4d59-8bf1-3ab963191f83",
+            "name": "money",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "octo",
+            "id": "b11e3da1-2ad9-4581-a983-90870694224e",
+            "name": "octo",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "washington-dc",
+            "id": "872312eb-fdc7-4027-8d00-8fab2453b88f",
+            "name": "washington-dc",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "groups": [],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      },
+      {
+        "author": null,
+        "author_email": null,
+        "creator_user_id": "1ecd1fb1-1be6-46bb-b90d-07a0762ed104",
+        "id": "9b711253-9a0f-4223-b407-1606e5a20697",
+        "isopen": false,
+        "license_id": "other-license-specified",
+        "license_title": "other-license-specified",
+        "maintainer": "Wesley Ingwersen",
+        "maintainer_email": "ingwersen.wesley@epa.gov",
+        "metadata_created": "2025-04-24T11:59:30.557222",
+        "metadata_modified": "2025-04-24T11:59:30.557228",
+        "name": "useeio-v2-5-models",
+        "notes": "This dataset consists of various USEEIO v2.5 models.\nAll models are built using the coupled model approach described in the EPA 2024 report \"Estimating embodied environmental flows in international imports for the U.S. Environmentally-Extended Input-Output (USEEIO) Model\" and using the v1.7.0 release of useeior.\nModels are named using an alias that corresponds with a unique set of model attributes, and the final two digits represent the last two digits of the year intended to be represented. Model alias attributes are defined at https://github.com/USEPA/USEEIO/blob/master/models.md#aliases.\nCatbird and oriole are detailed and summary-level models, respectively, coupled with CEDA 2024 for representing GHGs in imports.\nKinglet and kingbird are detailed and summary-level models, respectively, coupled with EXIOBASE v3.8.2 for representing GHGs in imports.\nWaxwing and yellowthroat are detailed and summary-level models, respectively, coupled with the GLORIA v59a model for representing GHGs and material flows in imports.\nThe summary level models are available for 2017-2022 for EXIOBASE- and GLORIA-coupled models and 2022 for the CEDA-coupled model. The detailed CEDA, EXIOBASE and GLORIA coupled models are only available for 2022 (note underlying U.S. IO data represents 2017 for detailed models). \n\n\"v2.5-kingbird-\" models replace \"v2.3-s-GHG-\" models, published under \"USEEIO Models with Import Emission Factors for Greenhouse Gases for 2017-2022 from EXIOBASE coupled model\".\n\"v2.5-oriole-22\" replaces \"v2.4-oriole-22\" , published under \"USEEIO Models with Import Emission Factors for Greenhouse Gases for 2022 from CEDA coupled model\". \n\nThe model objects are in unique tabs/worksheets of each file and defined in https://github.com/USEPA/useeior/blob/v1.7.0/format_specs/Model.md.\nLinks to the model specification files are provided below. \n\nMore information can be found on these models in two additions to the original EPA report \"Estimating embodied environmental flows in international imports for the USEEIO Model\" https://cfpub.epa.gov/si/si_public_record_report.cfm?dirEntryId=362470. The \"Corrigendum: Updated Results for Consumption-based GHG Emissions\" describes updates related to the EXIOBASE and CEDA coupled models. Addendum 2 describes the GLORIA coupled models. \n\nPlease cite this dataset as \"Young, Ben, and Wesley Ingwersen. 2025. USEEIO v2.5 Models. Data.gov. https://doi.org/10.23719/1532178.\". \n\nThis dataset is associated with the following publication:\nIngwersen, W.W., J. Namovich, B. Young, and J. Vendries. Estimating embodied environmental flows in international imports for the USEEIO Model. U.S. Environmental Protection Agency, Washington, DC, USA, 2024.",
+        "num_resources": 16,
+        "num_tags": 3,
+        "organization": {
+          "id": "82b85475-f85d-404a-b95b-89d1a42e9f6b",
+          "name": "epa-gov",
+          "title": "U.S. Environmental Protection Agency",
+          "type": "organization",
+          "description": "Our mission is to protect human health and the environment. ",
+          "image_url": "https://edg.epa.gov/EPALogo.svg",
+          "created": "2020-11-10T15:10:42.298896",
+          "is_organization": true,
+          "approval_status": "approved",
+          "state": "active"
+        },
+        "owner_org": "82b85475-f85d-404a-b95b-89d1a42e9f6b",
+        "private": false,
+        "state": "active",
+        "title": "USEEIO v2.5 Models",
+        "type": "dataset",
+        "url": null,
+        "version": null,
+        "extras": [
+          {
+            "key": "resource-type",
+            "value": "Dataset"
+          },
+          {
+            "key": "source_hash",
+            "value": "3da124c13047e346254e7ce3987392814e4f68b832cb9b10e87528cf85661886"
+          },
+          {
+            "key": "source_datajson_identifier",
+            "value": true
+          },
+          {
+            "key": "source_schema_version",
+            "value": "1.1"
+          },
+          {
+            "key": "accessLevel",
+            "value": "public"
+          },
+          {
+            "key": "bureauCode",
+            "value": [
+              "020:00"
+            ]
+          },
+          {
+            "key": "identifier",
+            "value": "https://doi.org/10.23719/1532178"
+          },
+          {
+            "key": "license",
+            "value": "https://pasteur.epa.gov/license/sciencehub-license.html"
+          },
+          {
+            "key": "modified",
+            "value": "2025-04-16"
+          },
+          {
+            "key": "programCode",
+            "value": [
+              "020:000"
+            ]
+          },
+          {
+            "key": "publisher",
+            "value": "U.S. EPA Office of Research and Development (ORD)"
+          },
+          {
+            "key": "references",
+            "value": [
+              "https://dmap-data-commons-ord.s3.amazonaws.com/useeior/USEEIOv2.5-catbird-22.yml",
+              "https://dmap-data-commons-ord.s3.amazonaws.com/useeior/USEEIOv2.5-kingbird-17.yml",
+              "https://dmap-data-commons-ord.s3.amazonaws.com/useeior/USEEIOv2.5-kingbird-18.yml",
+              "https://dmap-data-commons-ord.s3.amazonaws.com/useeior/USEEIOv2.5-kingbird-19.yml",
+              "https://dmap-data-commons-ord.s3.amazonaws.com/useeior/USEEIOv2.5-kingbird-20.yml",
+              "https://dmap-data-commons-ord.s3.amazonaws.com/useeior/USEEIOv2.5-kingbird-21.yml",
+              "https://dmap-data-commons-ord.s3.amazonaws.com/useeior/USEEIOv2.5-kingbird-22.yml",
+              "https://dmap-data-commons-ord.s3.amazonaws.com/useeior/USEEIOv2.5-kinglet-22.yml",
+              "https://dmap-data-commons-ord.s3.amazonaws.com/useeior/USEEIOv2.5-oriole-22.yml",
+              "https://dmap-data-commons-ord.s3.amazonaws.com/useeior/USEEIOv2.5-waxwing-22.yml",
+              "https://dmap-data-commons-ord.s3.amazonaws.com/useeior/USEEIOv2.5-yellowthroat-17.yml",
+              "https://dmap-data-commons-ord.s3.amazonaws.com/useeior/USEEIOv2.5-yellowthroat-18.yml",
+              "https://dmap-data-commons-ord.s3.amazonaws.com/useeior/USEEIOv2.5-yellowthroat-19.yml",
+              "https://dmap-data-commons-ord.s3.amazonaws.com/useeior/USEEIOv2.5-yellowthroat-20.yml",
+              "https://dmap-data-commons-ord.s3.amazonaws.com/useeior/USEEIOv2.5-yellowthroat-21.yml",
+              "https://dmap-data-commons-ord.s3.amazonaws.com/useeior/USEEIOv2.5-yellowthroat-22.yml"
+            ]
+          },
+          {
+            "key": "describedBy",
+            "value": "https://github.com/USEPA/useeior/blob/v1.7.0/format_specs/Model.md"
+          },
+          {
+            "key": "catalog_conformsTo",
+            "value": "https://project-open-data.cio.gov/v1.1/schema"
+          },
+          {
+            "key": "publisher_hierarchy",
+            "value": "U.S. Government > U.S. Environmental Protection Agency > U.S. EPA Office of Research and Development (ORD)"
+          },
+          {
+            "key": "harvest_object_id",
+            "value": "e8294a52-fb45-4cd7-8725-cb21befd77cf"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "04b59eaf-ae53-4066-93db-80f2ed0df446"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "EPA ScienceHub"
+          }
+        ],
+        "resources": [
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-04-24T11:59:30.564146",
+            "description": "USEEIOv2.5-yellowthroat-22.xlsx",
+            "format": "ZIP",
+            "hash": "",
+            "id": "0d7b1c11-3850-4ef2-b5ce-564a8ef8ee4c",
+            "last_modified": null,
+            "metadata_modified": "2025-04-24T11:59:30.544105",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "USEEIOv2.5-yellowthroat-22.xlsx",
+            "package_id": "9b711253-9a0f-4223-b407-1606e5a20697",
+            "position": 0,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 70,
+              "recent": 15
+            },
+            "url": "https://pasteur.epa.gov/uploads/10.23719/1532178/USEEIOv2.5-yellowthroat-22.xlsx",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-04-24T11:59:30.564151",
+            "description": "USEEIOv2.5-yellowthroat-21.xlsx",
+            "format": "ZIP",
+            "hash": "",
+            "id": "52458297-fc57-4ef7-868e-68f4f7876b96",
+            "last_modified": null,
+            "metadata_modified": "2025-04-24T11:59:30.544324",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "USEEIOv2.5-yellowthroat-21.xlsx",
+            "package_id": "9b711253-9a0f-4223-b407-1606e5a20697",
+            "position": 1,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 4,
+              "recent": 2
+            },
+            "url": "https://pasteur.epa.gov/uploads/10.23719/1532178/USEEIOv2.5-yellowthroat-21.xlsx",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-04-24T11:59:30.564154",
+            "description": "USEEIOv2.5-yellowthroat-20.xlsx",
+            "format": "ZIP",
+            "hash": "",
+            "id": "655cd5ce-baa4-474c-9f44-39cf126a8d12",
+            "last_modified": null,
+            "metadata_modified": "2025-04-24T11:59:30.544556",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "USEEIOv2.5-yellowthroat-20.xlsx",
+            "package_id": "9b711253-9a0f-4223-b407-1606e5a20697",
+            "position": 2,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://pasteur.epa.gov/uploads/10.23719/1532178/USEEIOv2.5-yellowthroat-20.xlsx",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-04-24T11:59:30.564157",
+            "description": "USEEIOv2.5-yellowthroat-19.xlsx",
+            "format": "ZIP",
+            "hash": "",
+            "id": "607272d9-34fe-42ec-aef5-269278edebd9",
+            "last_modified": null,
+            "metadata_modified": "2025-04-24T11:59:30.544748",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "USEEIOv2.5-yellowthroat-19.xlsx",
+            "package_id": "9b711253-9a0f-4223-b407-1606e5a20697",
+            "position": 3,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://pasteur.epa.gov/uploads/10.23719/1532178/USEEIOv2.5-yellowthroat-19.xlsx",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-04-24T11:59:30.564159",
+            "description": "USEEIOv2.5-yellowthroat-18.xlsx",
+            "format": "ZIP",
+            "hash": "",
+            "id": "143846b0-08bf-4ccc-83dd-eb931f93d5ed",
+            "last_modified": null,
+            "metadata_modified": "2025-04-24T11:59:30.544926",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "USEEIOv2.5-yellowthroat-18.xlsx",
+            "package_id": "9b711253-9a0f-4223-b407-1606e5a20697",
+            "position": 4,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 1,
+              "recent": 1
+            },
+            "url": "https://pasteur.epa.gov/uploads/10.23719/1532178/USEEIOv2.5-yellowthroat-18.xlsx",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-04-24T11:59:30.564162",
+            "description": "USEEIOv2.5-yellowthroat-17.xlsx",
+            "format": "ZIP",
+            "hash": "",
+            "id": "ce1f66e4-1fb1-4bdc-9854-79b665bf810b",
+            "last_modified": null,
+            "metadata_modified": "2025-04-24T11:59:30.545101",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "USEEIOv2.5-yellowthroat-17.xlsx",
+            "package_id": "9b711253-9a0f-4223-b407-1606e5a20697",
+            "position": 5,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 4,
+              "recent": 4
+            },
+            "url": "https://pasteur.epa.gov/uploads/10.23719/1532178/USEEIOv2.5-yellowthroat-17.xlsx",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-04-24T11:59:30.564164",
+            "description": "USEEIOv2.5-waxwing-22.xlsx",
+            "format": "ZIP",
+            "hash": "",
+            "id": "ef6e7f1f-d4ef-4ca1-ac30-c419c64bfd23",
+            "last_modified": null,
+            "metadata_modified": "2025-04-24T11:59:30.545274",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "USEEIOv2.5-waxwing-22.xlsx",
+            "package_id": "9b711253-9a0f-4223-b407-1606e5a20697",
+            "position": 6,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 4,
+              "recent": 2
+            },
+            "url": "https://pasteur.epa.gov/uploads/10.23719/1532178/USEEIOv2.5-waxwing-22.xlsx",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-04-24T11:59:30.564167",
+            "description": "USEEIOv2.5-oriole-22.xlsx",
+            "format": "ZIP",
+            "hash": "",
+            "id": "32402138-d97d-44d4-99a1-d4e9f9f0b1c1",
+            "last_modified": null,
+            "metadata_modified": "2025-04-24T11:59:30.545448",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "USEEIOv2.5-oriole-22.xlsx",
+            "package_id": "9b711253-9a0f-4223-b407-1606e5a20697",
+            "position": 7,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 2,
+              "recent": 2
+            },
+            "url": "https://pasteur.epa.gov/uploads/10.23719/1532178/USEEIOv2.5-oriole-22.xlsx",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-04-24T11:59:30.564169",
+            "description": "USEEIOv2.5-kinglet-22.xlsx",
+            "format": "ZIP",
+            "hash": "",
+            "id": "ef9ad858-5d52-4f32-b408-8fb541ca56ae",
+            "last_modified": null,
+            "metadata_modified": "2025-04-24T11:59:30.545625",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "USEEIOv2.5-kinglet-22.xlsx",
+            "package_id": "9b711253-9a0f-4223-b407-1606e5a20697",
+            "position": 8,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 5,
+              "recent": 3
+            },
+            "url": "https://pasteur.epa.gov/uploads/10.23719/1532178/USEEIOv2.5-kinglet-22.xlsx",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-04-24T11:59:30.564172",
+            "description": "USEEIOv2.5-kingbird-22.xlsx",
+            "format": "ZIP",
+            "hash": "",
+            "id": "dba0ba5c-dadf-41fa-b627-5d3fe1e96fa6",
+            "last_modified": null,
+            "metadata_modified": "2025-04-24T11:59:30.545810",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "USEEIOv2.5-kingbird-22.xlsx",
+            "package_id": "9b711253-9a0f-4223-b407-1606e5a20697",
+            "position": 9,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 4,
+              "recent": 2
+            },
+            "url": "https://pasteur.epa.gov/uploads/10.23719/1532178/USEEIOv2.5-kingbird-22.xlsx",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-04-24T11:59:30.564174",
+            "description": "USEEIOv2.5-kingbird-21.xlsx",
+            "format": "ZIP",
+            "hash": "",
+            "id": "12c65c2d-b134-45d5-ba8f-bc87126ead1e",
+            "last_modified": null,
+            "metadata_modified": "2025-04-24T11:59:30.545988",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "USEEIOv2.5-kingbird-21.xlsx",
+            "package_id": "9b711253-9a0f-4223-b407-1606e5a20697",
+            "position": 10,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://pasteur.epa.gov/uploads/10.23719/1532178/USEEIOv2.5-kingbird-21.xlsx",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-04-24T11:59:30.564177",
+            "description": "USEEIOv2.5-kingbird-20.xlsx",
+            "format": "ZIP",
+            "hash": "",
+            "id": "2cde04d4-7402-46e5-b6b4-0683046e1be6",
+            "last_modified": null,
+            "metadata_modified": "2025-04-24T11:59:30.546159",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "USEEIOv2.5-kingbird-20.xlsx",
+            "package_id": "9b711253-9a0f-4223-b407-1606e5a20697",
+            "position": 11,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 2,
+              "recent": 2
+            },
+            "url": "https://pasteur.epa.gov/uploads/10.23719/1532178/USEEIOv2.5-kingbird-20.xlsx",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-04-24T11:59:30.564179",
+            "description": "USEEIOv2.5-kingbird-19.xlsx",
+            "format": "ZIP",
+            "hash": "",
+            "id": "875d8c8a-54f7-4a86-9e31-41eed27a128c",
+            "last_modified": null,
+            "metadata_modified": "2025-04-24T11:59:30.546338",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "USEEIOv2.5-kingbird-19.xlsx",
+            "package_id": "9b711253-9a0f-4223-b407-1606e5a20697",
+            "position": 12,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://pasteur.epa.gov/uploads/10.23719/1532178/USEEIOv2.5-kingbird-19.xlsx",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-04-24T11:59:30.564182",
+            "description": "USEEIOv2.5-kingbird-18.xlsx",
+            "format": "ZIP",
+            "hash": "",
+            "id": "74a83980-97d7-445d-b8a6-13a13bb39360",
+            "last_modified": null,
+            "metadata_modified": "2025-04-24T11:59:30.546519",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "USEEIOv2.5-kingbird-18.xlsx",
+            "package_id": "9b711253-9a0f-4223-b407-1606e5a20697",
+            "position": 13,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://pasteur.epa.gov/uploads/10.23719/1532178/USEEIOv2.5-kingbird-18.xlsx",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-04-24T11:59:30.564184",
+            "description": "USEEIOv2.5-kingbird-17.xlsx",
+            "format": "ZIP",
+            "hash": "",
+            "id": "8d1ccbb7-607f-4bb8-841c-66c3cd59115a",
+            "last_modified": null,
+            "metadata_modified": "2025-04-24T11:59:30.546709",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "USEEIOv2.5-kingbird-17.xlsx",
+            "package_id": "9b711253-9a0f-4223-b407-1606e5a20697",
+            "position": 14,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 3,
+              "recent": 2
+            },
+            "url": "https://pasteur.epa.gov/uploads/10.23719/1532178/USEEIOv2.5-kingbird-17.xlsx",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-04-24T11:59:30.564187",
+            "description": "USEEIOv2.5-catbird-22.xlsx",
+            "format": "ZIP",
+            "hash": "",
+            "id": "1e20aaf3-426a-412f-b69d-dfc102187b64",
+            "last_modified": null,
+            "metadata_modified": "2025-04-24T11:59:30.546879",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "USEEIOv2.5-catbird-22.xlsx",
+            "package_id": "9b711253-9a0f-4223-b407-1606e5a20697",
+            "position": 15,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 6,
+              "recent": 1
+            },
+            "url": "https://pasteur.epa.gov/uploads/10.23719/1532178/USEEIOv2.5-catbird-22.xlsx",
+            "url_type": null
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "eeio",
+            "id": "eadb7a56-6cf8-4283-a777-415680640887",
+            "name": "eeio",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "ghgs",
+            "id": "64567d51-5ed4-48e6-8f44-4ed754b00539",
+            "name": "ghgs",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "useeio",
+            "id": "a5a67ec6-413c-44a7-82ac-832717c61113",
+            "name": "useeio",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "groups": [],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      }
+    ],
+    "sort": "views_recent desc",
+    "search_facets": {}
+  },
+  "help": "https://catalog.data.gov/api/3/action/help_show?name=package_search",
+  "query_params": {
+    "q": "crime data Washington, DC",
+    "rows": 10,
+    "start": 0
+  },
+  "endpoint": "https://catalog.data.gov/api/3/action/package_search",
+  "_metadata": {
+    "saved_at": "2025-09-28T07:25:23.864838",
+    "data_source": "data.gov",
+    "saved_by": "tooling.py"
+  }
+}

@@ -2203,6 +2203,8 @@ def download_small_dataset(resource_url: str, format_hint: str = None) -> Dict[s
                     print(f"CSV file saved to: {csv_file_path}")
                     
                     csv_status: Dict[str, dict] = {}
+                    with open("csv_status.json", "w") as f:
+                        json.dump(csv_status, f)
                     csv_status[csv_filename] = {"ready": True, "path": str(csv_file_path.absolute())}
                     with open("csv_status.json", "w") as f:
                         json.dump(csv_status, f)

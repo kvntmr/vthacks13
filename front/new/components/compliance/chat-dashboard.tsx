@@ -2,6 +2,7 @@
 
 import { formatDistanceToNow } from "date-fns";
 import {
+  BookOpen,
   Building2,
   ChevronLeft,
   ChevronRight,
@@ -62,11 +63,12 @@ import { Separator } from "@/components/ui/separator";
 import { cn, generateUUID } from "@/lib/utils";
 import SpreadsheetEditor from "@/components/spreadsheet";
 import React from "react";
-import { backendAPI } from "@/lib/api/backend";
+import { backendAPI, type ResearchQueryRequest, type ResearchQueryResponse, type VisualizationRequest, type IntegratedAnalysisRequest } from "@/lib/api/backend";
 import { toast } from "sonner";
 import { useLocalStorage } from "usehooks-ts";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { ResearchChat } from "@/components/research-chat";
 
 import { Spreadsheet, Worksheet, jspreadsheet } from "@jspreadsheet-ce/react";
 import "jsuites/dist/jsuites.css";
@@ -325,6 +327,7 @@ const HOME_DEALS: DealSummary[] = [
 const NAV_ITEMS: NavItem[] = [
   { id: "home", label: "Overview", icon: Home },
   { id: "chat", label: "Chat", icon: MessageSquare },
+  { id: "research", label: "Research", icon: BookOpen },
   {
     id: "reports",
     label: "Reports",
@@ -851,6 +854,216 @@ function UploadManager({
 }
 
 // ---------------------------------------------------------------------------
+// Research view
+// ---------------------------------------------------------------------------
+
+type ResearchViewProps = {
+  onNavigate: (navId: string) => void;
+  onOpenFolder: (folderId: string) => void;
+};
+
+function ResearchView({
+  onNavigate,
+  onOpenFolder,
+}: ResearchViewProps) {
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeResearchArea, setActiveResearchArea] = useState<string>("market-analysis");
+  const [selectedLocation, setSelectedLocation] = useState<string>("");
+
+  const researchAreas = [
+    {
+      id: "market-analysis",
+      label: "Market Analysis",
+      description: "Research market trends, comparables, and economic indicators",
+      icon: Building2,
+    },
+    {
+      id: "property-research",
+      label: "Property Research",
+      description: "Analyze property details, history, and valuation metrics",
+      icon: Home,
+    },
+    {
+      id: "financial-modeling",
+      label: "Financial Modeling",
+      description: "Explore financial scenarios and investment projections",
+      icon: ClipboardList,
+    },
+    {
+      id: "due-diligence",
+      label: "Due Diligence",
+      description: "Research compliance, legal, and operational factors",
+      icon: Search,
+    },
+  ];
+
+  const researchTools = [
+    {
+      id: "document-search",
+      label: "Document Search",
+      description: "Search across all uploaded documents for specific information",
+      action: () => onNavigate("file-library"),
+    },
+    {
+      id: "report-generator",
+      label: "Research Reports",
+      description: "Generate comprehensive analysis reports",
+      action: () => onNavigate("reports"),
+    },
+  ];
+
+  const recentResearch = [
+    {
+      id: "recent-1",
+      title: "Dallas Industrial Market Trends Q4 2024",
+      timestamp: "2 hours ago",
+      type: "Market Analysis",
+    },
+    {
+      id: "recent-2",
+      title: "Horizon Logistics Park Comparables Analysis",
+      timestamp: "Yesterday",
+      type: "Property Research",
+    },
+    {
+      id: "recent-3",
+      title: "Phoenix Retail Cap Rate Study",
+      timestamp: "3 days ago",
+      type: "Financial Modeling",
+    },
+  ];
+
+  const handleLocationAnalysis = (location: string) => {
+    setSelectedLocation(location);
+  };
+
+  return (
+    <div className="flex h-full gap-6">
+      {/* Left Panel - Research Overview */}
+      <div className="flex w-96 flex-col gap-6 rounded-3xl border border-border/60 bg-background/95 px-6 py-6 shadow-sm">
+        <div className="flex flex-col gap-2">
+          <h1 className="font-semibold text-2xl text-foreground">
+            Research Hub
+          </h1>
+          <p className="text-muted-foreground text-sm">
+            AI-powered real estate research using government data from Data.gov.
+          </p>
+        </div>
+
+        {/* Search Bar */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            className="pl-10"
+            placeholder="Search research areas..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </div>
+
+        {/* Research Areas */}
+        <div className="grid gap-3 grid-cols-2">
+          {researchAreas.map((area) => (
+            <button
+              key={area.id}
+              className={`flex flex-col gap-2 rounded-2xl border border-border/60 bg-background/95 p-4 shadow-sm text-left transition-all hover:bg-muted/20 ${
+                activeResearchArea === area.id ? "ring-2 ring-primary/20" : ""
+              }`}
+              onClick={() => setActiveResearchArea(area.id)}
+              type="button"
+            >
+              <area.icon className="h-5 w-5 text-primary" />
+              <div>
+                <h3 className="font-medium text-foreground text-xs">{area.label}</h3>
+                <p className="text-muted-foreground text-[10px] mt-1 leading-tight">{area.description}</p>
+              </div>
+            </button>
+          ))}
+        </div>
+
+        {/* Research Tools */}
+        <div className="flex flex-col gap-3">
+          <h2 className="font-semibold text-foreground text-sm">Research Tools</h2>
+          <div className="space-y-2">
+            {researchTools.map((tool) => (
+              <div
+                key={tool.id}
+                className="rounded-xl border border-border/60 bg-background/95 p-3 text-sm shadow-sm"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div>
+                    <p className="font-medium text-foreground text-xs">{tool.label}</p>
+                    <p className="text-muted-foreground text-[10px] mt-1">{tool.description}</p>
+                  </div>
+                </div>
+                <div className="mt-2">
+                  <Button
+                    className="px-0 text-primary text-xs h-auto"
+                    onClick={tool.action}
+                    size="sm"
+                    variant="ghost"
+                  >
+                    Launch tool
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Recent Research */}
+        <div className="flex flex-col gap-3">
+          <div className="flex items-center justify-between">
+            <h2 className="font-semibold text-foreground text-sm">Recent Research</h2>
+            <Button size="sm" variant="outline" className="h-6 px-2 text-xs">
+              View all
+            </Button>
+          </div>
+          <div className="space-y-2">
+            {recentResearch.map((item) => (
+              <div
+                key={item.id}
+                className="rounded-xl border border-border/60 bg-background/95 p-3 text-sm shadow-sm"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1">
+                    <p className="font-medium text-foreground leading-tight text-xs">{item.title}</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <Badge className="text-[9px] uppercase px-1 py-0" variant="outline">
+                        {item.type}
+                      </Badge>
+                      <span className="text-muted-foreground text-[10px]">{item.timestamp}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Current Analysis */}
+        {selectedLocation && (
+          <div className="rounded-xl border border-primary/20 bg-primary/5 p-3">
+            <h3 className="font-medium text-foreground text-sm">Current Analysis</h3>
+            <p className="text-muted-foreground text-xs mt-1">
+              Analyzing: <span className="font-medium">{selectedLocation}</span>
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Right Panel - Research Chat */}
+      <div className="flex-1 rounded-3xl border border-border/60 bg-background/95 shadow-sm overflow-hidden">
+        <ResearchChat 
+          className="h-full"
+          onLocationAnalysis={handleLocationAnalysis}
+        />
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Main component
 // ---------------------------------------------------------------------------
 
@@ -1290,6 +1503,13 @@ export function ChatDashboard() {
             fileLibraryData={fileLibraryData}
             folderIndex={folderIndex}
             onCloseLeftSidebar={() => setIsSidebarOpen(false)}
+          />
+        );
+      case "research":
+        return (
+          <ResearchView
+            onNavigate={navigateTo}
+            onOpenFolder={openFolderInLibrary}
           />
         );
       case "history":

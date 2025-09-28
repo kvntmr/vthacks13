@@ -1,0 +1,283 @@
+{
+  "success": true,
+  "result": {
+    "author": null,
+    "author_email": null,
+    "creator_user_id": "2b785922-9f13-491b-a3c2-2a40acbd80c2",
+    "id": "f9a2b1da-af74-452f-b056-110496e646eb",
+    "isopen": false,
+    "license_id": "notspecified",
+    "license_title": "License not specified",
+    "maintainer": "cocadmin",
+    "maintainer_email": "no-reply@data.cityofchicago.org",
+    "metadata_created": "2020-11-10T16:55:01.551376",
+    "metadata_modified": "2025-09-27T21:21:38.777262",
+    "name": "crimes-2001-to-present",
+    "notes": "This dataset reflects reported incidents of crime (with the exception of murders where data exists for each victim) that occurred in the City of Chicago from 2001 to present, minus the most recent seven days. Data is extracted from the Chicago Police Department's CLEAR (Citizen Law Enforcement Analysis and Reporting) system. In order to protect the privacy of crime victims, addresses are shown at the block level only and specific locations are not identified. Should you have questions about this dataset, you may contact the Data Fulfillment and Analysis Division of the Chicago Police Department at DFA@ChicagoPolice.org.  Disclaimer: These crimes may be based upon preliminary information supplied to the Police Department by the reporting parties that have not been verified. The preliminary crime classifications may be changed at a later date based upon additional investigation and there is always the possibility of mechanical or human error. Therefore, the Chicago Police Department does not guarantee (either expressed or implied) the accuracy, completeness, timeliness, or correct sequencing of the information and the information should not be used for comparison purposes over time. The Chicago Police Department will not be responsible for any error or omission, or for the use of, or the results obtained from the use of this information. All data visualizations on maps should be considered approximate and attempts to derive specific addresses are strictly prohibited. The Chicago Police Department is not responsible for the content of any off-site pages that are referenced by or that reference this web page other than an official City of Chicago or Chicago Police Department web page. The user specifically acknowledges that the Chicago Police Department is not responsible for any defamatory, offensive, misleading, or illegal conduct of other users, links, or third parties and that the risk of injury from the foregoing rests entirely with the user.  The unauthorized use of the words \"Chicago Police Department,\" \"Chicago Police,\" or any colorable imitation of these words or the unauthorized use of the Chicago Police Department logo is unlawful. This web page does not, in any way, authorize such use. Data are updated daily. To access a list of Chicago Police Department - Illinois Uniform Crime Reporting (IUCR) codes, go to http://data.cityofchicago.org/Public-Safety/Chicago-Police-Department-Illinois-Uniform-Crime-R/c7ck-438e",
+    "num_resources": 4,
+    "num_tags": 2,
+    "organization": {
+      "id": "7ba1dcf3-0855-491e-bd62-1625f38972b9",
+      "name": "city-of-chicago",
+      "title": "City of Chicago",
+      "type": "organization",
+      "description": "",
+      "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Logo_of_Chicago%2C_Illinois.svg/1920px-Logo_of_Chicago%2C_Illinois.svg.png",
+      "created": "2020-11-10T15:12:15.807741",
+      "is_organization": true,
+      "approval_status": "approved",
+      "state": "active"
+    },
+    "owner_org": "7ba1dcf3-0855-491e-bd62-1625f38972b9",
+    "private": false,
+    "state": "active",
+    "title": "Crimes - 2001 to Present",
+    "type": "dataset",
+    "url": null,
+    "version": null,
+    "extras": [
+      {
+        "key": "resource-type",
+        "value": "Dataset"
+      },
+      {
+        "key": "source_hash",
+        "value": "8984d34f870be65e6fb00d5a1fc199cc3000ed9643756c716887e77856505d72"
+      },
+      {
+        "key": "source_datajson_identifier",
+        "value": true
+      },
+      {
+        "key": "source_schema_version",
+        "value": "1.1"
+      },
+      {
+        "key": "accessLevel",
+        "value": "public"
+      },
+      {
+        "key": "identifier",
+        "value": "https://data.cityofchicago.org/api/views/ijzp-q8t2"
+      },
+      {
+        "key": "issued",
+        "value": "2023-09-15"
+      },
+      {
+        "key": "landingPage",
+        "value": "https://data.cityofchicago.org/d/ijzp-q8t2"
+      },
+      {
+        "key": "modified",
+        "value": "2025-09-27"
+      },
+      {
+        "key": "publisher",
+        "value": "data.cityofchicago.org"
+      },
+      {
+        "key": "theme",
+        "value": [
+          "Public Safety"
+        ]
+      },
+      {
+        "key": "catalog_@context",
+        "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+      },
+      {
+        "key": "catalog_@id",
+        "value": "https://data.cityofchicago.org/data.json"
+      },
+      {
+        "key": "catalog_conformsTo",
+        "value": "https://project-open-data.cio.gov/v1.1/schema"
+      },
+      {
+        "key": "catalog_describedBy",
+        "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+      },
+      {
+        "key": "harvest_object_id",
+        "value": "13748ea0-476f-41e3-bfca-7dcffa4cd51e"
+      },
+      {
+        "key": "harvest_source_id",
+        "value": "7590e386-229e-453a-8e53-6f18e200e421"
+      },
+      {
+        "key": "harvest_source_title",
+        "value": "Chicago JSON"
+      }
+    ],
+    "groups": [
+      {
+        "description": "Local Government Topic - for all datasets with state, local, county organizations",
+        "display_name": "Local Government",
+        "id": "7d625e66-9e91-4b47-badd-44ec6f16b62b",
+        "image_display_url": "",
+        "name": "local",
+        "title": "Local Government"
+      }
+    ],
+    "resources": [
+      {
+        "cache_last_updated": null,
+        "cache_url": null,
+        "created": "2020-11-10T16:55:01.569151",
+        "description": "",
+        "format": "CSV",
+        "hash": "",
+        "id": "31b027d7-b633-4e82-ad2e-cfa5caaf5837",
+        "last_modified": null,
+        "metadata_modified": "2020-11-10T16:55:01.569151",
+        "mimetype": "text/csv",
+        "mimetype_inner": null,
+        "name": "Comma Separated Values File",
+        "no_real_name": true,
+        "package_id": "f9a2b1da-af74-452f-b056-110496e646eb",
+        "position": 0,
+        "resource_type": null,
+        "size": null,
+        "state": "active",
+        "tracking_summary": {
+          "total": 731,
+          "recent": 28
+        },
+        "url": "https://data.cityofchicago.org/api/views/ijzp-q8t2/rows.csv?accessType=DOWNLOAD",
+        "url_type": null
+      },
+      {
+        "cache_last_updated": null,
+        "cache_url": null,
+        "created": "2020-11-10T16:55:01.569158",
+        "describedBy": "https://data.cityofchicago.org/api/views/ijzp-q8t2/columns.rdf",
+        "describedByType": "application/rdf+xml",
+        "description": "",
+        "format": "RDF",
+        "hash": "",
+        "id": "6be8a92c-e51f-4948-8c04-9d7d9ab999f9",
+        "last_modified": null,
+        "metadata_modified": "2020-11-10T16:55:01.569158",
+        "mimetype": "application/rdf+xml",
+        "mimetype_inner": null,
+        "name": "RDF File",
+        "no_real_name": true,
+        "package_id": "f9a2b1da-af74-452f-b056-110496e646eb",
+        "position": 1,
+        "resource_type": null,
+        "size": null,
+        "state": "active",
+        "tracking_summary": {
+          "total": 39,
+          "recent": 2
+        },
+        "url": "https://data.cityofchicago.org/api/views/ijzp-q8t2/rows.rdf?accessType=DOWNLOAD",
+        "url_type": null
+      },
+      {
+        "cache_last_updated": null,
+        "cache_url": null,
+        "created": "2020-11-10T16:55:01.569161",
+        "describedBy": "https://data.cityofchicago.org/api/views/ijzp-q8t2/columns.json",
+        "describedByType": "application/json",
+        "description": "",
+        "format": "JSON",
+        "hash": "",
+        "id": "4c630026-e81b-4e96-b3a5-eb92c6dd6689",
+        "last_modified": null,
+        "metadata_modified": "2020-11-10T16:55:01.569161",
+        "mimetype": "application/json",
+        "mimetype_inner": null,
+        "name": "JSON File",
+        "no_real_name": true,
+        "package_id": "f9a2b1da-af74-452f-b056-110496e646eb",
+        "position": 2,
+        "resource_type": null,
+        "size": null,
+        "state": "active",
+        "tracking_summary": {
+          "total": 68,
+          "recent": 2
+        },
+        "url": "https://data.cityofchicago.org/api/views/ijzp-q8t2/rows.json?accessType=DOWNLOAD",
+        "url_type": null
+      },
+      {
+        "cache_last_updated": null,
+        "cache_url": null,
+        "created": "2020-11-10T16:55:01.569164",
+        "describedBy": "https://data.cityofchicago.org/api/views/ijzp-q8t2/columns.xml",
+        "describedByType": "application/xml",
+        "description": "",
+        "format": "XML",
+        "hash": "",
+        "id": "41738d7a-37c5-4aff-b558-2ceba4670957",
+        "last_modified": null,
+        "metadata_modified": "2020-11-10T16:55:01.569164",
+        "mimetype": "application/xml",
+        "mimetype_inner": null,
+        "name": "XML File",
+        "no_real_name": true,
+        "package_id": "f9a2b1da-af74-452f-b056-110496e646eb",
+        "position": 3,
+        "resource_type": null,
+        "size": null,
+        "state": "active",
+        "tracking_summary": {
+          "total": 55,
+          "recent": 4
+        },
+        "url": "https://data.cityofchicago.org/api/views/ijzp-q8t2/rows.xml?accessType=DOWNLOAD",
+        "url_type": null
+      }
+    ],
+    "tags": [
+      {
+        "display_name": "crime",
+        "id": "df442823-c823-4890-8fca-805427bd8dd9",
+        "name": "crime",
+        "state": "active",
+        "vocabulary_id": null
+      },
+      {
+        "display_name": "police",
+        "id": "382373db-6ae8-4e4f-ad63-d0cbe30ac053",
+        "name": "police",
+        "state": "active",
+        "vocabulary_id": null
+      }
+    ],
+    "relationships_as_subject": [],
+    "relationships_as_object": [],
+    "tracking_summary": {
+      "total": 25223,
+      "recent": 433
+    }
+  },
+  "help": "https://catalog.data.gov/api/3/action/help_show?name=package_show",
+  "package_id": "f9a2b1da-af74-452f-b056-110496e646eb",
+  "endpoint": "https://catalog.data.gov/api/3/action/package_show",
+  "summary": {
+    "title": "Crimes - 2001 to Present",
+    "resource_count": 4,
+    "organization": "City of Chicago",
+    "last_modified": "2025-09-27T21:21:38.777262",
+    "tags": [
+      "crime",
+      "police"
+    ],
+    "formats": [
+      "XML",
+      "JSON",
+      "RDF",
+      "CSV"
+    ]
+  },
+  "_metadata": {
+    "saved_at": "2025-09-28T07:03:32.336767",
+    "data_source": "data.gov",
+    "saved_by": "tooling.py"
+  }
+}

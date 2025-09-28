@@ -44,6 +44,51 @@ export interface DeleteSelectedResponse {
   success: boolean;
 }
 
+export interface ResearchQueryRequest {
+  question: string;
+  include_metadata?: boolean;
+}
+
+export interface ResearchQueryResponse {
+  success: boolean;
+  response: string;
+  message_count?: number;
+  error?: string;
+  metadata?: any;
+}
+
+export interface VisualizationRequest {
+  request: string;
+  data_context?: string;
+  include_metadata?: boolean;
+}
+
+export interface VisualizationResponse {
+  success: boolean;
+  response: string;
+  mcp_connected: boolean;
+  tools_available: boolean;
+  message_count?: number;
+  error?: string;
+  metadata?: any;
+}
+
+export interface IntegratedAnalysisRequest {
+  location: string;
+  analysis_focus?: string;
+  include_metadata?: boolean;
+}
+
+export interface IntegratedAnalysisResponse {
+  success: boolean;
+  location: string;
+  analysis_focus: string;
+  data_analysis?: any;
+  visualizations?: any;
+  errors: string[];
+  metadata?: any;
+}
+
 class BackendAPIError extends Error {
   constructor(
     message: string,
@@ -193,6 +238,104 @@ export class BackendAPI {
         message: error instanceof Error ? error.message : 'Connection failed' 
       };
     }
+  }
+
+  /**
+   * Send a research query to the real estate agent
+   */
+  async researchQuery(request: ResearchQueryRequest): Promise<ResearchQueryResponse> {
+    console.log('Sending research query to:', `${this.baseUrl}/query/sync`);
+    console.log('Request payload:', request);
+    
+    const response = await fetch(`${this.baseUrl}/query/sync`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+
+    console.log('Research response status:', response.status);
+
+    return handleResponse<ResearchQueryResponse>(response);
+  }
+
+  /**
+   * Send a visualization request
+   */
+  async visualizationQuery(request: VisualizationRequest): Promise<VisualizationResponse> {
+    console.log('Sending visualization query to:', `${this.baseUrl}/visualization/query`);
+    console.log('Request payload:', request);
+    
+    const response = await fetch(`${this.baseUrl}/visualization/query`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+
+    console.log('Visualization response status:', response.status);
+
+    return handleResponse<VisualizationResponse>(response);
+  }
+
+  /**
+   * Send an integrated analysis request
+   */
+  async integratedAnalysis(request: IntegratedAnalysisRequest): Promise<IntegratedAnalysisResponse> {
+    console.log('Sending integrated analysis to:', `${this.baseUrl}/integrated/analyze`);
+    console.log('Request payload:', request);
+    
+    const response = await fetch(`${this.baseUrl}/integrated/analyze`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(request),
+    });
+
+    console.log('Integrated analysis response status:', response.status);
+
+    return handleResponse<IntegratedAnalysisResponse>(response);
+  }
+
+  /**
+   * Quick crime analysis for a location
+   */
+  async crimeAnalysis(location: string): Promise<IntegratedAnalysisResponse> {
+    console.log('Sending crime analysis for location:', location);
+    
+    const response = await fetch(`${this.baseUrl}/integrated/crime-analysis`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ location }),
+    });
+
+    console.log('Crime analysis response status:', response.status);
+
+    return handleResponse<IntegratedAnalysisResponse>(response);
+  }
+
+  /**
+   * Quick market analysis for a location
+   */
+  async marketAnalysis(location: string): Promise<IntegratedAnalysisResponse> {
+    console.log('Sending market analysis for location:', location);
+    
+    const response = await fetch(`${this.baseUrl}/integrated/market-analysis`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ location }),
+    });
+
+    console.log('Market analysis response status:', response.status);
+
+    return handleResponse<IntegratedAnalysisResponse>(response);
   }
 }
 

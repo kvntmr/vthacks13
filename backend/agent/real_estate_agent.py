@@ -221,10 +221,22 @@ financial investments. Accuracy, recency, and comprehensive analysis are critica
                 # No running loop, we can create one
                 return asyncio.run(self.query(user_input))
             else:
-                # We're in an async context, need to handle differently
-                import nest_asyncio
-                nest_asyncio.apply()
-                return loop.run_until_complete(self.query(user_input))
+                # We're in an async context, run in a thread pool
+                import concurrent.futures
+                import threading
+                
+                def run_async_in_thread():
+                    # Create a new event loop in this thread
+                    new_loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(new_loop)
+                    try:
+                        return new_loop.run_until_complete(self.query(user_input))
+                    finally:
+                        new_loop.close()
+                
+                with concurrent.futures.ThreadPoolExecutor() as executor:
+                    future = executor.submit(run_async_in_thread)
+                    return future.result()
         except Exception as e:
             return {
                 "success": False,

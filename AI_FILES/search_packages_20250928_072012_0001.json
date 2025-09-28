@@ -1,0 +1,3574 @@
+{
+  "success": true,
+  "result": {
+    "count": 44,
+    "facets": {},
+    "results": [
+      {
+        "author": null,
+        "author_email": null,
+        "creator_user_id": "2b785922-9f13-491b-a3c2-2a40acbd80c2",
+        "id": "864bd161-823a-4a1d-9fd9-94e01ab8f698",
+        "isopen": false,
+        "license_id": "notspecified",
+        "license_title": "License not specified",
+        "maintainer": "cocadmin",
+        "maintainer_email": "no-reply@data.cityofchicago.org",
+        "metadata_created": "2020-11-10T16:55:31.674717",
+        "metadata_modified": "2025-09-27T21:24:15.260486",
+        "name": "sex-offenders",
+        "notes": "Description: Pursuant to the Sex Offender and Child Murderer Community Notification Law, 730 ILCS 152/101,et seq., the Chicago Police Department maintains a list of sex offenders residing in the City of Chicago who are required to register under the Sex Offender Registration Act, 730 ILCS 150/2, et seq. To protect the privacy of the individuals, addresses are shown at the block level only and specific locations are not identified. The data are extracted from the CLEAR (Citizen Law Enforcement Analysis and Reporting) system developed by the Department.\nAlthough every effort is made to keep this list accurate and current, the city cannot guarantee the accuracy of this information. Offenders may have moved and failed to notify the Chicago Police Department as required by law. If any information presented in this web site is known to be outdated, please contact the Chicago Police Department at srwbmstr@chicagopolice.org, or mail to Sex Registration Unit, 3510 S Michigan Ave, Chicago, IL 60653.\nDisclaimer: This registry is based upon the legislature's decision to facilitate access to publicly available information about persons convicted of specific sexual offenses. The Chicago Police Department has not considered or assessed the specific risk of re-offense with regard to any individual prior to his or her inclusion within this registry, and has made no determination that any individual included within the registry is currently dangerous. Individuals included within this registry are included solely by virtue of their conviction record and Illinois law. The main purpose of providing this data on the internet is to make the information more available and accessible, not to warn about any specific individual. \n\nAnyone who uses information contained in the Sex Offender Database to commit a criminal act against another person is subject to criminal prosecution.\nData Owner: Chicago Police Department.\nFrequency: Data is updated daily.\nRelated Applications: CLEARMAP (http://j.mp/lLluSa).",
+        "num_resources": 4,
+        "num_tags": 3,
+        "organization": {
+          "id": "7ba1dcf3-0855-491e-bd62-1625f38972b9",
+          "name": "city-of-chicago",
+          "title": "City of Chicago",
+          "type": "organization",
+          "description": "",
+          "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Logo_of_Chicago%2C_Illinois.svg/1920px-Logo_of_Chicago%2C_Illinois.svg.png",
+          "created": "2020-11-10T15:12:15.807741",
+          "is_organization": true,
+          "approval_status": "approved",
+          "state": "active"
+        },
+        "owner_org": "7ba1dcf3-0855-491e-bd62-1625f38972b9",
+        "private": false,
+        "state": "active",
+        "title": "Sex Offenders",
+        "type": "dataset",
+        "url": null,
+        "version": null,
+        "extras": [
+          {
+            "key": "resource-type",
+            "value": "Dataset"
+          },
+          {
+            "key": "source_hash",
+            "value": "74ecc5307d26b0d3763dc71934698d196153048e16f763f340ffbd6e58f99979"
+          },
+          {
+            "key": "source_datajson_identifier",
+            "value": true
+          },
+          {
+            "key": "source_schema_version",
+            "value": "1.1"
+          },
+          {
+            "key": "accessLevel",
+            "value": "public"
+          },
+          {
+            "key": "identifier",
+            "value": "https://data.cityofchicago.org/api/views/vc9r-bqvy"
+          },
+          {
+            "key": "issued",
+            "value": "2021-06-11"
+          },
+          {
+            "key": "landingPage",
+            "value": "https://data.cityofchicago.org/d/vc9r-bqvy"
+          },
+          {
+            "key": "modified",
+            "value": "2025-09-27"
+          },
+          {
+            "key": "publisher",
+            "value": "data.cityofchicago.org"
+          },
+          {
+            "key": "theme",
+            "value": [
+              "Public Safety"
+            ]
+          },
+          {
+            "key": "catalog_@context",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+          },
+          {
+            "key": "catalog_@id",
+            "value": "https://data.cityofchicago.org/data.json"
+          },
+          {
+            "key": "catalog_conformsTo",
+            "value": "https://project-open-data.cio.gov/v1.1/schema"
+          },
+          {
+            "key": "catalog_describedBy",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+          },
+          {
+            "key": "harvest_object_id",
+            "value": "83654c76-49a8-416c-b268-c19d37a02fcf"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "7590e386-229e-453a-8e53-6f18e200e421"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "Chicago JSON"
+          }
+        ],
+        "groups": [
+          {
+            "description": "Local Government Topic - for all datasets with state, local, county organizations",
+            "display_name": "Local Government",
+            "id": "7d625e66-9e91-4b47-badd-44ec6f16b62b",
+            "image_display_url": "",
+            "name": "local",
+            "title": "Local Government"
+          }
+        ],
+        "resources": [
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2020-11-10T16:55:31.687322",
+            "description": "",
+            "format": "CSV",
+            "hash": "",
+            "id": "86a7b082-941f-4e46-b962-f38ae7608c44",
+            "last_modified": null,
+            "metadata_modified": "2020-11-10T16:55:31.687322",
+            "mimetype": "text/csv",
+            "mimetype_inner": null,
+            "name": "Comma Separated Values File",
+            "no_real_name": true,
+            "package_id": "864bd161-823a-4a1d-9fd9-94e01ab8f698",
+            "position": 0,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 45,
+              "recent": 4
+            },
+            "url": "https://data.cityofchicago.org/api/views/vc9r-bqvy/rows.csv?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2020-11-10T16:55:31.687332",
+            "describedBy": "https://data.cityofchicago.org/api/views/vc9r-bqvy/columns.rdf",
+            "describedByType": "application/rdf+xml",
+            "description": "",
+            "format": "RDF",
+            "hash": "",
+            "id": "ae2e16fd-3495-43ef-b6fc-3854322c4c9d",
+            "last_modified": null,
+            "metadata_modified": "2020-11-10T16:55:31.687332",
+            "mimetype": "application/rdf+xml",
+            "mimetype_inner": null,
+            "name": "RDF File",
+            "no_real_name": true,
+            "package_id": "864bd161-823a-4a1d-9fd9-94e01ab8f698",
+            "position": 1,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 6,
+              "recent": 4
+            },
+            "url": "https://data.cityofchicago.org/api/views/vc9r-bqvy/rows.rdf?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2020-11-10T16:55:31.687338",
+            "describedBy": "https://data.cityofchicago.org/api/views/vc9r-bqvy/columns.json",
+            "describedByType": "application/json",
+            "description": "",
+            "format": "JSON",
+            "hash": "",
+            "id": "7cdd3806-8f17-42b1-80ac-d4bd087356d7",
+            "last_modified": null,
+            "metadata_modified": "2020-11-10T16:55:31.687338",
+            "mimetype": "application/json",
+            "mimetype_inner": null,
+            "name": "JSON File",
+            "no_real_name": true,
+            "package_id": "864bd161-823a-4a1d-9fd9-94e01ab8f698",
+            "position": 2,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 10,
+              "recent": 2
+            },
+            "url": "https://data.cityofchicago.org/api/views/vc9r-bqvy/rows.json?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2020-11-10T16:55:31.687342",
+            "describedBy": "https://data.cityofchicago.org/api/views/vc9r-bqvy/columns.xml",
+            "describedByType": "application/xml",
+            "description": "",
+            "format": "XML",
+            "hash": "",
+            "id": "6b71900f-952d-4f75-b2df-33ec2960ff1f",
+            "last_modified": null,
+            "metadata_modified": "2020-11-10T16:55:31.687342",
+            "mimetype": "application/xml",
+            "mimetype_inner": null,
+            "name": "XML File",
+            "no_real_name": true,
+            "package_id": "864bd161-823a-4a1d-9fd9-94e01ab8f698",
+            "position": 3,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 15,
+              "recent": 1
+            },
+            "url": "https://data.cityofchicago.org/api/views/vc9r-bqvy/rows.xml?accessType=DOWNLOAD",
+            "url_type": null
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "crime",
+            "id": "df442823-c823-4890-8fca-805427bd8dd9",
+            "name": "crime",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "link-to-article-present",
+            "id": "a5b19e23-6d97-4dbe-b775-06567411e12c",
+            "name": "link-to-article-present",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "police",
+            "id": "382373db-6ae8-4e4f-ad63-d0cbe30ac053",
+            "name": "police",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      },
+      {
+        "author": null,
+        "author_email": null,
+        "creator_user_id": "2b785922-9f13-491b-a3c2-2a40acbd80c2",
+        "id": "17083cd3-62ae-4cf5-b729-da1f8e395c89",
+        "isopen": false,
+        "license_id": "notspecified",
+        "license_title": "License not specified",
+        "maintainer": "drakec",
+        "maintainer_email": "no-reply@data.kingcounty.gov",
+        "metadata_created": "2020-11-10T16:58:37.238511",
+        "metadata_modified": "2025-09-27T20:51:49.027522",
+        "name": "food-establishment-inspection-data",
+        "notes": "Health Department inspection results for food service establishments in King County, 2006 to the present. This data is organized by Business / Inspection Date / Violation. Each row in this dataset is an inspection, and if an inspection at a particular buiness results in multiple violations there will be multiple rows for that business with the same Inspection_Serial_Num. This dataset was last updated on 09/26/2025 and is current from 1/1/2006 to 09/23/2025.",
+        "num_resources": 4,
+        "num_tags": 6,
+        "organization": {
+          "id": "d737f173-fa1c-4f41-a363-6e2d5a8e7256",
+          "name": "king-county-washington",
+          "title": "King County, Washington",
+          "type": "organization",
+          "description": "",
+          "image_url": "",
+          "created": "2020-11-10T15:26:47.348075",
+          "is_organization": true,
+          "approval_status": "approved",
+          "state": "active"
+        },
+        "owner_org": "d737f173-fa1c-4f41-a363-6e2d5a8e7256",
+        "private": false,
+        "state": "active",
+        "title": "Food Establishment Inspection Data",
+        "type": "dataset",
+        "url": null,
+        "version": null,
+        "extras": [
+          {
+            "key": "resource-type",
+            "value": "Dataset"
+          },
+          {
+            "key": "source_hash",
+            "value": "f8f2cd7dc843f4b443fbfbbf80c000e31f52e5ab9d85c15b9f0faec7bef17c1e"
+          },
+          {
+            "key": "source_datajson_identifier",
+            "value": true
+          },
+          {
+            "key": "source_schema_version",
+            "value": "1.1"
+          },
+          {
+            "key": "accessLevel",
+            "value": "public"
+          },
+          {
+            "key": "identifier",
+            "value": "https://data.kingcounty.gov/api/views/f29f-zza5"
+          },
+          {
+            "key": "issued",
+            "value": "2019-01-02"
+          },
+          {
+            "key": "landingPage",
+            "value": "https://data.kingcounty.gov/d/f29f-zza5"
+          },
+          {
+            "key": "modified",
+            "value": "2025-09-27"
+          },
+          {
+            "key": "publisher",
+            "value": "data.kingcounty.gov"
+          },
+          {
+            "key": "theme",
+            "value": [
+              "Health & Wellness"
+            ]
+          },
+          {
+            "key": "catalog_@context",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+          },
+          {
+            "key": "catalog_@id",
+            "value": "https://data.kingcounty.gov/data.json"
+          },
+          {
+            "key": "catalog_conformsTo",
+            "value": "https://project-open-data.cio.gov/v1.1/schema"
+          },
+          {
+            "key": "catalog_describedBy",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+          },
+          {
+            "key": "harvest_object_id",
+            "value": "5969b580-40b7-47d9-ae01-e995897043aa"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "a91026a8-af79-4f8c-bcfe-e14f3d6aa4fb"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "kingcounty json"
+          }
+        ],
+        "groups": [
+          {
+            "description": "Local Government Topic - for all datasets with state, local, county organizations",
+            "display_name": "Local Government",
+            "id": "7d625e66-9e91-4b47-badd-44ec6f16b62b",
+            "image_display_url": "",
+            "name": "local",
+            "title": "Local Government"
+          }
+        ],
+        "resources": [
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2020-11-10T16:58:37.244514",
+            "description": "",
+            "format": "CSV",
+            "hash": "",
+            "id": "ebfcdbbb-815f-4215-b806-cbc218c63c6d",
+            "last_modified": null,
+            "metadata_modified": "2020-11-10T16:58:37.244514",
+            "mimetype": "text/csv",
+            "mimetype_inner": null,
+            "name": "Comma Separated Values File",
+            "no_real_name": true,
+            "package_id": "17083cd3-62ae-4cf5-b729-da1f8e395c89",
+            "position": 0,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 10,
+              "recent": 4
+            },
+            "url": "https://data.kingcounty.gov/api/views/f29f-zza5/rows.csv?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2020-11-10T16:58:37.244524",
+            "describedBy": "https://data.kingcounty.gov/api/views/f29f-zza5/columns.rdf",
+            "describedByType": "application/rdf+xml",
+            "description": "",
+            "format": "RDF",
+            "hash": "",
+            "id": "b3f468fb-723e-401f-b270-3dab587adf2d",
+            "last_modified": null,
+            "metadata_modified": "2020-11-10T16:58:37.244524",
+            "mimetype": "application/rdf+xml",
+            "mimetype_inner": null,
+            "name": "RDF File",
+            "no_real_name": true,
+            "package_id": "17083cd3-62ae-4cf5-b729-da1f8e395c89",
+            "position": 1,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://data.kingcounty.gov/api/views/f29f-zza5/rows.rdf?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2020-11-10T16:58:37.244530",
+            "describedBy": "https://data.kingcounty.gov/api/views/f29f-zza5/columns.json",
+            "describedByType": "application/json",
+            "description": "",
+            "format": "JSON",
+            "hash": "",
+            "id": "536be9a8-6907-42a3-acb1-e3ef87cb6993",
+            "last_modified": null,
+            "metadata_modified": "2020-11-10T16:58:37.244530",
+            "mimetype": "application/json",
+            "mimetype_inner": null,
+            "name": "JSON File",
+            "no_real_name": true,
+            "package_id": "17083cd3-62ae-4cf5-b729-da1f8e395c89",
+            "position": 2,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://data.kingcounty.gov/api/views/f29f-zza5/rows.json?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2020-11-10T16:58:37.244535",
+            "describedBy": "https://data.kingcounty.gov/api/views/f29f-zza5/columns.xml",
+            "describedByType": "application/xml",
+            "description": "",
+            "format": "XML",
+            "hash": "",
+            "id": "94229949-b9ee-4a63-931c-c60a0218b1b5",
+            "last_modified": null,
+            "metadata_modified": "2020-11-10T16:58:37.244535",
+            "mimetype": "application/xml",
+            "mimetype_inner": null,
+            "name": "XML File",
+            "no_real_name": true,
+            "package_id": "17083cd3-62ae-4cf5-b729-da1f8e395c89",
+            "position": 3,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://data.kingcounty.gov/api/views/f29f-zza5/rows.xml?accessType=DOWNLOAD",
+            "url_type": null
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "closures",
+            "id": "6f83999e-3bd4-4607-be54-8d6a2898a1f2",
+            "name": "closures",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "food-safety",
+            "id": "321a54fb-c3fa-4639-8184-fb6fff423794",
+            "name": "food-safety",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "government",
+            "id": "fa877518-85c8-4f1d-a607-84886a35be75",
+            "name": "government",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "health",
+            "id": "3b24c0fa-1ddf-4dc3-965f-93a79d68ab18",
+            "name": "health",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "restaurant-inspections",
+            "id": "901231dc-038a-42b2-8c09-a206a64e9954",
+            "name": "restaurant-inspections",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "violations",
+            "id": "86aa5919-b576-4e33-9dd3-a90d5fd7d79a",
+            "name": "violations",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      },
+      {
+        "author": null,
+        "author_email": null,
+        "creator_user_id": "2b785922-9f13-491b-a3c2-2a40acbd80c2",
+        "id": "fd2d2733-d864-42d6-9fea-ef6a32c2755b",
+        "isopen": false,
+        "license_id": "notspecified",
+        "license_title": "License not specified",
+        "maintainer": "emassa",
+        "maintainer_email": "no-reply@data.kingcounty.gov",
+        "metadata_created": "2022-03-08T00:19:37.028028",
+        "metadata_modified": "2025-09-27T20:51:39.926959",
+        "name": "kcso-offense-reports-2020-to-present",
+        "notes": "The King County Sheriff’s Office (KCSO) is providing offense report data captured in it's Records Management System (RMS) from 2020 to present. KCSO replaced its RMS in late 2018 and at the same time transitioned to the FBI’s National Incident-Based Reporting System (NIBRS). The NIBRS standardization of crime classifications allows for comparison over time and between agencies. For official KCSO NIBRS reporting, please visit the WASPC Crime in Washington Report: https://www.waspc.org/cjis-statistics---reports.\n\nDisclaimer: Only finalized (supervisor approved) reports are released. Those in draft, awaiting supervisor approval, or completed after the daily update of data, will not appear until the subsequent day(s). Data updates once every twenty-four hours. Records and classification changes will occur as a report makes its way through the approval and investigative process, thus reports might appear in the data set one day, but be removed the next day if there is a change in the approval status. This mirrors the fluidity of an investigation.  Once a report is re-approved, it will show back up in the data set. Other than approval status, the report case status is factored into what can be released in the daily data set. As soon as a report case status matches the criteria for release, it will be included in the data set. For a list of offenses that are included in the data set, please see the attached pdf.\n\nResources:\n - KCSO's 2019 crime data: https://data.kingcounty.gov/Law-Enforcement-Safety/King-County-Sheriff-s-Office-Incident-Dataset/rzfs-wyvy\n- Police District GIS shapefile: https://gis-kingcounty.opendata.arcgis.com/datasets/king-county-sheriff-patrol-districts-patrol-districts-area/explore\n- Police District key: https://data.kingcounty.gov/Law-Enforcement-Safety/KCSO-Patrol-Districts/ptrt-hdax/data\n- For more information on definitions and classifications, please visit https://www.fbi.gov/services/cjis/ucr/nibrs\n- SPD's Crime Data: https://data.seattle.gov/Public-Safety/SPD-Crime-Data-2008-Present/tazs-3rd5",
+        "num_resources": 4,
+        "num_tags": 6,
+        "organization": {
+          "id": "d737f173-fa1c-4f41-a363-6e2d5a8e7256",
+          "name": "king-county-washington",
+          "title": "King County, Washington",
+          "type": "organization",
+          "description": "",
+          "image_url": "",
+          "created": "2020-11-10T15:26:47.348075",
+          "is_organization": true,
+          "approval_status": "approved",
+          "state": "active"
+        },
+        "owner_org": "d737f173-fa1c-4f41-a363-6e2d5a8e7256",
+        "private": false,
+        "state": "active",
+        "title": "KCSO Offense Reports: 2020 to Present",
+        "type": "dataset",
+        "url": null,
+        "version": null,
+        "extras": [
+          {
+            "key": "resource-type",
+            "value": "Dataset"
+          },
+          {
+            "key": "source_hash",
+            "value": "98e1ed02ffa65dd0fbee3230c27da72fd943404b6f223a65e1177bc4a5c316c0"
+          },
+          {
+            "key": "source_datajson_identifier",
+            "value": true
+          },
+          {
+            "key": "source_schema_version",
+            "value": "1.1"
+          },
+          {
+            "key": "accessLevel",
+            "value": "public"
+          },
+          {
+            "key": "identifier",
+            "value": "https://data.kingcounty.gov/api/views/4kmt-kfqf"
+          },
+          {
+            "key": "issued",
+            "value": "2023-08-10"
+          },
+          {
+            "key": "landingPage",
+            "value": "https://data.kingcounty.gov/d/4kmt-kfqf"
+          },
+          {
+            "key": "modified",
+            "value": "2025-09-27"
+          },
+          {
+            "key": "publisher",
+            "value": "data.kingcounty.gov"
+          },
+          {
+            "key": "theme",
+            "value": [
+              "Law Enforcement & Safety"
+            ]
+          },
+          {
+            "key": "catalog_@context",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+          },
+          {
+            "key": "catalog_@id",
+            "value": "https://data.kingcounty.gov/data.json"
+          },
+          {
+            "key": "catalog_conformsTo",
+            "value": "https://project-open-data.cio.gov/v1.1/schema"
+          },
+          {
+            "key": "catalog_describedBy",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+          },
+          {
+            "key": "harvest_object_id",
+            "value": "8840c006-47f1-4020-8761-2cf1177adeb3"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "a91026a8-af79-4f8c-bcfe-e14f3d6aa4fb"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "kingcounty json"
+          }
+        ],
+        "groups": [
+          {
+            "description": "Local Government Topic - for all datasets with state, local, county organizations",
+            "display_name": "Local Government",
+            "id": "7d625e66-9e91-4b47-badd-44ec6f16b62b",
+            "image_display_url": "",
+            "name": "local",
+            "title": "Local Government"
+          }
+        ],
+        "resources": [
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2022-03-08T00:19:37.169192",
+            "description": "",
+            "format": "CSV",
+            "hash": "",
+            "id": "d780032e-c071-4744-a6c0-aca7d6622cfa",
+            "last_modified": null,
+            "metadata_modified": "2022-03-08T00:19:37.169192",
+            "mimetype": "text/csv",
+            "mimetype_inner": null,
+            "name": "Comma Separated Values File",
+            "no_real_name": true,
+            "package_id": "fd2d2733-d864-42d6-9fea-ef6a32c2755b",
+            "position": 0,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 2,
+              "recent": 2
+            },
+            "url": "https://data.kingcounty.gov/api/views/4kmt-kfqf/rows.csv?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2022-03-08T00:19:37.169198",
+            "describedBy": "https://data.kingcounty.gov/api/views/4kmt-kfqf/columns.rdf",
+            "describedByType": "application/rdf+xml",
+            "description": "",
+            "format": "RDF",
+            "hash": "",
+            "id": "a8ffabf6-89ad-48e2-9845-4051787ff2f4",
+            "last_modified": null,
+            "metadata_modified": "2022-03-08T00:19:37.169198",
+            "mimetype": "application/rdf+xml",
+            "mimetype_inner": null,
+            "name": "RDF File",
+            "no_real_name": true,
+            "package_id": "fd2d2733-d864-42d6-9fea-ef6a32c2755b",
+            "position": 1,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 1,
+              "recent": 1
+            },
+            "url": "https://data.kingcounty.gov/api/views/4kmt-kfqf/rows.rdf?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2022-03-08T00:19:37.169202",
+            "describedBy": "https://data.kingcounty.gov/api/views/4kmt-kfqf/columns.json",
+            "describedByType": "application/json",
+            "description": "",
+            "format": "JSON",
+            "hash": "",
+            "id": "d94aabe0-0915-4d5c-b538-c5492c1357b5",
+            "last_modified": null,
+            "metadata_modified": "2022-03-08T00:19:37.169202",
+            "mimetype": "application/json",
+            "mimetype_inner": null,
+            "name": "JSON File",
+            "no_real_name": true,
+            "package_id": "fd2d2733-d864-42d6-9fea-ef6a32c2755b",
+            "position": 2,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://data.kingcounty.gov/api/views/4kmt-kfqf/rows.json?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2022-03-08T00:19:37.169204",
+            "describedBy": "https://data.kingcounty.gov/api/views/4kmt-kfqf/columns.xml",
+            "describedByType": "application/xml",
+            "description": "",
+            "format": "XML",
+            "hash": "",
+            "id": "8c1f1422-e28c-48ac-a759-0df6dbc53b1b",
+            "last_modified": null,
+            "metadata_modified": "2022-03-08T00:19:37.169204",
+            "mimetype": "application/xml",
+            "mimetype_inner": null,
+            "name": "XML File",
+            "no_real_name": true,
+            "package_id": "fd2d2733-d864-42d6-9fea-ef6a32c2755b",
+            "position": 3,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://data.kingcounty.gov/api/views/4kmt-kfqf/rows.xml?accessType=DOWNLOAD",
+            "url_type": null
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "crime",
+            "id": "df442823-c823-4890-8fca-805427bd8dd9",
+            "name": "crime",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "data-driven",
+            "id": "775779ed-9d10-420d-990e-0d4406118ce5",
+            "name": "data-driven",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "district",
+            "id": "80e48b05-51e9-414e-b938-45cabfea1a11",
+            "name": "district",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "nibrs",
+            "id": "2d18787a-badd-40f3-bdf4-3810033d7ada",
+            "name": "nibrs",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "offenses",
+            "id": "1cf91929-cc62-4f20-9211-25a554b7cc53",
+            "name": "offenses",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "public-safety",
+            "id": "66326f22-35c0-46a7-941b-4b7690f8b199",
+            "name": "public-safety",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      },
+      {
+        "author": null,
+        "author_email": null,
+        "creator_user_id": "1ecd1fb1-1be6-46bb-b90d-07a0762ed104",
+        "id": "2dd6028a-a21f-4459-b0a2-d08b39c3e7fb",
+        "isopen": false,
+        "license_id": "notspecified",
+        "license_title": "License not specified",
+        "maintainer": "Washington State Liquor & Cannabis Board",
+        "maintainer_email": "no-reply@data.wa.gov",
+        "metadata_created": "2024-09-13T19:08:57.202342",
+        "metadata_modified": "2025-09-27T20:39:06.470245",
+        "name": "washington-state-liquor-and-cannabis-board-lcb-local-authority-letters",
+        "notes": "State law requires the Washington State Liquor and Cannabis Board (LCB) to notify the local authority (i.e. mayor or county commission) of the city or county a proposed business is located in that have applied for a license. The local authority has a designated time period respond with an approval, objection or no response to the license application. This dataset provides details submitted to the local authority for applications related to Change of Location, Assumption, Applied for added priv., New Application, and App. In lieu of cur. Priv.",
+        "num_resources": 4,
+        "num_tags": 8,
+        "organization": {
+          "id": "bccbad82-abc4-4712-bd29-3e194e7a8042",
+          "name": "state-of-washington",
+          "title": "State of Washington",
+          "type": "organization",
+          "description": "Washington Technology Solutions (WaTech) provides the state of Washington Open Data Program for all state agencies to publish public data at https://data.wa.gov. Washington state agencies, library systems, school districts, and small local government entities publish more than 2,500 datasets, visualizations, and data stories that people access nearly three million times per month. Data topics include campaign contributions, public health, licensed professionals, environment, social services, vehicle licensing and registration, public safety, and more.",
+          "image_url": "https://raw.githubusercontent.com/GSA/logo/refs/heads/master/wa-opendata.png",
+          "created": "2020-11-10T15:27:34.605650",
+          "is_organization": true,
+          "approval_status": "approved",
+          "state": "active"
+        },
+        "owner_org": "bccbad82-abc4-4712-bd29-3e194e7a8042",
+        "private": false,
+        "state": "active",
+        "title": "Washington State Liquor and Cannabis Board (LCB) Local Authority Letters",
+        "type": "dataset",
+        "url": null,
+        "version": null,
+        "extras": [
+          {
+            "key": "resource-type",
+            "value": "Dataset"
+          },
+          {
+            "key": "source_hash",
+            "value": "d8af98a62bc67ea2ae663d2e434b107f37b3ff518e368ce9017c0bca2cc55853"
+          },
+          {
+            "key": "source_datajson_identifier",
+            "value": true
+          },
+          {
+            "key": "source_schema_version",
+            "value": "1.1"
+          },
+          {
+            "key": "accessLevel",
+            "value": "public"
+          },
+          {
+            "key": "identifier",
+            "value": "https://data.wa.gov/api/views/vgcw-qfjm"
+          },
+          {
+            "key": "issued",
+            "value": "2015-07-01"
+          },
+          {
+            "key": "landingPage",
+            "value": "https://data.wa.gov/d/vgcw-qfjm"
+          },
+          {
+            "key": "modified",
+            "value": "2025-09-27"
+          },
+          {
+            "key": "publisher",
+            "value": "data.wa.gov"
+          },
+          {
+            "key": "theme",
+            "value": [
+              "Public Safety"
+            ]
+          },
+          {
+            "key": "catalog_@context",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+          },
+          {
+            "key": "catalog_@id",
+            "value": "https://data.wa.gov/data.json"
+          },
+          {
+            "key": "catalog_conformsTo",
+            "value": "https://project-open-data.cio.gov/v1.1/schema"
+          },
+          {
+            "key": "catalog_describedBy",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+          },
+          {
+            "key": "harvest_object_id",
+            "value": "3d5e5d0e-1a2f-4ae1-9c70-70d28095f2dc"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "1c33d1cb-2f69-4f1b-835e-453790f38dc7"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "WA JSON"
+          }
+        ],
+        "groups": [
+          {
+            "description": "Local Government Topic - for all datasets with state, local, county organizations",
+            "display_name": "Local Government",
+            "id": "7d625e66-9e91-4b47-badd-44ec6f16b62b",
+            "image_display_url": "",
+            "name": "local",
+            "title": "Local Government"
+          }
+        ],
+        "resources": [
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-09-13T19:08:57.203818",
+            "description": "",
+            "format": "CSV",
+            "hash": "",
+            "id": "326c26cb-15b9-45c4-8a54-4faf9f6943f8",
+            "last_modified": null,
+            "metadata_modified": "2024-09-13T19:08:57.189110",
+            "mimetype": "text/csv",
+            "mimetype_inner": null,
+            "name": "Comma Separated Values File",
+            "no_real_name": true,
+            "package_id": "2dd6028a-a21f-4459-b0a2-d08b39c3e7fb",
+            "position": 0,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 2,
+              "recent": 2
+            },
+            "url": "https://data.wa.gov/api/views/vgcw-qfjm/rows.csv?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-09-13T19:08:57.203821",
+            "describedBy": "https://data.wa.gov/api/views/vgcw-qfjm/columns.rdf",
+            "describedByType": "application/rdf+xml",
+            "description": "",
+            "format": "RDF",
+            "hash": "",
+            "id": "e58910ba-6288-480e-b13c-79bb0152bbea",
+            "last_modified": null,
+            "metadata_modified": "2024-09-13T19:08:57.189252",
+            "mimetype": "application/rdf+xml",
+            "mimetype_inner": null,
+            "name": "RDF File",
+            "no_real_name": true,
+            "package_id": "2dd6028a-a21f-4459-b0a2-d08b39c3e7fb",
+            "position": 1,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://data.wa.gov/api/views/vgcw-qfjm/rows.rdf?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-09-13T19:08:57.203823",
+            "describedBy": "https://data.wa.gov/api/views/vgcw-qfjm/columns.json",
+            "describedByType": "application/json",
+            "description": "",
+            "format": "JSON",
+            "hash": "",
+            "id": "b60c4d8f-f6f9-45de-a794-835b60cbed1e",
+            "last_modified": null,
+            "metadata_modified": "2024-09-13T19:08:57.189368",
+            "mimetype": "application/json",
+            "mimetype_inner": null,
+            "name": "JSON File",
+            "no_real_name": true,
+            "package_id": "2dd6028a-a21f-4459-b0a2-d08b39c3e7fb",
+            "position": 2,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 2,
+              "recent": 2
+            },
+            "url": "https://data.wa.gov/api/views/vgcw-qfjm/rows.json?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-09-13T19:08:57.203825",
+            "describedBy": "https://data.wa.gov/api/views/vgcw-qfjm/columns.xml",
+            "describedByType": "application/xml",
+            "description": "",
+            "format": "XML",
+            "hash": "",
+            "id": "f8dacc58-e467-488e-8292-631aee523d9b",
+            "last_modified": null,
+            "metadata_modified": "2024-09-13T19:08:57.189481",
+            "mimetype": "application/xml",
+            "mimetype_inner": null,
+            "name": "XML File",
+            "no_real_name": true,
+            "package_id": "2dd6028a-a21f-4459-b0a2-d08b39c3e7fb",
+            "position": 3,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://data.wa.gov/api/views/vgcw-qfjm/rows.xml?accessType=DOWNLOAD",
+            "url_type": null
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "application",
+            "id": "1a8a1ae6-e567-433d-8c0a-5633bd0f96e9",
+            "name": "application",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "cannabis",
+            "id": "916e4b98-350c-4f51-bf9a-aec51ad337f6",
+            "name": "cannabis",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "endorsement",
+            "id": "5f856981-cc73-4829-bbf6-ca61f719fd26",
+            "name": "endorsement",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "license",
+            "id": "9605d16f-596f-429b-bbfd-3ca6e9d56b0d",
+            "name": "license",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "liquor",
+            "id": "7348f34a-da1d-4035-aa31-4c875d603799",
+            "name": "liquor",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "local-authority",
+            "id": "ef015a28-c371-42c6-ba0b-184b8e53497c",
+            "name": "local-authority",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "permit",
+            "id": "b3dff60e-8ea0-4cea-8a47-b02a3cb8f46b",
+            "name": "permit",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "privilege",
+            "id": "9d477eef-b4ce-4aa1-a66f-78992d4dac05",
+            "name": "privilege",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      },
+      {
+        "author": null,
+        "author_email": null,
+        "creator_user_id": "1ecd1fb1-1be6-46bb-b90d-07a0762ed104",
+        "id": "c9e3215f-0989-48f4-bcd7-050817d0f626",
+        "isopen": false,
+        "license_id": "notspecified",
+        "license_title": "License not specified",
+        "maintainer": "NY Open Data",
+        "maintainer_email": "no-reply@data.ny.gov",
+        "metadata_created": "2023-12-22T10:58:36.244974",
+        "metadata_modified": "2025-09-27T19:36:15.401935",
+        "name": "mta-major-felonies",
+        "notes": "Major felonies reflect the count of arrests made in relation to seven major felony offenses within the MTA system. These offenses are classified as murder, rape, robbery, felony assault, burglary, grand larceny, and grand larceny auto.",
+        "num_resources": 4,
+        "num_tags": 20,
+        "organization": {
+          "id": "dde3fc99-e074-41cf-a843-14aa9c777889",
+          "name": "state-of-new-york",
+          "title": "State of New York",
+          "type": "organization",
+          "description": "",
+          "image_url": "",
+          "created": "2020-11-10T20:14:29.747011",
+          "is_organization": true,
+          "approval_status": "approved",
+          "state": "active"
+        },
+        "owner_org": "dde3fc99-e074-41cf-a843-14aa9c777889",
+        "private": false,
+        "state": "active",
+        "title": "MTA Major Felonies",
+        "type": "dataset",
+        "url": null,
+        "version": null,
+        "extras": [
+          {
+            "key": "resource-type",
+            "value": "Dataset"
+          },
+          {
+            "key": "source_hash",
+            "value": "74a980bbd28cd68976435018d242afbd8e97a22fae79b7290a974dd30e5f4772"
+          },
+          {
+            "key": "source_datajson_identifier",
+            "value": true
+          },
+          {
+            "key": "source_schema_version",
+            "value": "1.1"
+          },
+          {
+            "key": "accessLevel",
+            "value": "public"
+          },
+          {
+            "key": "identifier",
+            "value": "https://data.ny.gov/api/views/yeek-jhmu"
+          },
+          {
+            "key": "issued",
+            "value": "2024-05-01"
+          },
+          {
+            "key": "landingPage",
+            "value": "https://data.ny.gov/d/yeek-jhmu"
+          },
+          {
+            "key": "modified",
+            "value": "2025-09-26"
+          },
+          {
+            "key": "publisher",
+            "value": "data.ny.gov"
+          },
+          {
+            "key": "theme",
+            "value": [
+              "Transportation"
+            ]
+          },
+          {
+            "key": "catalog_@context",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+          },
+          {
+            "key": "catalog_@id",
+            "value": "https://data.ny.gov/data.json"
+          },
+          {
+            "key": "catalog_conformsTo",
+            "value": "https://project-open-data.cio.gov/v1.1/schema"
+          },
+          {
+            "key": "catalog_describedBy",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+          },
+          {
+            "key": "harvest_object_id",
+            "value": "77a4e6ea-452b-40a8-9f50-b675564f6d69"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "36f923f9-f915-42dc-a4de-1a5e3a17d284"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "NY State JSON"
+          }
+        ],
+        "groups": [
+          {
+            "description": "Local Government Topic - for all datasets with state, local, county organizations",
+            "display_name": "Local Government",
+            "id": "7d625e66-9e91-4b47-badd-44ec6f16b62b",
+            "image_display_url": "",
+            "name": "local",
+            "title": "Local Government"
+          }
+        ],
+        "resources": [
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2023-12-22T10:58:36.251559",
+            "description": "",
+            "format": "CSV",
+            "hash": "",
+            "id": "73a167d2-2846-4a5d-9a38-75148e25a304",
+            "last_modified": null,
+            "metadata_modified": "2023-12-22T10:58:36.231131",
+            "mimetype": "text/csv",
+            "mimetype_inner": null,
+            "name": "Comma Separated Values File",
+            "no_real_name": true,
+            "package_id": "c9e3215f-0989-48f4-bcd7-050817d0f626",
+            "position": 0,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 9,
+              "recent": 2
+            },
+            "url": "https://data.ny.gov/api/views/yeek-jhmu/rows.csv?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2023-12-22T10:58:36.251562",
+            "describedBy": "https://data.ny.gov/api/views/yeek-jhmu/columns.rdf",
+            "describedByType": "application/rdf+xml",
+            "description": "",
+            "format": "RDF",
+            "hash": "",
+            "id": "00a13d34-423a-442f-b737-05b0bf41dd22",
+            "last_modified": null,
+            "metadata_modified": "2023-12-22T10:58:36.231282",
+            "mimetype": "application/rdf+xml",
+            "mimetype_inner": null,
+            "name": "RDF File",
+            "no_real_name": true,
+            "package_id": "c9e3215f-0989-48f4-bcd7-050817d0f626",
+            "position": 1,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://data.ny.gov/api/views/yeek-jhmu/rows.rdf?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2023-12-22T10:58:36.251564",
+            "describedBy": "https://data.ny.gov/api/views/yeek-jhmu/columns.json",
+            "describedByType": "application/json",
+            "description": "",
+            "format": "JSON",
+            "hash": "",
+            "id": "dd1a1095-828e-4136-9fd4-6eba0aa53007",
+            "last_modified": null,
+            "metadata_modified": "2023-12-22T10:58:36.231457",
+            "mimetype": "application/json",
+            "mimetype_inner": null,
+            "name": "JSON File",
+            "no_real_name": true,
+            "package_id": "c9e3215f-0989-48f4-bcd7-050817d0f626",
+            "position": 2,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://data.ny.gov/api/views/yeek-jhmu/rows.json?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2023-12-22T10:58:36.251566",
+            "describedBy": "https://data.ny.gov/api/views/yeek-jhmu/columns.xml",
+            "describedByType": "application/xml",
+            "description": "",
+            "format": "XML",
+            "hash": "",
+            "id": "9ded7b01-2f9e-41e2-af3c-02d201d376c9",
+            "last_modified": null,
+            "metadata_modified": "2023-12-22T10:58:36.231599",
+            "mimetype": "application/xml",
+            "mimetype_inner": null,
+            "name": "XML File",
+            "no_real_name": true,
+            "package_id": "c9e3215f-0989-48f4-bcd7-050817d0f626",
+            "position": 3,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 1,
+              "recent": 1
+            },
+            "url": "https://data.ny.gov/api/views/yeek-jhmu/rows.xml?accessType=DOWNLOAD",
+            "url_type": null
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "commuter-rail",
+            "id": "f467bc84-ebc3-42ab-8b4b-18c51f8aef69",
+            "name": "commuter-rail",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "crimes",
+            "id": "92838233-0688-44d1-a636-81db179ca873",
+            "name": "crimes",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "felonies",
+            "id": "72188642-6560-4711-ae26-3eced76681c7",
+            "name": "felonies",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "lirr",
+            "id": "6fb2ec80-5315-45ca-a0db-26bc621f8653",
+            "name": "lirr",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "long-island-rail-road",
+            "id": "9a0b0557-3a85-4506-a7e3-287ecd860f52",
+            "name": "long-island-rail-road",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "metro-north",
+            "id": "8bab425a-c517-475e-ac1f-9421e1174fc3",
+            "name": "metro-north",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "metro-north-railroad",
+            "id": "309640ac-5c1f-42e4-aaba-81e3ff579673",
+            "name": "metro-north-railroad",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mnr",
+            "id": "0821781f-b8cf-4a38-b2e7-a35ba9e40842",
+            "name": "mnr",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "monthly",
+            "id": "690bd642-4a37-4006-b727-f7130e286e49",
+            "name": "monthly",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mta-police-department",
+            "id": "848df809-f50a-4f97-98b9-7b37e6df9257",
+            "name": "mta-police-department",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mtapd",
+            "id": "3ee50725-f4ef-436c-82e1-6ecd0f7d0a8f",
+            "name": "mtapd",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "new-york-city-transit",
+            "id": "cffbce8b-9eab-4f7b-8d26-8e42d33548b0",
+            "name": "new-york-city-transit",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "new-york-police-department",
+            "id": "47a38cab-7c7e-4d5d-b16a-0b2898380be4",
+            "name": "new-york-police-department",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "nyct",
+            "id": "bd21d5d4-903c-49a6-ad4e-a872f0b89f63",
+            "name": "nyct",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "nypd",
+            "id": "f3f11364-96d9-4bda-b4f4-5d6111c39108",
+            "name": "nypd",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "safety",
+            "id": "6ef4ce6e-1dc5-491c-95c9-c9613ca29ca7",
+            "name": "safety",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "security",
+            "id": "a8313cee-759c-4826-896e-144179765c02",
+            "name": "security",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "sir",
+            "id": "b76b107c-49af-4165-941a-16a3a5b1698a",
+            "name": "sir",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "staten-island-railway",
+            "id": "19dbd193-6957-4f97-b39d-3316dfc8258d",
+            "name": "staten-island-railway",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "subway",
+            "id": "2a58eba8-e0ba-4d40-9165-4385197132a0",
+            "name": "subway",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      },
+      {
+        "author": null,
+        "author_email": null,
+        "creator_user_id": "1ecd1fb1-1be6-46bb-b90d-07a0762ed104",
+        "id": "57a00ce9-9ca1-462f-804f-146bb211cbd2",
+        "isopen": false,
+        "license_id": "notspecified",
+        "license_title": "License not specified",
+        "maintainer": "NY Open Data",
+        "maintainer_email": "no-reply@data.ny.gov",
+        "metadata_created": "2024-04-05T12:48:51.989095",
+        "metadata_modified": "2025-09-27T19:28:22.000621",
+        "name": "mta-summonses-and-arrests-beginning-2019",
+        "notes": "The number of summonses and arrests made by NYPD or MTAPD for fare evasion and other violations of the rules of conduct of the transit system.",
+        "num_resources": 4,
+        "num_tags": 27,
+        "organization": {
+          "id": "dde3fc99-e074-41cf-a843-14aa9c777889",
+          "name": "state-of-new-york",
+          "title": "State of New York",
+          "type": "organization",
+          "description": "",
+          "image_url": "",
+          "created": "2020-11-10T20:14:29.747011",
+          "is_organization": true,
+          "approval_status": "approved",
+          "state": "active"
+        },
+        "owner_org": "dde3fc99-e074-41cf-a843-14aa9c777889",
+        "private": false,
+        "state": "active",
+        "title": "MTA Summonses and Arrests: Beginning 2019",
+        "type": "dataset",
+        "url": null,
+        "version": null,
+        "extras": [
+          {
+            "key": "resource-type",
+            "value": "Dataset"
+          },
+          {
+            "key": "source_hash",
+            "value": "c4969dea413fcf9c87607972230d6ca091268f2a5bd0aa135cb047fc04344c62"
+          },
+          {
+            "key": "source_datajson_identifier",
+            "value": true
+          },
+          {
+            "key": "source_schema_version",
+            "value": "1.1"
+          },
+          {
+            "key": "accessLevel",
+            "value": "public"
+          },
+          {
+            "key": "identifier",
+            "value": "https://data.ny.gov/api/views/7tfn-twae"
+          },
+          {
+            "key": "issued",
+            "value": "2024-04-02"
+          },
+          {
+            "key": "landingPage",
+            "value": "https://data.ny.gov/d/7tfn-twae"
+          },
+          {
+            "key": "modified",
+            "value": "2025-09-26"
+          },
+          {
+            "key": "publisher",
+            "value": "data.ny.gov"
+          },
+          {
+            "key": "theme",
+            "value": [
+              "Transportation"
+            ]
+          },
+          {
+            "key": "catalog_@context",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+          },
+          {
+            "key": "catalog_@id",
+            "value": "https://data.ny.gov/data.json"
+          },
+          {
+            "key": "catalog_conformsTo",
+            "value": "https://project-open-data.cio.gov/v1.1/schema"
+          },
+          {
+            "key": "catalog_describedBy",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+          },
+          {
+            "key": "harvest_object_id",
+            "value": "864a1fef-ab7c-4363-8f0e-bff59cc31fe7"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "36f923f9-f915-42dc-a4de-1a5e3a17d284"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "NY State JSON"
+          }
+        ],
+        "groups": [
+          {
+            "description": "Local Government Topic - for all datasets with state, local, county organizations",
+            "display_name": "Local Government",
+            "id": "7d625e66-9e91-4b47-badd-44ec6f16b62b",
+            "image_display_url": "",
+            "name": "local",
+            "title": "Local Government"
+          }
+        ],
+        "resources": [
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-04-05T12:48:51.998286",
+            "description": "",
+            "format": "CSV",
+            "hash": "",
+            "id": "cad42692-ebbe-4738-9bde-8f4bfe3185f0",
+            "last_modified": null,
+            "metadata_modified": "2024-04-05T12:48:51.966715",
+            "mimetype": "text/csv",
+            "mimetype_inner": null,
+            "name": "Comma Separated Values File",
+            "no_real_name": true,
+            "package_id": "57a00ce9-9ca1-462f-804f-146bb211cbd2",
+            "position": 0,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 11,
+              "recent": 4
+            },
+            "url": "https://data.ny.gov/api/views/7tfn-twae/rows.csv?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-04-05T12:48:51.998291",
+            "describedBy": "https://data.ny.gov/api/views/7tfn-twae/columns.rdf",
+            "describedByType": "application/rdf+xml",
+            "description": "",
+            "format": "RDF",
+            "hash": "",
+            "id": "6d2ab099-d4e3-4f0d-9213-910b3356967e",
+            "last_modified": null,
+            "metadata_modified": "2024-04-05T12:48:51.966881",
+            "mimetype": "application/rdf+xml",
+            "mimetype_inner": null,
+            "name": "RDF File",
+            "no_real_name": true,
+            "package_id": "57a00ce9-9ca1-462f-804f-146bb211cbd2",
+            "position": 1,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 2,
+              "recent": 2
+            },
+            "url": "https://data.ny.gov/api/views/7tfn-twae/rows.rdf?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-04-05T12:48:51.998293",
+            "describedBy": "https://data.ny.gov/api/views/7tfn-twae/columns.json",
+            "describedByType": "application/json",
+            "description": "",
+            "format": "JSON",
+            "hash": "",
+            "id": "d2a469db-775a-45a5-9765-e3d4d92052f9",
+            "last_modified": null,
+            "metadata_modified": "2024-04-05T12:48:51.966998",
+            "mimetype": "application/json",
+            "mimetype_inner": null,
+            "name": "JSON File",
+            "no_real_name": true,
+            "package_id": "57a00ce9-9ca1-462f-804f-146bb211cbd2",
+            "position": 2,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://data.ny.gov/api/views/7tfn-twae/rows.json?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-04-05T12:48:51.998295",
+            "describedBy": "https://data.ny.gov/api/views/7tfn-twae/columns.xml",
+            "describedByType": "application/xml",
+            "description": "",
+            "format": "XML",
+            "hash": "",
+            "id": "17aced30-cc3d-40b6-833b-2e991deb77da",
+            "last_modified": null,
+            "metadata_modified": "2024-04-05T12:48:51.967148",
+            "mimetype": "application/xml",
+            "mimetype_inner": null,
+            "name": "XML File",
+            "no_real_name": true,
+            "package_id": "57a00ce9-9ca1-462f-804f-146bb211cbd2",
+            "position": 3,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://data.ny.gov/api/views/7tfn-twae/rows.xml?accessType=DOWNLOAD",
+            "url_type": null
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "arrests",
+            "id": "509c88ba-e01e-41a6-97d0-a307dcf4d9f9",
+            "name": "arrests",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "bus",
+            "id": "4ed89e7b-5b0b-4847-aa5a-6690bb65ea83",
+            "name": "bus",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "commuter-rail",
+            "id": "f467bc84-ebc3-42ab-8b4b-18c51f8aef69",
+            "name": "commuter-rail",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "crimes",
+            "id": "92838233-0688-44d1-a636-81db179ca873",
+            "name": "crimes",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "criminal-summonses",
+            "id": "ca2719b1-2772-416a-a2fa-4e94615c42c3",
+            "name": "criminal-summonses",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "fare-evasion",
+            "id": "95b4fbd5-7f73-4b71-b580-e04553c475f5",
+            "name": "fare-evasion",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "lirr",
+            "id": "6fb2ec80-5315-45ca-a0db-26bc621f8653",
+            "name": "lirr",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "long-island-rail-road",
+            "id": "9a0b0557-3a85-4506-a7e3-287ecd860f52",
+            "name": "long-island-rail-road",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "metro-north",
+            "id": "8bab425a-c517-475e-ac1f-9421e1174fc3",
+            "name": "metro-north",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "metro-north-railroad",
+            "id": "309640ac-5c1f-42e4-aaba-81e3ff579673",
+            "name": "metro-north-railroad",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mnr",
+            "id": "0821781f-b8cf-4a38-b2e7-a35ba9e40842",
+            "name": "mnr",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "monthly",
+            "id": "690bd642-4a37-4006-b727-f7130e286e49",
+            "name": "monthly",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mta-bus",
+            "id": "3cfdd346-f919-4461-917c-78adcde4b671",
+            "name": "mta-bus",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mta-pd",
+            "id": "21c1c747-1c31-42d2-ae4e-85fbbc676d7f",
+            "name": "mta-pd",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mta-police-department",
+            "id": "848df809-f50a-4f97-98b9-7b37e6df9257",
+            "name": "mta-police-department",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mtabc",
+            "id": "70ce90eb-6f2e-488b-94b8-b7fa20709450",
+            "name": "mtabc",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "new-york-city-transit",
+            "id": "cffbce8b-9eab-4f7b-8d26-8e42d33548b0",
+            "name": "new-york-city-transit",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "new-york-police-department",
+            "id": "47a38cab-7c7e-4d5d-b16a-0b2898380be4",
+            "name": "new-york-police-department",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "nyct",
+            "id": "bd21d5d4-903c-49a6-ad4e-a872f0b89f63",
+            "name": "nyct",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "nypd",
+            "id": "f3f11364-96d9-4bda-b4f4-5d6111c39108",
+            "name": "nypd",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "safety",
+            "id": "6ef4ce6e-1dc5-491c-95c9-c9613ca29ca7",
+            "name": "safety",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "security",
+            "id": "a8313cee-759c-4826-896e-144179765c02",
+            "name": "security",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "subway",
+            "id": "2a58eba8-e0ba-4d40-9165-4385197132a0",
+            "name": "subway",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "summonses",
+            "id": "ece49775-6209-428e-8fb6-14f4d1e05314",
+            "name": "summonses",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "tab",
+            "id": "ec250a1a-9958-4757-b8c1-ac44a831c5c3",
+            "name": "tab",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "transit-adjudication-bureau",
+            "id": "dd7b256d-3ba0-4a7d-9ef3-79f37408ae73",
+            "name": "transit-adjudication-bureau",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "violations",
+            "id": "86aa5919-b576-4e33-9dd3-a90d5fd7d79a",
+            "name": "violations",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      },
+      {
+        "author": null,
+        "author_email": null,
+        "creator_user_id": "1ecd1fb1-1be6-46bb-b90d-07a0762ed104",
+        "id": "d88ddcbf-e93c-4256-addb-00ac84c7c149",
+        "isopen": false,
+        "license_id": "notspecified",
+        "license_title": "License not specified",
+        "maintainer": "NY Open Data",
+        "maintainer_email": "no-reply@data.ny.gov",
+        "metadata_created": "2024-03-22T12:34:32.828172",
+        "metadata_modified": "2025-09-27T19:28:01.128198",
+        "name": "mta-workplace-violence-labor-law-incidents-beginning-2019",
+        "notes": "This dataset reflects the monthly number of employee-reported incidents of workplace violence, as defined by New York State Labor Law Section 27-B, against on-duty MTA employees. This dataset divides workplace violence incidents into groupings as reported pursuant to New York State Labor Law Section 27-B. The same data is available in the MTA Workplace Violence Penal Law Incidents dataset, which divides the data according to New York State Penal Law Related Offenses.",
+        "num_resources": 4,
+        "num_tags": 29,
+        "organization": {
+          "id": "dde3fc99-e074-41cf-a843-14aa9c777889",
+          "name": "state-of-new-york",
+          "title": "State of New York",
+          "type": "organization",
+          "description": "",
+          "image_url": "",
+          "created": "2020-11-10T20:14:29.747011",
+          "is_organization": true,
+          "approval_status": "approved",
+          "state": "active"
+        },
+        "owner_org": "dde3fc99-e074-41cf-a843-14aa9c777889",
+        "private": false,
+        "state": "active",
+        "title": "MTA Workplace Violence Labor Law Incidents: Beginning 2019",
+        "type": "dataset",
+        "url": null,
+        "version": null,
+        "extras": [
+          {
+            "key": "resource-type",
+            "value": "Dataset"
+          },
+          {
+            "key": "source_hash",
+            "value": "02d8136ca3d744fc3d32a634d9ad3723a2cb116a435f980635867661b43abf16"
+          },
+          {
+            "key": "source_datajson_identifier",
+            "value": true
+          },
+          {
+            "key": "source_schema_version",
+            "value": "1.1"
+          },
+          {
+            "key": "accessLevel",
+            "value": "public"
+          },
+          {
+            "key": "identifier",
+            "value": "https://data.ny.gov/api/views/7i3h-vdya"
+          },
+          {
+            "key": "issued",
+            "value": "2024-03-18"
+          },
+          {
+            "key": "landingPage",
+            "value": "https://data.ny.gov/d/7i3h-vdya"
+          },
+          {
+            "key": "modified",
+            "value": "2025-09-26"
+          },
+          {
+            "key": "publisher",
+            "value": "data.ny.gov"
+          },
+          {
+            "key": "theme",
+            "value": [
+              "Transportation"
+            ]
+          },
+          {
+            "key": "catalog_@context",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+          },
+          {
+            "key": "catalog_@id",
+            "value": "https://data.ny.gov/data.json"
+          },
+          {
+            "key": "catalog_conformsTo",
+            "value": "https://project-open-data.cio.gov/v1.1/schema"
+          },
+          {
+            "key": "catalog_describedBy",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+          },
+          {
+            "key": "harvest_object_id",
+            "value": "df21fbd8-d389-4126-a976-ff8c474b9043"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "36f923f9-f915-42dc-a4de-1a5e3a17d284"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "NY State JSON"
+          }
+        ],
+        "groups": [
+          {
+            "description": "Local Government Topic - for all datasets with state, local, county organizations",
+            "display_name": "Local Government",
+            "id": "7d625e66-9e91-4b47-badd-44ec6f16b62b",
+            "image_display_url": "",
+            "name": "local",
+            "title": "Local Government"
+          }
+        ],
+        "resources": [
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-03-22T12:34:32.832899",
+            "description": "",
+            "format": "CSV",
+            "hash": "",
+            "id": "467406c2-128e-46e9-8161-da5c0faf2209",
+            "last_modified": null,
+            "metadata_modified": "2024-03-22T12:34:32.810434",
+            "mimetype": "text/csv",
+            "mimetype_inner": null,
+            "name": "Comma Separated Values File",
+            "no_real_name": true,
+            "package_id": "d88ddcbf-e93c-4256-addb-00ac84c7c149",
+            "position": 0,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 29,
+              "recent": 4
+            },
+            "url": "https://data.ny.gov/api/views/7i3h-vdya/rows.csv?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-03-22T12:34:32.832905",
+            "describedBy": "https://data.ny.gov/api/views/7i3h-vdya/columns.rdf",
+            "describedByType": "application/rdf+xml",
+            "description": "",
+            "format": "RDF",
+            "hash": "",
+            "id": "5498c25f-51bb-46cb-a2f2-6ec3e2bd1e44",
+            "last_modified": null,
+            "metadata_modified": "2024-03-22T12:34:32.810584",
+            "mimetype": "application/rdf+xml",
+            "mimetype_inner": null,
+            "name": "RDF File",
+            "no_real_name": true,
+            "package_id": "d88ddcbf-e93c-4256-addb-00ac84c7c149",
+            "position": 1,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://data.ny.gov/api/views/7i3h-vdya/rows.rdf?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-03-22T12:34:32.832906",
+            "describedBy": "https://data.ny.gov/api/views/7i3h-vdya/columns.json",
+            "describedByType": "application/json",
+            "description": "",
+            "format": "JSON",
+            "hash": "",
+            "id": "388aac36-a040-4bad-84ca-96e71c2b350a",
+            "last_modified": null,
+            "metadata_modified": "2024-03-22T12:34:32.810702",
+            "mimetype": "application/json",
+            "mimetype_inner": null,
+            "name": "JSON File",
+            "no_real_name": true,
+            "package_id": "d88ddcbf-e93c-4256-addb-00ac84c7c149",
+            "position": 2,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 2,
+              "recent": 2
+            },
+            "url": "https://data.ny.gov/api/views/7i3h-vdya/rows.json?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2024-03-22T12:34:32.832908",
+            "describedBy": "https://data.ny.gov/api/views/7i3h-vdya/columns.xml",
+            "describedByType": "application/xml",
+            "description": "",
+            "format": "XML",
+            "hash": "",
+            "id": "9ed2aca0-ef51-4c1d-89b0-02d69f96107c",
+            "last_modified": null,
+            "metadata_modified": "2024-03-22T12:34:32.810815",
+            "mimetype": "application/xml",
+            "mimetype_inner": null,
+            "name": "XML File",
+            "no_real_name": true,
+            "package_id": "d88ddcbf-e93c-4256-addb-00ac84c7c149",
+            "position": 3,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://data.ny.gov/api/views/7i3h-vdya/rows.xml?accessType=DOWNLOAD",
+            "url_type": null
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "bt",
+            "id": "d1769fc2-a22f-4f39-8f2d-ead7e9c2c8c9",
+            "name": "bt",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "bus",
+            "id": "4ed89e7b-5b0b-4847-aa5a-6690bb65ea83",
+            "name": "bus",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "commuter-rail",
+            "id": "f467bc84-ebc3-42ab-8b4b-18c51f8aef69",
+            "name": "commuter-rail",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "crimes",
+            "id": "92838233-0688-44d1-a636-81db179ca873",
+            "name": "crimes",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "employees",
+            "id": "84060db6-9b50-47cb-a293-7c1117dbeca0",
+            "name": "employees",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "labor-law",
+            "id": "a67b8c2c-ed57-4db2-8423-5d8cff6439f2",
+            "name": "labor-law",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "lirr",
+            "id": "6fb2ec80-5315-45ca-a0db-26bc621f8653",
+            "name": "lirr",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "long-island-rail-road",
+            "id": "9a0b0557-3a85-4506-a7e3-287ecd860f52",
+            "name": "long-island-rail-road",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "metro-north",
+            "id": "8bab425a-c517-475e-ac1f-9421e1174fc3",
+            "name": "metro-north",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "metro-north-railroad",
+            "id": "309640ac-5c1f-42e4-aaba-81e3ff579673",
+            "name": "metro-north-railroad",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mnr",
+            "id": "0821781f-b8cf-4a38-b2e7-a35ba9e40842",
+            "name": "mnr",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "monthly",
+            "id": "690bd642-4a37-4006-b727-f7130e286e49",
+            "name": "monthly",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mta-bridges-tunnels",
+            "id": "088e925b-d963-4430-9a36-c44ab5243f2f",
+            "name": "mta-bridges-tunnels",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mta-bus",
+            "id": "3cfdd346-f919-4461-917c-78adcde4b671",
+            "name": "mta-bus",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mta-headquarters",
+            "id": "97611cd2-f9dc-4525-9b0e-f494e8c09696",
+            "name": "mta-headquarters",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mta-hq",
+            "id": "960af8e0-440d-4810-b304-d163e63466ad",
+            "name": "mta-hq",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mta-pd",
+            "id": "21c1c747-1c31-42d2-ae4e-85fbbc676d7f",
+            "name": "mta-pd",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mta-police-department",
+            "id": "848df809-f50a-4f97-98b9-7b37e6df9257",
+            "name": "mta-police-department",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mtabc",
+            "id": "70ce90eb-6f2e-488b-94b8-b7fa20709450",
+            "name": "mtabc",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "new-york-city-transit",
+            "id": "cffbce8b-9eab-4f7b-8d26-8e42d33548b0",
+            "name": "new-york-city-transit",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "new-york-police-department",
+            "id": "47a38cab-7c7e-4d5d-b16a-0b2898380be4",
+            "name": "new-york-police-department",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "nyct",
+            "id": "bd21d5d4-903c-49a6-ad4e-a872f0b89f63",
+            "name": "nyct",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "nypd",
+            "id": "f3f11364-96d9-4bda-b4f4-5d6111c39108",
+            "name": "nypd",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "safety",
+            "id": "6ef4ce6e-1dc5-491c-95c9-c9613ca29ca7",
+            "name": "safety",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "security",
+            "id": "a8313cee-759c-4826-896e-144179765c02",
+            "name": "security",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "sir",
+            "id": "b76b107c-49af-4165-941a-16a3a5b1698a",
+            "name": "sir",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "staten-island-railway",
+            "id": "19dbd193-6957-4f97-b39d-3316dfc8258d",
+            "name": "staten-island-railway",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "subway",
+            "id": "2a58eba8-e0ba-4d40-9165-4385197132a0",
+            "name": "subway",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "workplace-violence",
+            "id": "712c1832-d3f8-4753-bd8b-b2aa73b413db",
+            "name": "workplace-violence",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      },
+      {
+        "author": null,
+        "author_email": null,
+        "creator_user_id": "1ecd1fb1-1be6-46bb-b90d-07a0762ed104",
+        "id": "fe4d1a40-0d35-43fc-b681-d9c669cc650d",
+        "isopen": false,
+        "license_id": "notspecified",
+        "license_title": "License not specified",
+        "maintainer": "NY Open Data",
+        "maintainer_email": "no-reply@data.ny.gov",
+        "metadata_created": "2023-05-19T06:44:06.445138",
+        "metadata_modified": "2025-09-27T19:26:34.171247",
+        "name": "mta-subway-and-bus-employee-assaults-and-harassments-beginning-2019",
+        "notes": "This dataset reflects the monthly number of employee-reported incidents of workplace violence, as defined by New York State Labor Law Section 27-B, against on-duty MTA employees. This dataset divides workplace violence incidents into groupings according to New York State Penal Law Related Offenses. The same data is available in the MTA Workplace Violence Labor Law Incidents dataset, which divides the data as reported pursuant to New York State Labor Law Section 27-B.",
+        "num_resources": 4,
+        "num_tags": 29,
+        "organization": {
+          "id": "dde3fc99-e074-41cf-a843-14aa9c777889",
+          "name": "state-of-new-york",
+          "title": "State of New York",
+          "type": "organization",
+          "description": "",
+          "image_url": "",
+          "created": "2020-11-10T20:14:29.747011",
+          "is_organization": true,
+          "approval_status": "approved",
+          "state": "active"
+        },
+        "owner_org": "dde3fc99-e074-41cf-a843-14aa9c777889",
+        "private": false,
+        "state": "active",
+        "title": "MTA Workplace Violence Penal Law Incidents: Beginning 2019",
+        "type": "dataset",
+        "url": null,
+        "version": null,
+        "extras": [
+          {
+            "key": "resource-type",
+            "value": "Dataset"
+          },
+          {
+            "key": "source_hash",
+            "value": "c72e946e8b3f7c9b82c8844c0cc1ae9048bdbfd8c17227add8aa8d53b48414ea"
+          },
+          {
+            "key": "source_datajson_identifier",
+            "value": true
+          },
+          {
+            "key": "source_schema_version",
+            "value": "1.1"
+          },
+          {
+            "key": "accessLevel",
+            "value": "public"
+          },
+          {
+            "key": "identifier",
+            "value": "https://data.ny.gov/api/views/2xh4-m2qk"
+          },
+          {
+            "key": "issued",
+            "value": "2024-03-20"
+          },
+          {
+            "key": "landingPage",
+            "value": "https://data.ny.gov/d/2xh4-m2qk"
+          },
+          {
+            "key": "modified",
+            "value": "2025-09-26"
+          },
+          {
+            "key": "publisher",
+            "value": "data.ny.gov"
+          },
+          {
+            "key": "theme",
+            "value": [
+              "Transportation"
+            ]
+          },
+          {
+            "key": "catalog_@context",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+          },
+          {
+            "key": "catalog_@id",
+            "value": "https://data.ny.gov/data.json"
+          },
+          {
+            "key": "catalog_conformsTo",
+            "value": "https://project-open-data.cio.gov/v1.1/schema"
+          },
+          {
+            "key": "catalog_describedBy",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+          },
+          {
+            "key": "harvest_object_id",
+            "value": "c50c026f-55c5-42d1-9ce4-25a177be75c5"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "36f923f9-f915-42dc-a4de-1a5e3a17d284"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "NY State JSON"
+          }
+        ],
+        "groups": [
+          {
+            "description": "Local Government Topic - for all datasets with state, local, county organizations",
+            "display_name": "Local Government",
+            "id": "7d625e66-9e91-4b47-badd-44ec6f16b62b",
+            "image_display_url": "",
+            "name": "local",
+            "title": "Local Government"
+          }
+        ],
+        "resources": [
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2023-05-19T06:44:06.483410",
+            "description": "",
+            "format": "CSV",
+            "hash": "",
+            "id": "4a4623de-5728-49a1-9fb3-3f5c61d84ff8",
+            "last_modified": null,
+            "metadata_modified": "2023-05-19T06:44:06.424103",
+            "mimetype": "text/csv",
+            "mimetype_inner": null,
+            "name": "Comma Separated Values File",
+            "no_real_name": true,
+            "package_id": "fe4d1a40-0d35-43fc-b681-d9c669cc650d",
+            "position": 0,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 16,
+              "recent": 2
+            },
+            "url": "https://data.ny.gov/api/views/2xh4-m2qk/rows.csv?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2023-05-19T06:44:06.483414",
+            "describedBy": "https://data.ny.gov/api/views/2xh4-m2qk/columns.rdf",
+            "describedByType": "application/rdf+xml",
+            "description": "",
+            "format": "RDF",
+            "hash": "",
+            "id": "ac48e79d-dfdc-4bd9-b6eb-39622a3e1f46",
+            "last_modified": null,
+            "metadata_modified": "2023-05-19T06:44:06.424280",
+            "mimetype": "application/rdf+xml",
+            "mimetype_inner": null,
+            "name": "RDF File",
+            "no_real_name": true,
+            "package_id": "fe4d1a40-0d35-43fc-b681-d9c669cc650d",
+            "position": 1,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 2,
+              "recent": 2
+            },
+            "url": "https://data.ny.gov/api/views/2xh4-m2qk/rows.rdf?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2023-05-19T06:44:06.483416",
+            "describedBy": "https://data.ny.gov/api/views/2xh4-m2qk/columns.json",
+            "describedByType": "application/json",
+            "description": "",
+            "format": "JSON",
+            "hash": "",
+            "id": "bd74867d-c63b-4d51-b16e-91cd758d3f91",
+            "last_modified": null,
+            "metadata_modified": "2023-05-19T06:44:06.424439",
+            "mimetype": "application/json",
+            "mimetype_inner": null,
+            "name": "JSON File",
+            "no_real_name": true,
+            "package_id": "fe4d1a40-0d35-43fc-b681-d9c669cc650d",
+            "position": 2,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 4,
+              "recent": 4
+            },
+            "url": "https://data.ny.gov/api/views/2xh4-m2qk/rows.json?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2023-05-19T06:44:06.483418",
+            "describedBy": "https://data.ny.gov/api/views/2xh4-m2qk/columns.xml",
+            "describedByType": "application/xml",
+            "description": "",
+            "format": "XML",
+            "hash": "",
+            "id": "d71950b7-d36e-4b98-aee1-db7e127d9361",
+            "last_modified": null,
+            "metadata_modified": "2023-05-19T06:44:06.424596",
+            "mimetype": "application/xml",
+            "mimetype_inner": null,
+            "name": "XML File",
+            "no_real_name": true,
+            "package_id": "fe4d1a40-0d35-43fc-b681-d9c669cc650d",
+            "position": 3,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://data.ny.gov/api/views/2xh4-m2qk/rows.xml?accessType=DOWNLOAD",
+            "url_type": null
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "bt",
+            "id": "d1769fc2-a22f-4f39-8f2d-ead7e9c2c8c9",
+            "name": "bt",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "bus",
+            "id": "4ed89e7b-5b0b-4847-aa5a-6690bb65ea83",
+            "name": "bus",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "commuter-rail",
+            "id": "f467bc84-ebc3-42ab-8b4b-18c51f8aef69",
+            "name": "commuter-rail",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "crimes",
+            "id": "92838233-0688-44d1-a636-81db179ca873",
+            "name": "crimes",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "employees",
+            "id": "84060db6-9b50-47cb-a293-7c1117dbeca0",
+            "name": "employees",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "lirr",
+            "id": "6fb2ec80-5315-45ca-a0db-26bc621f8653",
+            "name": "lirr",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "long-island-rail-road",
+            "id": "9a0b0557-3a85-4506-a7e3-287ecd860f52",
+            "name": "long-island-rail-road",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "metro-north",
+            "id": "8bab425a-c517-475e-ac1f-9421e1174fc3",
+            "name": "metro-north",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "metro-north-railroad",
+            "id": "309640ac-5c1f-42e4-aaba-81e3ff579673",
+            "name": "metro-north-railroad",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mnr",
+            "id": "0821781f-b8cf-4a38-b2e7-a35ba9e40842",
+            "name": "mnr",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "monthly",
+            "id": "690bd642-4a37-4006-b727-f7130e286e49",
+            "name": "monthly",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mta-bridges-tunnels",
+            "id": "088e925b-d963-4430-9a36-c44ab5243f2f",
+            "name": "mta-bridges-tunnels",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mta-bus",
+            "id": "3cfdd346-f919-4461-917c-78adcde4b671",
+            "name": "mta-bus",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mta-headquarters",
+            "id": "97611cd2-f9dc-4525-9b0e-f494e8c09696",
+            "name": "mta-headquarters",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mta-hq",
+            "id": "960af8e0-440d-4810-b304-d163e63466ad",
+            "name": "mta-hq",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mta-pd",
+            "id": "21c1c747-1c31-42d2-ae4e-85fbbc676d7f",
+            "name": "mta-pd",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mta-police-department",
+            "id": "848df809-f50a-4f97-98b9-7b37e6df9257",
+            "name": "mta-police-department",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mtabc",
+            "id": "70ce90eb-6f2e-488b-94b8-b7fa20709450",
+            "name": "mtabc",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "new-york-city-transit",
+            "id": "cffbce8b-9eab-4f7b-8d26-8e42d33548b0",
+            "name": "new-york-city-transit",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "new-york-police-department",
+            "id": "47a38cab-7c7e-4d5d-b16a-0b2898380be4",
+            "name": "new-york-police-department",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "nyct",
+            "id": "bd21d5d4-903c-49a6-ad4e-a872f0b89f63",
+            "name": "nyct",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "nypd",
+            "id": "f3f11364-96d9-4bda-b4f4-5d6111c39108",
+            "name": "nypd",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "penal-law",
+            "id": "ca16e78d-fe46-4974-a06d-7b0bf83ae8f8",
+            "name": "penal-law",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "safety",
+            "id": "6ef4ce6e-1dc5-491c-95c9-c9613ca29ca7",
+            "name": "safety",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "security",
+            "id": "a8313cee-759c-4826-896e-144179765c02",
+            "name": "security",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "sir",
+            "id": "b76b107c-49af-4165-941a-16a3a5b1698a",
+            "name": "sir",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "staten-island-railway",
+            "id": "19dbd193-6957-4f97-b39d-3316dfc8258d",
+            "name": "staten-island-railway",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "subway",
+            "id": "2a58eba8-e0ba-4d40-9165-4385197132a0",
+            "name": "subway",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "workplace-violence",
+            "id": "712c1832-d3f8-4753-bd8b-b2aa73b413db",
+            "name": "workplace-violence",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      },
+      {
+        "author": null,
+        "author_email": null,
+        "creator_user_id": "1ecd1fb1-1be6-46bb-b90d-07a0762ed104",
+        "id": "40c8d839-0add-4d03-a666-a0460e5ad6f5",
+        "isopen": false,
+        "license_id": "notspecified",
+        "license_title": "License not specified",
+        "maintainer": "NY Open Data",
+        "maintainer_email": "no-reply@data.ny.gov",
+        "metadata_created": "2023-05-19T06:43:48.139833",
+        "metadata_modified": "2025-09-27T19:26:24.661729",
+        "name": "mta-subway-and-bus-vandalism-beginning-2021",
+        "notes": "This dataset reflects the monthly number of units vandalized for select elements of the subway and bus system.",
+        "num_resources": 4,
+        "num_tags": 12,
+        "organization": {
+          "id": "dde3fc99-e074-41cf-a843-14aa9c777889",
+          "name": "state-of-new-york",
+          "title": "State of New York",
+          "type": "organization",
+          "description": "",
+          "image_url": "",
+          "created": "2020-11-10T20:14:29.747011",
+          "is_organization": true,
+          "approval_status": "approved",
+          "state": "active"
+        },
+        "owner_org": "dde3fc99-e074-41cf-a843-14aa9c777889",
+        "private": false,
+        "state": "active",
+        "title": "MTA Subway and Bus Vandalism: Beginning 2021",
+        "type": "dataset",
+        "url": null,
+        "version": null,
+        "extras": [
+          {
+            "key": "resource-type",
+            "value": "Dataset"
+          },
+          {
+            "key": "source_hash",
+            "value": "8fcd7fb8cd07d612b777243be154a1e9781f94eeef9adc0fc73ef89ea2e3ddf5"
+          },
+          {
+            "key": "source_datajson_identifier",
+            "value": true
+          },
+          {
+            "key": "source_schema_version",
+            "value": "1.1"
+          },
+          {
+            "key": "accessLevel",
+            "value": "public"
+          },
+          {
+            "key": "identifier",
+            "value": "https://data.ny.gov/api/views/23fs-vfbd"
+          },
+          {
+            "key": "issued",
+            "value": "2023-05-18"
+          },
+          {
+            "key": "landingPage",
+            "value": "https://data.ny.gov/d/23fs-vfbd"
+          },
+          {
+            "key": "modified",
+            "value": "2025-09-24"
+          },
+          {
+            "key": "publisher",
+            "value": "data.ny.gov"
+          },
+          {
+            "key": "theme",
+            "value": [
+              "Transportation"
+            ]
+          },
+          {
+            "key": "catalog_@context",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+          },
+          {
+            "key": "catalog_@id",
+            "value": "https://data.ny.gov/data.json"
+          },
+          {
+            "key": "catalog_conformsTo",
+            "value": "https://project-open-data.cio.gov/v1.1/schema"
+          },
+          {
+            "key": "catalog_describedBy",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+          },
+          {
+            "key": "harvest_object_id",
+            "value": "b8c02d9d-6b62-47d4-b45b-7c7d42e2cf3d"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "36f923f9-f915-42dc-a4de-1a5e3a17d284"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "NY State JSON"
+          }
+        ],
+        "groups": [
+          {
+            "description": "Local Government Topic - for all datasets with state, local, county organizations",
+            "display_name": "Local Government",
+            "id": "7d625e66-9e91-4b47-badd-44ec6f16b62b",
+            "image_display_url": "",
+            "name": "local",
+            "title": "Local Government"
+          }
+        ],
+        "resources": [
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2023-05-19T06:43:48.170833",
+            "description": "",
+            "format": "CSV",
+            "hash": "",
+            "id": "0e58590d-3e89-42c4-bd49-d3bb31e9eeb7",
+            "last_modified": null,
+            "metadata_modified": "2023-05-19T06:43:48.123057",
+            "mimetype": "text/csv",
+            "mimetype_inner": null,
+            "name": "Comma Separated Values File",
+            "no_real_name": true,
+            "package_id": "40c8d839-0add-4d03-a666-a0460e5ad6f5",
+            "position": 0,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://data.ny.gov/api/views/23fs-vfbd/rows.csv?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2023-05-19T06:43:48.170838",
+            "describedBy": "https://data.ny.gov/api/views/23fs-vfbd/columns.rdf",
+            "describedByType": "application/rdf+xml",
+            "description": "",
+            "format": "RDF",
+            "hash": "",
+            "id": "768d5797-b3d3-4629-aeab-318391376a4d",
+            "last_modified": null,
+            "metadata_modified": "2023-05-19T06:43:48.123237",
+            "mimetype": "application/rdf+xml",
+            "mimetype_inner": null,
+            "name": "RDF File",
+            "no_real_name": true,
+            "package_id": "40c8d839-0add-4d03-a666-a0460e5ad6f5",
+            "position": 1,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://data.ny.gov/api/views/23fs-vfbd/rows.rdf?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2023-05-19T06:43:48.170840",
+            "describedBy": "https://data.ny.gov/api/views/23fs-vfbd/columns.json",
+            "describedByType": "application/json",
+            "description": "",
+            "format": "JSON",
+            "hash": "",
+            "id": "12f5973f-cf77-45ff-95c6-7fcc1e927b76",
+            "last_modified": null,
+            "metadata_modified": "2023-05-19T06:43:48.123393",
+            "mimetype": "application/json",
+            "mimetype_inner": null,
+            "name": "JSON File",
+            "no_real_name": true,
+            "package_id": "40c8d839-0add-4d03-a666-a0460e5ad6f5",
+            "position": 2,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://data.ny.gov/api/views/23fs-vfbd/rows.json?accessType=DOWNLOAD",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2023-05-19T06:43:48.170842",
+            "describedBy": "https://data.ny.gov/api/views/23fs-vfbd/columns.xml",
+            "describedByType": "application/xml",
+            "description": "",
+            "format": "XML",
+            "hash": "",
+            "id": "0cc6f93a-6588-4e80-8b03-92fe2ab1f142",
+            "last_modified": null,
+            "metadata_modified": "2023-05-19T06:43:48.123599",
+            "mimetype": "application/xml",
+            "mimetype_inner": null,
+            "name": "XML File",
+            "no_real_name": true,
+            "package_id": "40c8d839-0add-4d03-a666-a0460e5ad6f5",
+            "position": 3,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://data.ny.gov/api/views/23fs-vfbd/rows.xml?accessType=DOWNLOAD",
+            "url_type": null
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "bus",
+            "id": "4ed89e7b-5b0b-4847-aa5a-6690bb65ea83",
+            "name": "bus",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "crimes",
+            "id": "92838233-0688-44d1-a636-81db179ca873",
+            "name": "crimes",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "graffiti",
+            "id": "e8a4035d-2256-4855-bda7-39152cf9e3fc",
+            "name": "graffiti",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "monthly",
+            "id": "690bd642-4a37-4006-b727-f7130e286e49",
+            "name": "monthly",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mta-bus",
+            "id": "3cfdd346-f919-4461-917c-78adcde4b671",
+            "name": "mta-bus",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "mtabc",
+            "id": "70ce90eb-6f2e-488b-94b8-b7fa20709450",
+            "name": "mtabc",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "new-york-city-transit",
+            "id": "cffbce8b-9eab-4f7b-8d26-8e42d33548b0",
+            "name": "new-york-city-transit",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "nyct",
+            "id": "bd21d5d4-903c-49a6-ad4e-a872f0b89f63",
+            "name": "nyct",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "safety",
+            "id": "6ef4ce6e-1dc5-491c-95c9-c9613ca29ca7",
+            "name": "safety",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "security",
+            "id": "a8313cee-759c-4826-896e-144179765c02",
+            "name": "security",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "subway",
+            "id": "2a58eba8-e0ba-4d40-9165-4385197132a0",
+            "name": "subway",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "vandalism",
+            "id": "53415aa3-ca29-4c5e-a63c-e9ddddd625fa",
+            "name": "vandalism",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      },
+      {
+        "author": null,
+        "author_email": null,
+        "creator_user_id": "1ecd1fb1-1be6-46bb-b90d-07a0762ed104",
+        "id": "a633af50-27bf-4342-8375-74e2b8c3fbf1",
+        "isopen": false,
+        "license_id": "other-license-specified",
+        "license_title": "other-license-specified",
+        "maintainer": "Bureau of Indian Affairs Branch of Geospatial Support",
+        "maintainer_email": "geospatial@bia.gov",
+        "metadata_created": "2025-09-11T20:44:35.248271",
+        "metadata_modified": "2025-09-26T02:29:00.342887",
+        "name": "bia-regions",
+        "notes": "<span style='font-family:&quot;Avenir Next W01&quot;, &quot;Avenir Next W00&quot;, &quot;Avenir Next&quot;, Avenir, &quot;Helvetica Neue&quot;, sans-serif; font-size:16px;'>Delivery of program services to the federally recognized tribes and individual Indians and Alaska Natives, whether directly or through contracts, grants or compacts, is administered by the twelve regional offices and 83 agencies that report to the BIA Deputy Director-Field Operations, located in Washington, D.C. There is a regional office headed by a Regional Director who is responsible for all Bureau activities within a defined geographical area except education, law enforcement and functions of an administrative nature for each region. The typical Regional Office includes a Deputy Regional Director for Trust Services and Deputy Regional Director for Indian Services. The Deputy Regional Director for Trust Services oversees a staff of specialists responsible for natural resources (water resources, forestry and fire, irrigation and safety of dams), agriculture, (farm, pasture, and range), fish, wildlife and parks and real estate services (land acquisition and disposal land title records office, probate, rights-of-way, and lease/permit). The Deputy Regional Director for Indian Services oversees a staff of specialists responsible for transportation (planning, design, construction, and maintenance) and Indian services (tribal governments, human services, housing improvement).</span>",
+        "num_resources": 7,
+        "num_tags": 15,
+        "organization": {
+          "id": "143529f7-2eef-4a07-b227-93ac9e84fad8",
+          "name": "doi-gov",
+          "title": "Department of the Interior",
+          "type": "organization",
+          "description": "The Department of the Interior (DOI) conserves and manages the Nation’s natural resources and cultural heritage for the benefit and enjoyment of the American people, provides scientific and other information about natural resources and natural hazards to address societal challenges and create opportunities for the American people, and honors the Nation’s trust responsibilities or special commitments to American Indians, Alaska Natives, and affiliated island communities to help them prosper.\r\n\r\nSee more at https://www.doi.gov/",
+          "image_url": "https://raw.githubusercontent.com/GSA/logo/master/doi.png",
+          "created": "2020-11-10T15:11:40.499004",
+          "is_organization": true,
+          "approval_status": "approved",
+          "state": "active"
+        },
+        "owner_org": "143529f7-2eef-4a07-b227-93ac9e84fad8",
+        "private": false,
+        "state": "active",
+        "title": "BIA Regions",
+        "type": "dataset",
+        "url": null,
+        "version": null,
+        "extras": [
+          {
+            "key": "resource-type",
+            "value": "Dataset"
+          },
+          {
+            "key": "source_hash",
+            "value": "67e1dba935269c166acdf6ef46187e6eb1068f1ccfb523adecc1842f58122c66"
+          },
+          {
+            "key": "source_datajson_identifier",
+            "value": true
+          },
+          {
+            "key": "source_schema_version",
+            "value": "1.1"
+          },
+          {
+            "key": "accessLevel",
+            "value": "public"
+          },
+          {
+            "key": "bureauCode",
+            "value": [
+              "010:76"
+            ]
+          },
+          {
+            "key": "identifier",
+            "value": "https://www.arcgis.com/home/item.html?id=a9be4c360a154a8faf2f75de0880847f&sublayer=0"
+          },
+          {
+            "key": "issued",
+            "value": "2023-08-15T18:49:56Z"
+          },
+          {
+            "key": "landingPage",
+            "value": "https://onemap-bia-geospatial.hub.arcgis.com/datasets/BIA-Geospatial::bia-regions-1"
+          },
+          {
+            "key": "license",
+            "value": "https://www.idmanagement.gov/license/"
+          },
+          {
+            "key": "modified",
+            "value": "2025-05-14T15:07:44Z"
+          },
+          {
+            "key": "programCode",
+            "value": [
+              "010:000"
+            ]
+          },
+          {
+            "key": "publisher",
+            "value": "Bureau of Indian Affairs"
+          },
+          {
+            "key": "theme",
+            "value": [
+              "geospatial"
+            ]
+          },
+          {
+            "key": "metadata_type",
+            "value": "geospatial"
+          },
+          {
+            "key": "catalog_conformsTo",
+            "value": "https://project-open-data.cio.gov/v1.1/schema"
+          },
+          {
+            "key": "catalog_describedBy",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.json"
+          },
+          {
+            "key": "catalog_@context",
+            "value": "https://project-open-data.cio.gov/v1.1/schema/catalog.jsonld"
+          },
+          {
+            "key": "catalog_@id",
+            "value": "https://ddi.doi.gov/bia-data.json"
+          },
+          {
+            "key": "old-spatial",
+            "value": "-158.5303,55.3158,-131.5278,71.2952"
+          },
+          {
+            "key": "harvest_object_id",
+            "value": "554eaada-b02e-4215-95b0-3cc8609842af"
+          },
+          {
+            "key": "harvest_source_id",
+            "value": "bcd0de62-e748-4737-9607-e2ef4d239c53"
+          },
+          {
+            "key": "harvest_source_title",
+            "value": "DOI BIA DCAT-US"
+          },
+          {
+            "key": "spatial",
+            "value": "{\"type\": \"Polygon\", \"coordinates\": [[[-158.5303, 55.3158], [-158.5303, 71.2952], [-131.5278, 71.2952], [-131.5278, 55.3158], [-158.5303, 55.3158]]]}"
+          }
+        ],
+        "resources": [
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-09-11T20:44:35.250260",
+            "description": "",
+            "format": "ZIP",
+            "hash": "",
+            "id": "b4de1bdc-054f-4f65-b973-e022b582747a",
+            "last_modified": null,
+            "metadata_modified": "2025-09-11T20:44:35.217759",
+            "mimetype": "application/zip",
+            "mimetype_inner": null,
+            "name": "Shapefile",
+            "package_id": "a633af50-27bf-4342-8375-74e2b8c3fbf1",
+            "position": 0,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://onemap-bia-geospatial.hub.arcgis.com/api/download/v1/items/a9be4c360a154a8faf2f75de0880847f/shapefile?layers=0",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-09-11T20:44:35.250263",
+            "description": "",
+            "format": "GeoJSON",
+            "hash": "",
+            "id": "e506ccc3-0af3-4237-9240-f4fae09da386",
+            "last_modified": null,
+            "metadata_modified": "2025-09-11T20:44:35.217869",
+            "mimetype": "application/vnd.geo+json",
+            "mimetype_inner": null,
+            "name": "GeoJSON",
+            "package_id": "a633af50-27bf-4342-8375-74e2b8c3fbf1",
+            "position": 1,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://onemap-bia-geospatial.hub.arcgis.com/api/download/v1/items/a9be4c360a154a8faf2f75de0880847f/geojson?layers=0",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-09-11T20:44:35.250265",
+            "description": "",
+            "format": "XML",
+            "hash": "",
+            "id": "9330da06-a268-45da-9166-065c8e61e411",
+            "last_modified": null,
+            "metadata_modified": "2025-09-11T20:44:35.217962",
+            "mimetype": "text/xml",
+            "mimetype_inner": null,
+            "name": "ISO-19139 metadata",
+            "package_id": "a633af50-27bf-4342-8375-74e2b8c3fbf1",
+            "position": 2,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://biamaps.geoplatform.gov/server/rest/services/BOGS/BIA_Regions/FeatureServer/0/metadata?format=iso19139",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-09-11T20:44:35.250266",
+            "description": "",
+            "format": "KML",
+            "hash": "",
+            "id": "7de6e1be-834b-4985-acf9-78c5ca31ce67",
+            "last_modified": null,
+            "metadata_modified": "2025-09-11T20:44:35.218049",
+            "mimetype": "application/vnd.google-earth.kml+xml",
+            "mimetype_inner": null,
+            "name": "KML",
+            "package_id": "a633af50-27bf-4342-8375-74e2b8c3fbf1",
+            "position": 3,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 2,
+              "recent": 2
+            },
+            "url": "https://onemap-bia-geospatial.hub.arcgis.com/api/download/v1/items/a9be4c360a154a8faf2f75de0880847f/kml?layers=0",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-09-11T20:44:35.250267",
+            "description": "",
+            "format": "CSV",
+            "hash": "",
+            "id": "3d1dbc36-d357-4077-a24b-120588b03760",
+            "last_modified": null,
+            "metadata_modified": "2025-09-11T20:44:35.218136",
+            "mimetype": "text/csv",
+            "mimetype_inner": null,
+            "name": "CSV",
+            "package_id": "a633af50-27bf-4342-8375-74e2b8c3fbf1",
+            "position": 4,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://onemap-bia-geospatial.hub.arcgis.com/api/download/v1/items/a9be4c360a154a8faf2f75de0880847f/csv?layers=0",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-09-11T20:44:35.250268",
+            "description": "",
+            "format": "HTML",
+            "hash": "",
+            "id": "1463db54-89f6-4770-970c-d93e4c9c6d7c",
+            "last_modified": null,
+            "metadata_modified": "2025-09-11T20:44:35.218222",
+            "mimetype": "text/html",
+            "mimetype_inner": null,
+            "name": "ArcGIS Hub Dataset",
+            "package_id": "a633af50-27bf-4342-8375-74e2b8c3fbf1",
+            "position": 5,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://onemap-bia-geospatial.hub.arcgis.com/datasets/BIA-Geospatial::bia-regions-1",
+            "url_type": null
+          },
+          {
+            "cache_last_updated": null,
+            "cache_url": null,
+            "created": "2025-09-11T20:44:35.250270",
+            "description": "",
+            "format": "ArcGIS GeoServices REST API",
+            "hash": "",
+            "id": "e2d3332a-caee-4820-b40b-9ed0374a788a",
+            "last_modified": null,
+            "metadata_modified": "2025-09-11T20:44:35.218322",
+            "mimetype": "application/json",
+            "mimetype_inner": null,
+            "name": "ArcGIS GeoService",
+            "package_id": "a633af50-27bf-4342-8375-74e2b8c3fbf1",
+            "position": 6,
+            "resource_type": null,
+            "size": null,
+            "state": "active",
+            "tracking_summary": {
+              "total": 0,
+              "recent": 0
+            },
+            "url": "https://biamaps.geoplatform.gov/server/rest/services/BOGS/BIA_Regions/FeatureServer/0",
+            "url_type": null
+          }
+        ],
+        "tags": [
+          {
+            "display_name": "alaska",
+            "id": "5aa6034d-aead-4175-a8df-15f33abffb71",
+            "name": "alaska",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "bia",
+            "id": "443755cf-8c51-4d87-a50d-b75d39a3bf3d",
+            "name": "bia",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "bia-regions",
+            "id": "97d1dacd-85f0-463c-892f-153cc032dc2a",
+            "name": "bia-regions",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "eastern",
+            "id": "55de7a65-dddf-4e1a-94c2-50621f299a3a",
+            "name": "eastern",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "eastern-oklahoma",
+            "id": "1a8bd596-7eaf-47ae-a69f-64ee697e1d00",
+            "name": "eastern-oklahoma",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "midwest",
+            "id": "30f2f586-b7a0-43c1-9342-b80d89d7711e",
+            "name": "midwest",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "navajo",
+            "id": "1ddbf1ce-efff-4f17-8a8a-e8e17bc8b73d",
+            "name": "navajo",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "pacific",
+            "id": "88e0025d-aab3-429f-b2f3-34581b753474",
+            "name": "pacific",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "public",
+            "id": "904d6d04-d656-40e7-8430-ade951284f74",
+            "name": "public",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "public-rest-service",
+            "id": "e08d3d58-5fcd-414d-9df4-4c2c2766e3a0",
+            "name": "public-rest-service",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "regional-boundaries",
+            "id": "0b0e0d0d-107f-4bec-bfa3-a6b213b1cb43",
+            "name": "regional-boundaries",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "rocky-mountain",
+            "id": "4ff137a8-2553-4857-ac98-4db0b71679aa",
+            "name": "rocky-mountain",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "southern-plains",
+            "id": "6bc94a50-38df-46e6-b1ca-ba790a97e73d",
+            "name": "southern-plains",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "southwest",
+            "id": "63417509-fe23-4197-8983-e505041ec8c0",
+            "name": "southwest",
+            "state": "active",
+            "vocabulary_id": null
+          },
+          {
+            "display_name": "western",
+            "id": "b1c1def3-8ec2-4300-babd-687461ed71b6",
+            "name": "western",
+            "state": "active",
+            "vocabulary_id": null
+          }
+        ],
+        "groups": [],
+        "relationships_as_subject": [],
+        "relationships_as_object": []
+      }
+    ],
+    "sort": "metadata_modified desc",
+    "search_facets": {}
+  },
+  "help": "https://catalog.data.gov/api/3/action/help_show?name=package_search",
+  "query_params": {
+    "q": "crime safety Washington DC",
+    "rows": 10,
+    "start": 0,
+    "fq": "metadata_modified:[2025-08-29T07:20:11.487185Z TO 2025-09-28T07:20:11.487185Z]",
+    "sort": "metadata_modified desc"
+  },
+  "endpoint": "https://catalog.data.gov/api/3/action/package_search",
+  "_metadata": {
+    "saved_at": "2025-09-28T07:20:12.760358",
+    "data_source": "data.gov",
+    "saved_by": "tooling.py"
+  }
+}

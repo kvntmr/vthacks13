@@ -1,0 +1,8 @@
+{
+  "success": false,
+  "result": {
+    "csv_saved": false,
+    "csv_error": "Error message",
+    "csv_file_path": "attempted/path.csv"
+  }
+}
