@@ -32,6 +32,11 @@ import {
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import SpreadsheetEditor from "@/components/spreadsheet";
+import React, { useRef } from "react";
+import { Spreadsheet, Worksheet, jspreadsheet } from "@jspreadsheet-ce/react";
+import "jsuites/dist/jsuites.css";
+import "jspreadsheet-ce/dist/jspreadsheet.css";
 
 // ---------------------------------------------------------------------------
 // Types & mock data for the real estate file library
@@ -886,10 +891,7 @@ export function ChatDashboard() {
         return <ReportSettingsView preferences={REPORT_SETTINGS} />;
       case "sheets":
         return (
-          <SheetsWorkspaceView
-            exports={SHEETS_EXPORTS}
-            onNavigate={navigateTo}
-          />
+          <SpreadsheetEditor />
         );
       default:
         return (
