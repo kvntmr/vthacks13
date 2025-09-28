@@ -2644,6 +2644,7 @@ type ChatInterfaceState = {
   showDatasetSidebar: boolean;
   showDatasetDetails: string | null; // ID of dataset to show details for
   clickedButton: string | null; // ID of button that was just clicked for animation
+  datasetJsonData: Record<string, { data: any; lastFetched: number; loading: boolean; error: string | null }>; // JSON data for each dataset
 };
 
 function ChatInterface({ setActiveNavId, handleOpenFolder }: { 
@@ -2667,11 +2668,18 @@ function ChatInterface({ setActiveNavId, handleOpenFolder }: {
     showDatasetSidebar: false,
     showDatasetDetails: null,
     clickedButton: null,
+    datasetJsonData: {},
   });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const folderInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const setStateRef = useRef<typeof setState>();
+
+  // Update the ref whenever setState changes
+  useEffect(() => {
+    setStateRef.current = setState;
+  }, [setState]);
 
   // Get all available folders for selection
   const availableFolders = useMemo(() => {
@@ -2698,6 +2706,50 @@ function ChatInterface({ setActiveNavId, handleOpenFolder }: {
     return folders;
   }, []);
 
+  // Expose API for backend to call
+  useEffect(() => {
+    // Create global API object if it doesn't exist
+    if (typeof window !== 'undefined') {
+      (window as any).StagAPI = (window as any).StagAPI || {};
+      
+      // Expose dataset selection function
+      (window as any).StagAPI.selectDatasets = (datasetIds: string[]) => {
+        if (setStateRef.current) {
+          setStateRef.current(prev => ({
+            ...prev,
+            selectedFolders: datasetIds,
+            clickedButton: null // Clear any animation state
+          }));
+          return true; // Success
+        }
+        return false; // Failed - component not mounted
+      };
+
+      // Expose function to get current selected datasets
+      (window as any).StagAPI.getSelectedDatasets = () => {
+        return state.selectedFolders;
+      };
+
+      // Expose function to get available datasets
+      (window as any).StagAPI.getAvailableDatasets = () => {
+        return availableFolders.map(folder => ({
+          id: folder.id,
+          name: folder.name,
+          description: folder.description,
+        }));
+      };
+    }
+
+    // Cleanup on unmount
+    return () => {
+      if (typeof window !== 'undefined' && (window as any).StagAPI) {
+        delete (window as any).StagAPI.selectDatasets;
+        delete (window as any).StagAPI.getSelectedDatasets;
+        delete (window as any).StagAPI.getAvailableDatasets;
+      }
+    };
+  }, [state.selectedFolders, availableFolders]);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -2715,6 +2767,90 @@ function ChatInterface({ setActiveNavId, handleOpenFolder }: {
       return () => clearTimeout(timer);
     }
   }, [state.clickedButton]);
+
+  // Poll for JSON data every 5 seconds
+  useEffect(() => {
+    const pollJsonData = async () => {
+      for (const folder of availableFolders) {
+        const datasetId = folder.id;
+        const lastFetched = state.datasetJsonData[datasetId]?.lastFetched || 0;
+        const now = Date.now();
+        
+        // Only fetch if it's been more than 5 seconds since last fetch
+        if (now - lastFetched > 5000) {
+          try {
+            setState(prev => ({
+              ...prev,
+              datasetJsonData: {
+                ...prev.datasetJsonData,
+                [datasetId]: {
+                  ...prev.datasetJsonData[datasetId],
+                  loading: true,
+                  error: null,
+                }
+              }
+            }));
+
+            // Fetch JSON data for this dataset
+            const response = await fetch(`/api/datasets/${datasetId}/data.json`);
+            
+            if (response.ok) {
+              const jsonData = await response.json();
+              setState(prev => ({
+                ...prev,
+                datasetJsonData: {
+                  ...prev.datasetJsonData,
+                  [datasetId]: {
+                    data: jsonData,
+                    lastFetched: now,
+                    loading: false,
+                    error: null,
+                  }
+                }
+              }));
+            } else if (response.status === 404) {
+              // JSON file doesn't exist yet, clear any existing data
+              setState(prev => ({
+                ...prev,
+                datasetJsonData: {
+                  ...prev.datasetJsonData,
+                  [datasetId]: {
+                    data: null,
+                    lastFetched: now,
+                    loading: false,
+                    error: null,
+                  }
+                }
+              }));
+            } else {
+              throw new Error(`HTTP ${response.status}`);
+            }
+          } catch (error) {
+            setState(prev => ({
+              ...prev,
+              datasetJsonData: {
+                ...prev.datasetJsonData,
+                [datasetId]: {
+                  ...prev.datasetJsonData[datasetId],
+                  loading: false,
+                  error: error instanceof Error ? error.message : 'Failed to fetch data',
+                  lastFetched: now,
+                }
+              }
+            }));
+          }
+        }
+      }
+    };
+
+    // Initial poll
+    pollJsonData();
+
+    // Set up polling interval
+    const interval = setInterval(pollJsonData, 5000);
+
+    return () => clearInterval(interval);
+  }, [availableFolders, state.datasetJsonData]);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
@@ -3243,40 +3379,64 @@ function ChatInterface({ setActiveNavId, handleOpenFolder }: {
                         </div>
                       </div>
 
-                      {/* Actions */}
+                      {/* Database JSON Data */}
                       <div className="space-y-3">
-                        <h5 className="font-medium text-sm">Actions</h5>
-                        <div className="space-y-2">
-                          <Button 
-                            variant="outline" 
-                            className="w-full justify-start"
-                            onClick={() => {
-                              closeDatasetDetails();
-                              setActiveNavId("file-library");
-                              handleOpenFolder(dataset.id);
-                            }}
-                          >
-                            <Folder className="h-4 w-4 mr-2" />
-                            Open in File Library
-                          </Button>
-                          <Button 
-                            variant="outline" 
-                            className="w-full justify-start"
-                            onClick={() => {
-                              // Add to context if not already selected
-                              if (!state.selectedFolders.includes(dataset.id)) {
-                                setState(prev => ({
-                                  ...prev,
-                                  selectedFolders: [...prev.selectedFolders, dataset.id]
-                                }));
-                              }
-                              closeDatasetDetails();
-                            }}
-                          >
-                            <Plus className="h-4 w-4 mr-2" />
-                            Add to Context
-                          </Button>
-                        </div>
+                        <h5 className="font-medium text-sm">Database Data</h5>
+                        {(() => {
+                          const jsonInfo = state.datasetJsonData[dataset.id];
+                          
+                          if (jsonInfo?.loading) {
+                            return (
+                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                                <span>Loading data...</span>
+                              </div>
+                            );
+                          }
+                          
+                          if (jsonInfo?.error) {
+                            return (
+                              <div className="rounded-lg border border-red-200 bg-red-50 p-3">
+                                <p className="text-sm text-red-600">
+                                  Failed to load data: {jsonInfo.error}
+                                </p>
+                              </div>
+                            );
+                          }
+                          
+                          if (jsonInfo?.data) {
+                            return (
+                              <div className="space-y-2">
+                                <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                                      Live Database Data
+                                    </span>
+                                    <span className="text-xs text-muted-foreground">
+                                      Updated {jsonInfo.lastFetched ? new Date(jsonInfo.lastFetched).toLocaleTimeString() : 'just now'}
+                                    </span>
+                                  </div>
+                                  <ScrollArea className="h-48 w-full">
+                                    <pre className="text-xs text-foreground whitespace-pre-wrap">
+                                      {JSON.stringify(jsonInfo.data, null, 2)}
+                                    </pre>
+                                  </ScrollArea>
+                                </div>
+                              </div>
+                            );
+                          }
+                          
+                          return (
+                            <div className="rounded-lg border border-dashed border-border/60 bg-muted/20 p-4 text-center">
+                              <p className="text-sm text-muted-foreground">
+                                No database data available yet.
+                              </p>
+                              <p className="text-xs text-muted-foreground/80 mt-1">
+                                Data will appear here when the backend provides it.
+                              </p>
+                            </div>
+                          );
+                        })()}
                       </div>
                     </>
                   );
