@@ -59,7 +59,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
+import { cn, generateUUID } from "@/lib/utils";
 import SpreadsheetEditor from "@/components/spreadsheet";
 import React from "react";
 
@@ -2690,6 +2690,7 @@ function ChatInterface({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const folderInputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const chatIdRef = useRef<string>(generateUUID());
   const setStateRef = useRef<typeof setState>();
   const attachedFilesRef = useRef<File[]>([]);
   const isProcessingUploadRef = useRef(false);
