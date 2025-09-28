@@ -16,6 +16,12 @@ import {
   Search,
   Sparkles,
   Upload,
+  X,
+  CheckCircle,
+  AlertCircle,
+  Loader2,
+  Minimize2,
+  Maximize2,
 } from "lucide-react";
 import { type ElementType, Fragment, useEffect, useMemo, useRef, useState } from "react";
 
@@ -96,6 +102,23 @@ type FolderStats = {
 type FolderIndexEntry = {
   folder: RealEstateFolder;
   ancestors: BreadcrumbItem[];
+};
+
+// Upload Manager Types
+type UploadStatus = 'uploading' | 'completed' | 'error' | 'cancelled';
+
+type UploadItem = {
+  id: string;
+  file: File;
+  progress: number;
+  status: UploadStatus;
+  error?: string;
+};
+
+type UploadManagerState = {
+  uploads: UploadItem[];
+  isMinimized: boolean;
+  isVisible: boolean;
 };
 
 
@@ -718,6 +741,174 @@ const REPORT_SETTINGS: ReportPreference[] = [
 ];
 
 // ---------------------------------------------------------------------------
+// Upload Manager Component
+// ---------------------------------------------------------------------------
+
+type UploadManagerProps = {
+  uploads: UploadItem[];
+  isMinimized: boolean;
+  isVisible: boolean;
+  onCancel: (uploadId: string) => void;
+  onMinimize: () => void;
+  onRemove: (uploadId: string) => void;
+  onRetry: (uploadId: string) => void;
+};
+
+function UploadManager({
+  uploads,
+  isMinimized,
+  isVisible,
+  onCancel,
+  onMinimize,
+  onRemove,
+  onRetry,
+}: UploadManagerProps) {
+  const activeUploads = uploads.filter(u => u.status === 'uploading');
+  const completedUploads = uploads.filter(u => u.status === 'completed');
+  const errorUploads = uploads.filter(u => u.status === 'error');
+  const cancelledUploads = uploads.filter(u => u.status === 'cancelled');
+
+  const totalUploads = uploads.length;
+  const completedCount = completedUploads.length + errorUploads.length + cancelledUploads.length;
+
+  const getStatusIcon = (status: UploadStatus) => {
+    switch (status) {
+      case 'uploading':
+        return <Loader2 className="h-4 w-4 animate-spin text-blue-500" />;
+      case 'completed':
+        return <CheckCircle className="h-4 w-4 text-green-500" />;
+      case 'error':
+        return <AlertCircle className="h-4 w-4 text-red-500" />;
+      case 'cancelled':
+        return <X className="h-4 w-4 text-gray-500" />;
+      default:
+        return null;
+    }
+  };
+
+  const getHeaderText = () => {
+    if (activeUploads.length > 0) {
+      return `Uploading... ${completedCount} of ${totalUploads} files`;
+    }
+    return 'All uploads complete';
+  };
+
+  if (!isVisible) return null;
+
+  return (
+    <div className="fixed bottom-4 right-4 z-50">
+      {isMinimized ? (
+        // Minimized pill view
+        <div className="flex items-center gap-2 rounded-full bg-background border border-border/60 px-4 py-2 shadow-lg">
+          <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
+          <span className="text-sm font-medium">
+            {activeUploads.length > 0
+              ? `Uploading ${activeUploads.length} file${activeUploads.length === 1 ? '' : 's'}`
+              : 'Uploads complete'
+            }
+          </span>
+          <Button
+            onClick={onMinimize}
+            size="sm"
+            variant="ghost"
+            className="h-6 w-6 p-0"
+          >
+            <Maximize2 className="h-3 w-3" />
+          </Button>
+        </div>
+      ) : (
+        // Full drawer view
+        <div className="w-96 max-h-96 bg-background border border-border/60 rounded-lg shadow-xl overflow-hidden">
+          {/* Header */}
+          <div className="flex items-center justify-between p-4 border-b border-border/60">
+            <h3 className="font-semibold text-sm">{getHeaderText()}</h3>
+            <Button
+              onClick={onMinimize}
+              size="sm"
+              variant="ghost"
+              className="h-6 w-6 p-0"
+            >
+              <Minimize2 className="h-3 w-3" />
+            </Button>
+          </div>
+
+          {/* Upload list */}
+          <div className="max-h-80 overflow-y-auto">
+            {uploads.map((upload) => (
+              <div
+                key={upload.id}
+                className="flex items-center gap-3 p-3 border-b border-border/20 last:border-b-0"
+              >
+                {/* Status icon */}
+                <div className="flex-shrink-0">
+                  {getStatusIcon(upload.status)}
+                </div>
+
+                {/* File info */}
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate" title={upload.file.name}>
+                    {upload.file.name}
+                  </p>
+                  <div className="flex items-center gap-2 mt-1">
+                    <Progress
+                      value={upload.progress}
+                      className="flex-1 h-1"
+                    />
+                    <span className="text-xs text-muted-foreground">
+                      {upload.progress.toFixed(0)}%
+                    </span>
+                  </div>
+                  {upload.error && (
+                    <p className="text-xs text-red-500 mt-1">{upload.error}</p>
+                  )}
+                </div>
+
+                {/* Action buttons */}
+                <div className="flex items-center gap-1">
+                  {upload.status === 'uploading' && (
+                    <Button
+                      onClick={() => onCancel(upload.id)}
+                      size="sm"
+                      variant="ghost"
+                      className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+                      title="Cancel upload"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  )}
+                  {upload.status === 'error' && (
+                    <Button
+                      onClick={() => onRetry(upload.id)}
+                      size="sm"
+                      variant="ghost"
+                      className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+                      title="Retry upload"
+                    >
+                      <RotateCcw className="h-3 w-3" />
+                    </Button>
+                  )}
+                  {(upload.status === 'completed' || upload.status === 'error' || upload.status === 'cancelled') && (
+                    <Button
+                      onClick={() => onRemove(upload.id)}
+                      size="sm"
+                      variant="ghost"
+                      className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+                      title="Remove from list"
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Main component
 // ---------------------------------------------------------------------------
 
@@ -734,6 +925,11 @@ export function ChatDashboard() {
   const [newFolderName, setNewFolderName] = useState("");
   const [fileLibraryData, setFileLibraryData] = useState<RealEstateFolder>(FILE_LIBRARY_ROOT);
   const [folderIndex, setFolderIndex] = useState<Record<string, FolderIndexEntry>>(() => buildFolderIndex(FILE_LIBRARY_ROOT));
+  const [uploadManager, setUploadManager] = useState<UploadManagerState>({
+    uploads: [],
+    isMinimized: false,
+    isVisible: false,
+  });
 
   // Update folder index when data changes
   useEffect(() => {
@@ -820,6 +1016,114 @@ export function ChatDashboard() {
     }
   };
 
+  // Upload Manager Functions
+  const startUploads = (files: File[]) => {
+    const newUploads: UploadItem[] = files.map(file => ({
+      id: `upload-${Date.now()}-${Math.random()}`,
+      file,
+      progress: 0,
+      status: 'uploading' as const,
+    }));
+
+    setUploadManager(prev => ({
+      ...prev,
+      uploads: [...prev.uploads, ...newUploads],
+      isVisible: true,
+      isMinimized: false,
+    }));
+
+    // Start mock upload for each file
+    newUploads.forEach(upload => {
+      simulateUpload(upload.id);
+    });
+  };
+
+  const simulateUpload = (uploadId: string) => {
+    // Simulate random upload time between 1-5 seconds
+    const totalTime = Math.random() * 4000 + 1000;
+    const steps = 20;
+    const stepTime = totalTime / steps;
+    let currentStep = 0;
+
+    const interval = setInterval(() => {
+      currentStep++;
+      const progress = Math.min((currentStep / steps) * 100, 95); // Cap at 95% until complete
+
+      setUploadManager(prev => ({
+        ...prev,
+        uploads: prev.uploads.map(u =>
+          u.id === uploadId ? { ...u, progress } : u
+        ),
+      }));
+
+      if (currentStep >= steps) {
+        clearInterval(interval);
+
+        // Randomly simulate error (10% chance)
+        const hasError = Math.random() < 0.1;
+
+        setTimeout(() => {
+          setUploadManager(prev => ({
+            ...prev,
+            uploads: prev.uploads.map(u =>
+              u.id === uploadId
+                ? {
+                    ...u,
+                    progress: hasError ? u.progress : 100,
+                    status: hasError ? 'error' : 'completed',
+                    error: hasError ? 'Upload failed. Please try again.' : undefined,
+                  }
+                : u
+            ),
+          }));
+
+          // Auto-dismiss after 3 seconds if all uploads are complete
+          setTimeout(() => {
+            setUploadManager(prev => {
+              const activeUploads = prev.uploads.filter(u => u.status === 'uploading');
+              if (activeUploads.length === 0) {
+                return { ...prev, isVisible: false };
+              }
+              return prev;
+            });
+          }, 3000);
+        }, 200);
+      }
+    }, stepTime);
+  };
+
+  const cancelUpload = (uploadId: string) => {
+    setUploadManager(prev => ({
+      ...prev,
+      uploads: prev.uploads.map(u =>
+        u.id === uploadId ? { ...u, status: 'cancelled' } : u
+      ),
+    }));
+  };
+
+  const retryUpload = (uploadId: string) => {
+    setUploadManager(prev => ({
+      ...prev,
+      uploads: prev.uploads.map(u =>
+        u.id === uploadId
+          ? { ...u, progress: 0, status: 'uploading', error: undefined }
+          : u
+      ),
+    }));
+    simulateUpload(uploadId);
+  };
+
+  const removeUpload = (uploadId: string) => {
+    setUploadManager(prev => ({
+      ...prev,
+      uploads: prev.uploads.filter(u => u.id !== uploadId),
+    }));
+  };
+
+  const toggleMinimize = () => {
+    setUploadManager(prev => ({ ...prev, isMinimized: !prev.isMinimized }));
+  };
+
   const renderNavItem = (item: NavItem) => {
     const isActive = activeNavId === item.id;
     const isExpanded = expandedNav.includes(item.id);
@@ -903,6 +1207,7 @@ export function ChatDashboard() {
             newFolderName={newFolderName}
             onBreadcrumbSelect={handleOpenFolder}
             onCreateNewFolder={handleCreateNewFolder}
+            onFileUpload={startUploads}
             onFolderOpen={handleOpenFolder}
             onNewFolderNameChange={setNewFolderName}
             onSearchChange={setSearchQuery}
@@ -1052,6 +1357,17 @@ export function ChatDashboard() {
 
         </div>
       </div>
+
+      {/* Upload Manager */}
+      <UploadManager
+        uploads={uploadManager.uploads}
+        isMinimized={uploadManager.isMinimized}
+        isVisible={uploadManager.isVisible}
+        onCancel={cancelUpload}
+        onMinimize={toggleMinimize}
+        onRemove={removeUpload}
+        onRetry={retryUpload}
+      />
     </div>
   );
 }
@@ -1071,6 +1387,7 @@ type FileLibraryViewProps = {
   newFolderName: string;
   onBreadcrumbSelect: (id: string) => void;
   onCreateNewFolder: () => void;
+  onFileUpload: (files: File[]) => void;
   onFolderOpen: (id: string) => void;
   onNewFolderNameChange: (name: string) => void;
   onSearchChange: (value: string) => void;
@@ -1092,6 +1409,7 @@ function FileLibraryView({
   newFolderName,
   onBreadcrumbSelect,
   onCreateNewFolder,
+  onFileUpload,
   onFolderOpen,
   onNewFolderNameChange,
   onSearchChange,
@@ -1108,40 +1426,22 @@ function FileLibraryView({
     const selectedFiles = Array.from(event.target.files || []);
     if (selectedFiles.length === 0) return;
 
-    // In a real app, this would upload files to a backend API
-    // For now, we'll simulate adding files to the current folder
-    const newFiles: RealEstateFile[] = selectedFiles.map((file, index) => ({
-      id: `file-${Date.now()}-${index}`,
-      name: file.name,
-      type: file.name.endsWith('.pdf') ? 'pdf' : file.name.endsWith('.xlsx') || file.name.endsWith('.xls') ? 'xlsx' : 'doc',
-      size: `${(file.size / 1024 / 1024).toFixed(1)} MB`,
-      status: 'queued' as const,
-      updatedAt: new Date().toISOString(),
-    }));
+    // Start uploads using the upload manager
+    onFileUpload(selectedFiles);
 
-    // Update the file library data to add files to current folder
-    // This would normally be done via API call and state update from parent
-    alert(`Uploaded ${selectedFiles.length} file(s): ${selectedFiles.map(f => f.name).join(', ')}`);
+    // Clear the input
+    event.target.value = '';
   };
 
   const handleFolderUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = Array.from(event.target.files || []);
     if (selectedFiles.length === 0) return;
 
-    // In a real app, this would upload folder contents to a backend API
-    // For now, we'll simulate adding files to the current folder
-    const newFiles: RealEstateFile[] = selectedFiles.map((file, index) => ({
-      id: `file-${Date.now()}-${index}`,
-      name: file.name,
-      type: file.name.endsWith('.pdf') ? 'pdf' : file.name.endsWith('.xlsx') || file.name.endsWith('.xls') ? 'xlsx' : 'doc',
-      size: `${(file.size / 1024 / 1024).toFixed(1)} MB`,
-      status: 'queued' as const,
-      updatedAt: new Date().toISOString(),
-    }));
+    // Start uploads using the upload manager
+    onFileUpload(selectedFiles);
 
-    // Update the file library data to add files to current folder
-    // This would normally be done via API call and state update from parent
-    alert(`Uploaded ${selectedFiles.length} file(s) from folder: ${selectedFiles.map(f => f.name).join(', ')}`);
+    // Clear the input
+    event.target.value = '';
   };
   const isGrid = viewMode === "grid";
   const folderSummaries = isSearching
