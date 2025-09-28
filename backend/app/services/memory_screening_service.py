@@ -158,7 +158,7 @@ class MemoryScreeningService:
         include_property_data_only: bool = True
     ) -> Dict[str, Any]:
         """
-        Screen all properties stored in memory
+        Screen all properties stored in memory - OPTIMIZED VERSION
         
         Args:
             include_property_data_only: Whether to only include documents with property data
@@ -167,7 +167,7 @@ class MemoryScreeningService:
             Screening results with summary and metadata
         """
         try:
-            # Get all documents
+            # OPTIMIZATION 1: Get only metadata first (much faster)
             all_documents = await self.document_memory.get_all_documents(
                 include_property_data=False
             )
@@ -193,26 +193,39 @@ class MemoryScreeningService:
                     "error": "No documents with property data found"
                 }
             
-            # Prepare text inputs for screening
+            # OPTIMIZATION 2: Limit documents for performance (max 10)
+            if len(documents) > 10:
+                # Sort by file size (larger files likely have more data)
+                documents = sorted(documents, key=lambda x: x.get("file_size", 0), reverse=True)[:10]
+            
+            # OPTIMIZATION 3: Prepare text inputs with content truncation
             text_inputs = []
             document_ids = []
             
             for doc in documents:
+                # Truncate content to prevent overwhelming the AI
+                content = doc.get("content", "")
+                if len(content) > 2000:  # Limit to 2000 chars per document
+                    content = content[:2000] + "... [truncated]"
+                
                 text_inputs.append({
-                    "text": doc["content"],
-                    "source": doc["filename"]
+                    "text": content,
+                    "source": doc["filename"],
+                    "file_type": doc.get("document_type", "unknown"),
+                    "file_size": doc.get("file_size", 0)
                 })
                 document_ids.append(doc["document_id"])
             
-            # Generate comprehensive screening summary
-            summary = await self._generate_screening_summary(text_inputs)
+            # OPTIMIZATION 4: Generate intelligent screening summary
+            summary = await self._generate_intelligent_screening_summary(text_inputs)
             
             return {
                 "success": True,
                 "summary": summary,
                 "total_documents": len(documents),
                 "document_ids": document_ids,
-                "screening_timestamp": datetime.now().isoformat()
+                "screening_timestamp": datetime.now().isoformat(),
+                "performance_note": f"Analyzed {len(documents)} documents (content truncated for performance)"
             }
             
         except Exception as e:
@@ -319,68 +332,61 @@ class MemoryScreeningService:
         except Exception as e:
             return []
     
-    async def _generate_screening_summary(self, text_inputs: List[Dict[str, str]]) -> str:
+    async def _generate_intelligent_screening_summary(self, text_inputs: List[Dict[str, str]]) -> str:
         """
-        Generate a comprehensive property summary from multiple text sources
+        Generate an intelligent property summary from multiple text sources
+        AI determines the structure and content based on what it finds
         
         Args:
-            text_inputs: List of dictionaries containing 'text' and 'source' keys
+            text_inputs: List of dictionaries containing 'text', 'source', 'file_type', 'file_size' keys
             
         Returns:
-            String containing the comprehensive property summary
+            String containing the intelligent property summary
         """
         try:
-            # Format the input for the AI
+            # Format the input for the AI with metadata
             formatted_inputs = []
             for i, input_data in enumerate(text_inputs, 1):
                 text = input_data.get("text", "")
                 source = input_data.get("source", f"file_{i}")
-                formatted_inputs.append(f"--- SOURCE {i}: {source} ---\n{text}\n")
+                file_type = input_data.get("file_type", "unknown")
+                file_size = input_data.get("file_size", 0)
+                
+                formatted_inputs.append(f"""
+--- DOCUMENT {i}: {source} ---
+Type: {file_type} | Size: {file_size} bytes
+Content:
+{text}
+""")
             
             combined_text = "\n".join(formatted_inputs)
             
-            # Create the prompt template
+            # Create the intelligent prompt template
             prompt = ChatPromptTemplate.from_template("""
-You are a real estate investment analyst speaking directly to a client. Analyze the following property information from multiple sources and create a comprehensive investment summary.
+You are an expert real estate investment analyst. Analyze the following documents and create a comprehensive investment analysis.
 
-IMPORTANT: The information below comes from {num_sources} different files/sources. Please analyze ALL sources and take everything into account when creating your summary. Differentiate between the sources when relevant, but synthesize the information into a cohesive analysis.
+IMPORTANT: You have {num_sources} documents to analyze. Read through ALL of them carefully and synthesize the information into a cohesive analysis.
 
-Property Information from Multiple Sources:
+Documents to Analyze:
 {text}
 
-Write your analysis as if you're presenting directly to the client. Use a conversational tone and address them directly (e.g., "Based on my analysis..." or "I recommend...").
+Your task is to:
+1. **Analyze what you actually find** in these documents - don't assume standard real estate sections
+2. **Determine the most relevant information** for investment decision-making
+3. **Structure your response** based on what's actually in the documents
+4. **Provide actionable insights** based on the real data present
 
-Structure your response with clear headers and follow these formatting guidelines:
+Guidelines for your analysis:
+- **Be flexible with structure** - organize your response based on what information is actually available
+- **Focus on what matters** - prioritize financial data, market information, property details, and risks
+- **Be specific** - cite actual numbers, dates, and facts from the documents
+- **Identify gaps** - mention what important information might be missing
+- **Cross-reference** - connect information across different documents when relevant
+- **Be practical** - focus on information that would help an investor make a decision
 
-## EXECUTIVE SUMMARY
-Write this section in paragraph form, explaining the investment opportunity in a conversational way. Include:
-- Your overall assessment of the investment based on ALL available information
-- Key highlights that make this attractive (synthesize from all sources)
-- Main risks and opportunities (consider all data points)
-- Your recommendation (BUY/HOLD/AVOID) with clear reasoning based on comprehensive analysis
+Structure your response naturally based on the content you find. Use clear headers and organize the information logically. Don't force a predetermined structure if the documents don't contain that type of information.
 
-## DEAL OVERVIEW
-Use a mix of paragraphs and bullet points:
-- Start with a paragraph explaining the deal structure and key players (from all sources)
-- Use bullet points for specific financial metrics, lease terms, and financing details
-- Keep data points concise and easy to scan
-- Note any discrepancies or additional information found across different sources
-
-## ASSET & TENANCY
-Structure this section with:
-- Paragraphs for property description and market positioning (synthesize from all sources)
-- Bullet points for specific specifications, tenant details, and operational considerations
-- Clear explanations of how the asset fits into the broader market
-- Reference different sources when they provide unique insights
-
-Guidelines:
-- Use bullet points for lists of data, metrics, and specific details
-- Use paragraphs for explanations, analysis, and narrative content
-- Make headers clear and prominent
-- Keep the tone professional but conversational
-- Address the client directly throughout the analysis
-- Synthesize information from all sources rather than just listing them separately
-- If sources contain conflicting information, acknowledge this and provide your assessment
+Write as if you're presenting to a sophisticated real estate investor who needs actionable insights.
 """)
             
             # Create the chain and get response
@@ -393,5 +399,11 @@ Guidelines:
             return result.content
             
         except Exception as e:
-            return f"Error generating property summary: {str(e)}"
+            return f"Error generating intelligent property summary: {str(e)}"
+
+    async def _generate_screening_summary(self, text_inputs: List[Dict[str, str]]) -> str:
+        """
+        Legacy method - redirects to intelligent version
+        """
+        return await self._generate_intelligent_screening_summary(text_inputs)
 

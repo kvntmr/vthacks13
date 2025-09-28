@@ -384,9 +384,9 @@ async def chat_with_agent(request: ChatRequest):
         raise HTTPException(status_code=500, detail=f"AI agent error: {str(e)}")
 
 async def handle_screener_command(request: ChatRequest, conversation_id: str) -> ChatResponse:
-    """Handle @screener command - run memory screening"""
+    """Handle @screener command - run memory screening - OPTIMIZED VERSION"""
     try:
-        # Get cached document metadata first (faster check)
+        # OPTIMIZATION: Get cached document metadata first (faster check)
         doc_metadata = await get_cached_document_metadata()
         
         if not doc_metadata:
@@ -406,12 +406,13 @@ async def handle_screener_command(request: ChatRequest, conversation_id: str) ->
                 timestamp=datetime.now()
             )
         
-        # Run comprehensive screening
+        # OPTIMIZATION: Run optimized screening
         screening_result = await screening_service.screen_all_properties(include_property_data_only=False)
         
         if screening_result.get("success"):
             summary = screening_result.get("summary", "No summary available")
-            num_docs = screening_result.get("documents_analyzed", 0)
+            total_docs = screening_result.get("total_documents", 0)
+            performance_note = screening_result.get("performance_note", "")
             
             # Use LLM to generate a natural response based on the screening results
             prompt = ChatPromptTemplate.from_messages([
@@ -419,12 +420,13 @@ async def handle_screener_command(request: ChatRequest, conversation_id: str) ->
 
 Present the screening results in a natural, conversational way that:
 1. Highlights the key findings from the analysis
-2. Provides actionable insights
+2. Provides actionable insights based on what was actually found
 3. Suggests next steps based on the results
 4. Maintains a professional but friendly tone
+5. Acknowledges the analysis was based on the available documents
 
 Include the actual analysis summary and mention how many documents were analyzed."""),
-                ("human", f"The screening analysis found: {summary}\n\nNumber of documents analyzed: {num_docs}")
+                ("human", f"The screening analysis found: {summary}\n\nNumber of documents analyzed: {total_docs}\nPerformance note: {performance_note}")
             ])
             
             chain = prompt | llm | StrOutputParser()
@@ -450,9 +452,17 @@ Include the actual analysis summary and mention how many documents were analyzed
         )
         
     except Exception as e:
-        error_response = f"❌ **Screening Error:** {str(e)}"
+        # Use LLM to generate a natural error response instead of hardcoded text
+        prompt = ChatPromptTemplate.from_messages([
+            ("system", "You are a helpful real estate investment AI assistant. The screening analysis encountered an unexpected error. Provide a helpful, apologetic response that explains what went wrong and suggests what the user can do next."),
+            ("human", f"The screening encountered an error: {str(e)}")
+        ])
+        
+        chain = prompt | fast_llm | StrOutputParser()
+        response = await chain.ainvoke({})
+        
         return ChatResponse(
-            response=error_response,
+            response=response,
             function_used="screener",
             conversation_id=conversation_id,
             timestamp=datetime.now()
@@ -555,9 +565,9 @@ async def handle_stats_command(request: ChatRequest, conversation_id: str) -> Ch
         for doc_type, count in doc_types.items():
             response += f"  - {doc_type}: {count} documents\n"
         
-        if all_docs:
+        if doc_metadata:
             response += f"\n📄 **Recent Documents:**\n"
-            for i, doc in enumerate(all_docs[:5], 1):
+            for i, doc in enumerate(doc_metadata[:5], 1):
                 filename = doc.get('filename', 'Unknown')
                 doc_type = doc.get('document_type', 'Unknown')
                 response += f"  {i}. {filename} ({doc_type})\n"
