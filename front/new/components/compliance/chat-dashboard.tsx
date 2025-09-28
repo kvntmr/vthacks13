@@ -1037,19 +1037,64 @@ export function ChatDashboard() {
         const hasError = Math.random() < 0.1;
 
         setTimeout(() => {
-          setUploadManager(prev => ({
-            ...prev,
-            uploads: prev.uploads.map(u =>
-              u.id === uploadId
-                ? {
-                    ...u,
-                    progress: hasError ? u.progress : 100,
-                    status: hasError ? 'error' : 'completed',
-                    error: hasError ? 'Upload failed. Please try again.' : undefined,
+          setUploadManager(prev => {
+            const completedUpload = prev.uploads.find(u => u.id === uploadId);
+            
+            // If upload completed successfully, add file to library
+            if (!hasError && completedUpload) {
+              const fileType = completedUpload.file.name.toLowerCase().endsWith('.pdf') ? 'pdf' :
+                              completedUpload.file.name.toLowerCase().endsWith('.xlsx') || completedUpload.file.name.toLowerCase().endsWith('.xls') ? 'xlsx' :
+                              'doc';
+              
+              const fileSize = completedUpload.file.size < 1024 * 1024 
+                ? `${(completedUpload.file.size / 1024).toFixed(1)} KB`
+                : `${(completedUpload.file.size / (1024 * 1024)).toFixed(1)} MB`;
+
+              const newFile: RealEstateFile = {
+                id: `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                name: completedUpload.file.name,
+                type: fileType as "pdf" | "xlsx" | "doc",
+                size: fileSize,
+                status: "queued",
+                updatedAt: new Date().toISOString(),
+              };
+
+              // Add file to the active folder
+              setFileLibraryData(prevData => {
+                const updateFolder = (folder: RealEstateFolder): RealEstateFolder => {
+                  if (folder.id === activeFolderId) {
+                    return {
+                      ...folder,
+                      files: [...folder.files, newFile],
+                    };
                   }
-                : u
-            ),
-          }));
+                  if (folder.children) {
+                    return {
+                      ...folder,
+                      children: folder.children.map(updateFolder),
+                    };
+                  }
+                  return folder;
+                };
+
+                return updateFolder(prevData);
+              });
+            }
+
+            return {
+              ...prev,
+              uploads: prev.uploads.map(u =>
+                u.id === uploadId
+                  ? {
+                      ...u,
+                      progress: hasError ? u.progress : 100,
+                      status: hasError ? 'error' : 'completed',
+                      error: hasError ? 'Upload failed. Please try again.' : undefined,
+                    }
+                  : u
+              ),
+            };
+          });
 
           // Auto-dismiss after 3 seconds if all uploads are complete
           setTimeout(() => {
@@ -1183,6 +1228,7 @@ export function ChatDashboard() {
         return (
           <FileLibraryView
             activeFolder={activeFolder}
+            activeFolderId={activeFolderId}
             breadcrumbs={breadcrumbs}
             files={filteredFiles}
             fileLibraryData={fileLibraryData}
@@ -1193,6 +1239,7 @@ export function ChatDashboard() {
             onFileUpload={startUploads}
             onFolderOpen={handleOpenFolder}
             onSearchChange={setSearchQuery}
+            onUpdateFileLibraryData={setFileLibraryData}
             onViewModeChange={setViewMode}
             searchQuery={searchQuery}
             viewMode={viewMode}
@@ -1372,6 +1419,7 @@ export function ChatDashboard() {
 
 type FileLibraryViewProps = {
   activeFolder: RealEstateFolder;
+  activeFolderId: string;
   breadcrumbs: BreadcrumbItem[];
   files: RealEstateFile[];
   fileLibraryData: RealEstateFolder;
@@ -1383,12 +1431,14 @@ type FileLibraryViewProps = {
   onFolderOpen: (id: string) => void;
   onSearchChange: (value: string) => void;
   onViewModeChange: (mode: "grid" | "list") => void;
+  onUpdateFileLibraryData: (updater: (prev: RealEstateFolder) => RealEstateFolder) => void;
   searchQuery: string;
   viewMode: "grid" | "list";
 };
 
 function FileLibraryView({
   activeFolder,
+  activeFolderId,
   breadcrumbs,
   files,
   fileLibraryData,
@@ -1399,6 +1449,7 @@ function FileLibraryView({
   onFileUpload,
   onFolderOpen,
   onSearchChange,
+  onUpdateFileLibraryData,
   onViewModeChange,
   searchQuery,
   viewMode,
@@ -1421,8 +1472,107 @@ function FileLibraryView({
     const files = Array.from(event.target.files || []);
     if (files.length === 0) return;
 
-    // Start uploads using the upload manager
+    // Start uploads using the upload manager for visual feedback
     onFileUpload(files);
+
+    // Also create the folder structure immediately
+    const firstFile = files[0] as any;
+    const folderPath = firstFile.webkitRelativePath;
+    const rootFolderName = folderPath.split('/')[0];
+
+    // Create a new folder structure
+    const createFolderStructure = (files: File[]): RealEstateFolder => {
+      const folderMap: Record<string, RealEstateFolder> = {};
+      
+      // Create root folder
+      const rootFolder: RealEstateFolder = {
+        id: `folder-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        name: rootFolderName,
+        description: `Uploaded folder containing ${files.length} files`,
+        files: [],
+        children: [],
+      };
+      
+      folderMap[''] = rootFolder;
+      
+      // Process each file
+      files.forEach((file) => {
+        const fileWithPath = file as any;
+        const relativePath = fileWithPath.webkitRelativePath;
+        const pathParts = relativePath.split('/').slice(1); // Remove root folder name
+        const fileName = pathParts.pop() || '';
+        const folderPath = pathParts.join('/');
+        
+        // Ensure parent folders exist
+        let currentPath = '';
+        let currentFolder = rootFolder;
+        
+        for (const part of pathParts) {
+          currentPath += (currentPath ? '/' : '') + part;
+          
+          if (!folderMap[currentPath]) {
+            const newFolder: RealEstateFolder = {
+              id: `folder-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${currentPath.replace(/\//g, '-')}`,
+              name: part,
+              files: [],
+              children: [],
+            };
+            folderMap[currentPath] = newFolder;
+            
+            // Add to parent
+            if (!currentFolder.children) currentFolder.children = [];
+            currentFolder.children.push(newFolder);
+          }
+          
+          currentFolder = folderMap[currentPath];
+        }
+        
+        // Add file to the appropriate folder
+        const fileType = file.name.toLowerCase().endsWith('.pdf') ? 'pdf' :
+                        file.name.toLowerCase().endsWith('.xlsx') || file.name.toLowerCase().endsWith('.xls') ? 'xlsx' :
+                        'doc';
+        
+        const fileSize = file.size < 1024 * 1024 
+          ? `${(file.size / 1024).toFixed(1)} KB`
+          : `${(file.size / (1024 * 1024)).toFixed(1)} MB`;
+
+        const newFile: RealEstateFile = {
+          id: `file-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+          name: file.name,
+          type: fileType as "pdf" | "xlsx" | "doc",
+          size: fileSize,
+          status: "queued",
+          updatedAt: new Date().toISOString(),
+        };
+        
+        currentFolder.files.push(newFile);
+      });
+      
+      return rootFolder;
+    };
+
+    const newFolder = createFolderStructure(files);
+
+    // Add the new folder to the current active folder
+    onUpdateFileLibraryData(prevData => {
+      const updateFolder = (folder: RealEstateFolder): RealEstateFolder => {
+        if (folder.id === activeFolderId) {
+          return {
+            ...folder,
+            children: [...(folder.children || []), newFolder],
+          };
+        }
+        if (folder.children) {
+          return {
+            ...folder,
+            children: folder.children.map(updateFolder),
+          };
+        }
+        return folder;
+      };
+
+      return updateFolder(prevData);
+    });
 
     // Clear the input
     event.target.value = '';
