@@ -209,6 +209,11 @@ export default function SpreadsheetEditor({ fileToLoad }: SpreadsheetEditorProps
       loadFileFromAPI(fileToLoad.id, fileToLoad.name);
     }
   }, [fileToLoad]);
+
+  // Preload crime data CSV on component mount
+  useEffect(() => {
+    preloadCrimeData();
+  }, []);
   // Handle data changes - allow dynamic expansion
   const handleDataChange = useCallback((newData: any) => {
     // Ensure minimum grid size for usability
@@ -354,6 +359,41 @@ export default function SpreadsheetEditor({ fileToLoad }: SpreadsheetEditorProps
     } catch (error) {
       console.error('Error loading file from API:', error);
       alert('Error loading file. Please try again.');
+    }
+  }, [loadDataIntoSpreadsheet]);
+
+  // Preload crime data CSV from local file
+  const preloadCrimeData = useCallback(async () => {
+    try {
+      const response = await fetch('/data/Crime_Incidents_in_the_Last_30_Days.csv');
+      if (!response.ok) {
+        console.warn('Could not load crime data CSV file');
+        return;
+      }
+      
+      const csvText = await response.text();
+      if (!csvText) {
+        console.warn('Crime data CSV file is empty');
+        return;
+      }
+
+      // Parse CSV data
+      const lines = csvText.split('\n').filter(line => line.trim() !== '');
+      const csvData = lines.map(line => {
+        // Simple CSV parsing - handles basic cases
+        const values = line.split(',').map(value => value.trim().replace(/^"|"$/g, ''));
+        return values.map(value => ({ value }));
+      });
+
+      // Ensure we have at least some data
+      if (csvData.length === 0) {
+        console.warn('No data found in crime CSV file');
+        return;
+      }
+
+      loadDataIntoSpreadsheet(csvData, 'Crime_Incidents_in_the_Last_30_Days.csv');
+    } catch (error) {
+      console.error('Error preloading crime data:', error);
     }
   }, [loadDataIntoSpreadsheet]);
 
