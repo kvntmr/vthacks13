@@ -1,87 +1,65 @@
-import { geolocation } from "@vercel/functions";
-import {
-  convertToModelMessages,
-  createUIMessageStream,
-  JsonToSseTransformStream,
-  smoothStream,
-  stepCountIs,
-  streamText,
-} from "ai";
-import { unstable_cache as cache } from "next/cache";
-import { after } from "next/server";
-import {
-  createResumableStreamContext,
-  type ResumableStreamContext,
-} from "resumable-stream";
-import type { ModelCatalog } from "tokenlens/core";
-import { fetchModels } from "tokenlens/fetch";
-import { getUsage } from "tokenlens/helpers";
 import { auth, type UserType } from "@/app/(auth)/auth";
 import type { VisibilityType } from "@/components/visibility-selector";
 import { entitlementsByUserType } from "@/lib/ai/entitlements";
-import type { ChatModel } from "@/lib/ai/models";
-import { type RequestHints, systemPrompt } from "@/lib/ai/prompts";
-import { myProvider } from "@/lib/ai/providers";
-import { createDocument } from "@/lib/ai/tools/create-document";
-import { getWeather } from "@/lib/ai/tools/get-weather";
-import { requestSuggestions } from "@/lib/ai/tools/request-suggestions";
-import { updateDocument } from "@/lib/ai/tools/update-document";
-import { isProductionEnvironment } from "@/lib/constants";
 import {
   createStreamId,
   deleteChatById,
   getChatById,
   getMessageCountByUserId,
-  getMessagesByChatId,
   saveChat,
   saveMessages,
-  updateChatLastContextById,
 } from "@/lib/db/queries";
 import { ChatSDKError } from "@/lib/errors";
 import type { ChatMessage } from "@/lib/types";
-import type { AppUsage } from "@/lib/usage";
-import { convertToUIMessages, generateUUID } from "@/lib/utils";
+import { generateUUID } from "@/lib/utils";
 import { generateTitleFromUserMessage } from "../../actions";
 import { type PostRequestBody, postRequestBodySchema } from "./schema";
 
-export const maxDuration = 60;
+const BACKEND_API_BASE_URL =
+  process.env.BACKEND_API_URL ??
+  process.env.NEXT_PUBLIC_BACKEND_API_URL ??
+  "http://localhost:8000";
 
-let globalStreamContext: ResumableStreamContext | null = null;
+const BACKEND_API_AUTH_HEADER =
+  process.env.BACKEND_API_AUTH_HEADER ?? "";
 
-const getTokenlensCatalog = cache(
-  async (): Promise<ModelCatalog | undefined> => {
-    try {
-      return await fetchModels();
-    } catch (err) {
-      console.warn(
-        "TokenLens: catalog fetch failed, using default catalog",
-        err
-      );
-      return; // tokenlens helpers will fall back to defaultCatalog
-    }
-  },
-  ["tokenlens-catalog"],
-  { revalidate: 24 * 60 * 60 } // 24 hours
-);
+const BACKEND_API_AUTH_VALUE = process.env.BACKEND_API_AUTH_VALUE ?? "";
+
+function extractTextFromMessage(message: ChatMessage) {
+  const textParts = message.parts
+    .filter((part) => part.type === "text")
+    .map((part) => part.text?.trim())
+    .filter((text): text is string => Boolean(text));
+
+  return textParts.join("\n").trim();
+}
+
+function buildSSEStream(answer: string) {
+  const encoder = new TextEncoder();
+  return new ReadableStream<Uint8Array>({
+    start(controller) {
+      const send = (data: unknown) => {
+        controller.enqueue(
+          encoder.encode(`data: ${JSON.stringify(data)}\n\n`)
+        );
+      };
+
+      const messageId = generateUUID();
+
+      send({ type: "start-step" });
+      send({ type: "text-start", id: messageId });
+      send({ type: "text-delta", id: messageId, delta: answer });
+      send({ type: "text-end", id: messageId });
+      send({ type: "finish-step" });
+      send({ type: "finish" });
+      controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+      controller.close();
+    },
+  });
+}
 
 export function getStreamContext() {
-  if (!globalStreamContext) {
-    try {
-      globalStreamContext = createResumableStreamContext({
-        waitUntil: after,
-      });
-    } catch (error: any) {
-      if (error.message.includes("REDIS_URL")) {
-        console.log(
-          " > Resumable streams are disabled due to missing REDIS_URL"
-        );
-      } else {
-        console.error(error);
-      }
-    }
-  }
-
-  return globalStreamContext;
+  return null;
 }
 
 export async function POST(request: Request) {
@@ -98,12 +76,10 @@ export async function POST(request: Request) {
     const {
       id,
       message,
-      selectedChatModel,
       selectedVisibilityType,
     }: {
       id: string;
       message: ChatMessage;
-      selectedChatModel: ChatModel["id"];
       selectedVisibilityType: VisibilityType;
     } = requestBody;
 
@@ -143,18 +119,6 @@ export async function POST(request: Request) {
       });
     }
 
-    const messagesFromDb = await getMessagesByChatId({ id });
-    const uiMessages = [...convertToUIMessages(messagesFromDb), message];
-
-    const { longitude, latitude, city, country } = geolocation(request);
-
-    const requestHints: RequestHints = {
-      longitude,
-      latitude,
-      city,
-      country,
-    };
-
     await saveMessages({
       messages: [
         {
@@ -171,120 +135,85 @@ export async function POST(request: Request) {
     const streamId = generateUUID();
     await createStreamId({ streamId, chatId: id });
 
-    let finalMergedUsage: AppUsage | undefined;
+    const messageText = extractTextFromMessage(message);
 
-    const stream = createUIMessageStream({
-      execute: ({ writer: dataStream }) => {
-        const result = streamText({
-          model: myProvider.languageModel(selectedChatModel),
-          system: systemPrompt({ selectedChatModel, requestHints }),
-          messages: convertToModelMessages(uiMessages),
-          stopWhen: stepCountIs(5),
-          experimental_activeTools:
-            selectedChatModel === "chat-model-reasoning"
-              ? []
-              : [
-                  "getWeather",
-                  "createDocument",
-                  "updateDocument",
-                  "requestSuggestions",
-                ],
-          experimental_transform: smoothStream({ chunking: "word" }),
-          tools: {
-            getWeather,
-            createDocument: createDocument({ session, dataStream }),
-            updateDocument: updateDocument({ session, dataStream }),
-            requestSuggestions: requestSuggestions({
-              session,
-              dataStream,
-            }),
-          },
-          experimental_telemetry: {
-            isEnabled: isProductionEnvironment,
-            functionId: "stream-text",
-          },
-          onFinish: async ({ usage }) => {
-            try {
-              const providers = await getTokenlensCatalog();
-              const modelId =
-                myProvider.languageModel(selectedChatModel).modelId;
-              if (!modelId) {
-                finalMergedUsage = usage;
-                dataStream.write({
-                  type: "data-usage",
-                  data: finalMergedUsage,
-                });
-                return;
-              }
+    if (!messageText) {
+      return new ChatSDKError("bad_request:api").toResponse();
+    }
 
-              if (!providers) {
-                finalMergedUsage = usage;
-                dataStream.write({
-                  type: "data-usage",
-                  data: finalMergedUsage,
-                });
-                return;
-              }
+    const backendEndpoint = new URL(
+      "/api/v1/ai-agent/chat",
+      BACKEND_API_BASE_URL
+    );
 
-              const summary = getUsage({ modelId, usage, providers });
-              finalMergedUsage = { ...usage, ...summary, modelId } as AppUsage;
-              dataStream.write({ type: "data-usage", data: finalMergedUsage });
-            } catch (err) {
-              console.warn("TokenLens enrichment failed", err);
-              finalMergedUsage = usage;
-              dataStream.write({ type: "data-usage", data: finalMergedUsage });
-            }
-          },
-        });
+    const headers: Record<string, string> = {
+      "Content-Type": "application/json",
+    };
 
-        result.consumeStream();
+    if (BACKEND_API_AUTH_HEADER && BACKEND_API_AUTH_VALUE) {
+      headers[BACKEND_API_AUTH_HEADER] = BACKEND_API_AUTH_VALUE;
+    }
 
-        dataStream.merge(
-          result.toUIMessageStream({
-            sendReasoning: true,
-          })
-        );
-      },
-      generateId: generateUUID,
-      onFinish: async ({ messages }) => {
-        await saveMessages({
-          messages: messages.map((currentMessage) => ({
-            id: currentMessage.id,
-            role: currentMessage.role,
-            parts: currentMessage.parts,
-            createdAt: new Date(),
-            attachments: [],
-            chatId: id,
-          })),
-        });
-
-        if (finalMergedUsage) {
-          try {
-            await updateChatLastContextById({
-              chatId: id,
-              context: finalMergedUsage,
-            });
-          } catch (err) {
-            console.warn("Unable to persist last usage for chat", id, err);
-          }
-        }
-      },
-      onError: () => {
-        return "Oops, an error occurred!";
-      },
+    const backendResponse = await fetch(backendEndpoint, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        message: messageText,
+        conversation_id: id,
+        include_memory: true,
+      }),
     });
 
-    // const streamContext = getStreamContext();
+    if (!backendResponse.ok) {
+      const errorPayload = await backendResponse
+        .json()
+        .catch(() => ({ detail: backendResponse.statusText }));
 
-    // if (streamContext) {
-    //   return new Response(
-    //     await streamContext.resumableStream(streamId, () =>
-    //       stream.pipeThrough(new JsonToSseTransformStream())
-    //     )
-    //   );
-    // }
+      console.error("Backend chat request failed", {
+        status: backendResponse.status,
+        error: errorPayload,
+      });
 
-    return new Response(stream.pipeThrough(new JsonToSseTransformStream()));
+      return new ChatSDKError("offline:chat").toResponse();
+    }
+
+    const backendPayload = await backendResponse.json();
+    const answer = String(backendPayload?.response ?? "").trim();
+
+    if (!answer) {
+      return new ChatSDKError("offline:chat").toResponse();
+    }
+
+    const assistantMessageId = generateUUID();
+
+    await saveMessages({
+      messages: [
+        {
+          chatId: id,
+          id: assistantMessageId,
+          role: "assistant",
+          parts: [
+            {
+              type: "text",
+              text: answer,
+            },
+          ],
+          attachments: [],
+          createdAt: new Date(),
+        },
+      ],
+    });
+
+    const stream = buildSSEStream(answer);
+
+    return new Response(stream, {
+      headers: {
+        "Content-Type": "text/event-stream",
+        Connection: "keep-alive",
+        "Cache-Control": "no-cache, no-transform",
+        "Transfer-Encoding": "chunked",
+      },
+    });
   } catch (error) {
     const vercelId = request.headers.get("x-vercel-id");
 
