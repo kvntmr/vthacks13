@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import type { User } from "next-auth";
-import { PlusIcon } from "@/components/icons";
+import { PlusIcon, MessageSquareIcon, BotIcon } from "@/components/icons";
 import { SidebarHistory } from "@/components/sidebar-history";
 import { SidebarUserNav } from "@/components/sidebar-user-nav";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import {
   SidebarFooter,
   SidebarHeader,
   SidebarMenu,
+  SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./ui/tooltip";
@@ -60,6 +61,28 @@ export function AppSidebar({ user }: { user: User | undefined }) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <Link
+              href="/"
+              className="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-muted"
+              onClick={() => setOpenMobile(false)}
+            >
+              <MessageSquareIcon className="h-4 w-4" />
+              Standard Chat
+            </Link>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <Link
+              href="/backend"
+              className="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-muted"
+              onClick={() => setOpenMobile(false)}
+            >
+              <BotIcon className="h-4 w-4" />
+              AI Agent Chat
+            </Link>
+          </SidebarMenuItem>
+        </SidebarMenu>
         <SidebarHistory user={user} />
       </SidebarContent>
       <SidebarFooter>{user && <SidebarUserNav user={user} />}</SidebarFooter>

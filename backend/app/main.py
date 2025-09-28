@@ -38,3 +38,7 @@ async def root():
 @app.get("/health")
 async def health_check():
     return {"status": "healthy", "service": "real_estate_analysis_api"}
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)  # Change 8001 to your desired port
