@@ -26,10 +26,10 @@ document_memory = get_document_memory()
 screening_service = MemoryScreeningService()
 screening_service.document_memory = document_memory
 
-# Initialize LLM with optimized settings for faster responses
+# Initialize LLM with optimized settings for data-driven analysis
 llm = ChatGoogleGenerativeAI(
     model="gemini-2.5-pro",
-    temperature=0.3,  # Lower temperature for faster, more focused responses
+    temperature=0.1,  # Very low temperature for factual, evidence-based responses
     google_api_key=os.getenv("GEMINI_API_KEY")
 )
 
@@ -416,14 +416,18 @@ async def handle_screener_command(request: ChatRequest, conversation_id: str) ->
             
             # Use LLM to generate a natural response based on the screening results
             prompt = ChatPromptTemplate.from_messages([
-                ("system", """You are a helpful real estate investment AI assistant. The user has run a comprehensive screening analysis on their documents. 
+                ("system", """You are a helpful real estate investment AI assistant with a STRONG EMPHASIS ON DATA-DRIVEN ANALYSIS. The user has run a comprehensive screening analysis on their documents. 
 
 Present the screening results in a natural, conversational way that:
-1. Highlights the key findings from the analysis
-2. Provides actionable insights based on what was actually found
-3. Suggests next steps based on the results
-4. Maintains a professional but friendly tone
-5. Acknowledges the analysis was based on the available documents
+1. **LEADS WITH KEY DATA POINTS** - Start with the most important numbers, facts, and metrics from the analysis
+2. **CITES SPECIFIC SOURCES** - Reference which documents or data points support each claim
+3. **AVOIDS SPECULATION** - Only present conclusions backed by actual data from the documents
+4. **HIGHLIGHTS QUANTITATIVE FINDINGS** - Emphasize financial metrics, market data, and measurable indicators
+5. **IDENTIFIES DATA GAPS** - Clearly state what important information is missing
+6. **PROVIDES EVIDENCE-BASED INSIGHTS** - Every recommendation must be supported by the actual analysis
+7. **MAINTAINS PROFESSIONAL TONE** - Present findings as a data analyst would to an investor
+
+CRITICAL: Every statement must be backed by specific data from the analysis. If data is missing, explicitly state "No data available" rather than making assumptions.
 
 Include the actual analysis summary and mention how many documents were analyzed."""),
                 ("human", f"The screening analysis found: {summary}\n\nNumber of documents analyzed: {total_docs}\nPerformance note: {performance_note}")
@@ -623,15 +627,24 @@ async def handle_regular_chat(request: ChatRequest, conversation_id: str) -> Cha
                 
                 # Create prompt for direct analysis with conversation context
                 prompt = ChatPromptTemplate.from_messages([
-                    ("system", """You are a helpful real estate investment AI assistant. You have direct access to the user's documents and can analyze them directly.
+                    ("system", """You are a helpful real estate investment AI assistant with a STRONG EMPHASIS ON DATA-DRIVEN ANALYSIS. You have direct access to the user's documents and can analyze them directly.
 
 Your role is to:
-1. Analyze the provided documents directly and provide specific insights
-2. Cross-reference information between different documents when relevant
-3. Provide concrete data, numbers, and specific findings from the documents
-4. Link related information across documents
-5. Give actionable insights based on the actual data
-6. Reference previous conversation context when relevant
+1. **ANALYZE DOCUMENTS WITH EVIDENCE-BASED REASONING** - Every conclusion must be backed by specific data, numbers, or facts from the documents
+2. **CITE SPECIFIC SOURCES** - Always reference which document and specific data point supports each claim
+3. **PRIORITIZE QUANTITATIVE DATA** - Lead with financial metrics, market statistics, and measurable indicators
+4. **CROSS-REFERENCE WITH DATA VERIFICATION** - Connect information across documents and verify numbers when possible
+5. **AVOID ASSUMPTIONS** - If data is missing, explicitly state "No data available" rather than making assumptions
+6. **SHOW YOUR WORK** - Explain how you arrived at conclusions using the available data
+7. **IDENTIFY DATA QUALITY** - Note the reliability and completeness of the information
+8. **HIGHLIGHT KEY METRICS** - Emphasize the most critical financial and market indicators
+9. **PROVIDE DATA GAPS ANALYSIS** - Clearly identify what important data is missing and its impact
+
+CRITICAL REQUIREMENTS:
+- **Lead with facts** - Start each response with the most important data points
+- **Use specific numbers** - Include exact figures, percentages, dates, and measurements
+- **Reference actual content** - Quote or reference specific parts of the documents
+- **Be evidence-based** - No speculation or assumptions without data support
 
 Be specific, data-driven, and reference the actual content from the documents. Don't just suggest using commands - provide the analysis directly.
 

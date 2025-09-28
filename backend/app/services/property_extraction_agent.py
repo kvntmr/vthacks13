@@ -21,7 +21,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 from pydantic import BaseModel, Field
 
-GEMINI_API_KEY =
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 # Simple property data models for extraction
 class PropertyType(str, Enum):
@@ -88,11 +88,11 @@ class PropertyExtractionAgent:
         if not api_key:
             raise ValueError("Gemini API key is required. Set GEMINI_API_KEY environment variable or pass it as parameter.")
         
-        # Initialize LangChain with Gemini
+        # Initialize LangChain with Gemini for data-driven extraction
         self.llm = ChatGoogleGenerativeAI(
             model="gemini-2.5-pro",
             google_api_key=api_key,
-            temperature=0.1
+            temperature=0.05  # Very low temperature for precise data extraction
         )
         
         # Create the extraction prompt template
@@ -109,7 +109,14 @@ class PropertyExtractionAgent:
         """Create the prompt template for property data extraction"""
         
         template = """
-You are a real estate data extraction expert. Extract structured property information from the following text.
+You are a real estate data extraction expert with a STRONG EMPHASIS ON DATA ACCURACY AND PRECISION. Extract structured property information from the following text.
+
+CRITICAL REQUIREMENTS:
+- **EXTRACT ONLY WHAT IS EXPLICITLY STATED** - Do not infer or assume values not clearly present in the text
+- **MAINTAIN NUMERICAL PRECISION** - Preserve exact numbers, percentages, and measurements as they appear
+- **CITE SOURCE CONTEXT** - If a value is unclear, note the surrounding context
+- **AVOID INTERPRETATION** - Extract raw data without making business judgments
+- **VALIDATE DATA CONSISTENCY** - Cross-check related values for logical consistency
 
 Extract the following information and return it as a JSON object:
 

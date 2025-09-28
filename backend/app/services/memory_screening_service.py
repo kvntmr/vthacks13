@@ -23,10 +23,10 @@ class MemoryScreeningService:
         from app.core.langchain.memory.shared_memory import get_document_memory
         self.document_memory = get_document_memory()
         
-        # Initialize AI model for screening
+        # Initialize AI model for screening with low temperature for factual analysis
         self.llm = ChatGoogleGenerativeAI(
             model="gemini-2.5-pro",
-            temperature=0.3,
+            temperature=0.1,  # Lower temperature for more factual, less creative responses
             google_api_key=os.getenv("GEMINI_API_KEY")
         )
     
@@ -363,7 +363,7 @@ Content:
             
             # Create the intelligent prompt template
             prompt = ChatPromptTemplate.from_template("""
-You are an expert real estate investment analyst. Analyze the following documents and create a comprehensive investment analysis.
+You are an expert real estate investment analyst with a STRONG EMPHASIS ON DATA-DRIVEN ANALYSIS. Analyze the following documents and create a comprehensive investment analysis.
 
 IMPORTANT: You have {num_sources} documents to analyze. Read through ALL of them carefully and synthesize the information into a cohesive analysis.
 
@@ -371,22 +371,36 @@ Documents to Analyze:
 {text}
 
 Your task is to:
-1. **Analyze what you actually find** in these documents - don't assume standard real estate sections
-2. **Determine the most relevant information** for investment decision-making
-3. **Structure your response** based on what's actually in the documents
-4. **Provide actionable insights** based on the real data present
+1. **ANALYZE WHAT YOU ACTUALLY FIND** in these documents - don't assume standard real estate sections
+2. **DETERMINE THE MOST RELEVANT INFORMATION** for investment decision-making
+3. **STRUCTURE YOUR RESPONSE** based on what's actually in the documents
+4. **PROVIDE ACTIONABLE INSIGHTS** based on the real data present
 
-Guidelines for your analysis:
-- **Be flexible with structure** - organize your response based on what information is actually available
-- **Focus on what matters** - prioritize financial data, market information, property details, and risks
-- **Be specific** - cite actual numbers, dates, and facts from the documents
-- **Identify gaps** - mention what important information might be missing
-- **Cross-reference** - connect information across different documents when relevant
-- **Be practical** - focus on information that would help an investor make a decision
+CRITICAL GUIDELINES FOR DATA-DRIVEN ANALYSIS:
+- **EVIDENCE-BASED REASONING** - Every conclusion must be backed by specific data, numbers, or facts from the documents
+- **QUANTITATIVE FOCUS** - Prioritize numerical data, financial metrics, market statistics, and measurable indicators
+- **CITE SPECIFIC SOURCES** - Always reference which document and specific data point supports each claim
+- **AVOID ASSUMPTIONS** - If data is missing, explicitly state "No data available" rather than making assumptions
+- **DATA VERIFICATION** - Cross-reference numbers and facts across documents when possible
+- **STATISTICAL SIGNIFICANCE** - When presenting trends or patterns, focus on the actual data that supports them
 
-Structure your response naturally based on the content you find. Use clear headers and organize the information logically. Don't force a predetermined structure if the documents don't contain that type of information.
+ANALYSIS REQUIREMENTS:
+- **Lead with facts** - Start each section with the most important data points
+- **Use specific numbers** - Include exact figures, percentages, dates, and measurements
+- **Show your work** - Explain how you arrived at conclusions using the available data
+- **Identify data quality** - Note the reliability and completeness of the information
+- **Highlight key metrics** - Emphasize the most critical financial and market indicators
+- **Data gaps analysis** - Clearly identify what important data is missing and its impact
 
-Write as if you're presenting to a sophisticated real estate investor who needs actionable insights.
+STRUCTURE YOUR RESPONSE:
+1. **EXECUTIVE DATA SUMMARY** - Key numbers and facts upfront
+2. **FINANCIAL ANALYSIS** - All available financial data with specific figures
+3. **MARKET DATA** - Market trends, statistics, and comparative data
+4. **PROPERTY SPECIFICS** - Physical and operational data points
+5. **RISK ASSESSMENT** - Data-driven risk factors and mitigation strategies
+6. **INVESTMENT RECOMMENDATION** - Conclusion based strictly on available data
+
+Write as if you're presenting to a sophisticated real estate investor who demands evidence-based analysis with no speculation.
 """)
             
             # Create the chain and get response
