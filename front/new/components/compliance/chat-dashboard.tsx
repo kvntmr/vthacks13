@@ -7,6 +7,7 @@ import {
   ChevronRight,
   ClipboardList,
   FileStack,
+  FileText,
   Folder,
   Home,
   LayoutGrid,
@@ -14,6 +15,7 @@ import {
   MessageSquare,
   RotateCcw,
   Search,
+  Settings,
   Sparkles,
   Upload,
   X,
@@ -23,6 +25,7 @@ import {
   Minimize2,
   Maximize2,
   ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { type ElementType, Fragment, useEffect, useMemo, useRef, useState } from "react";
 
@@ -72,7 +75,7 @@ type NavItem = {
   id: string;
   label: string;
   icon: ElementType;
-  children?: { id: string; label: string }[];
+  children?: { id: string; label: string; icon: ElementType }[];
 };
 
 type RealEstateFile = {
@@ -199,11 +202,11 @@ const NAV_ITEMS: NavItem[] = [
   { id: "chat", label: "Chat", icon: MessageSquare },
   {
     id: "history",
-    label: "Deliverables",
+    label: "Reports",
     icon: ClipboardList,
     children: [
-      { id: "history-reports", label: "Screening memo" },
-      { id: "history-settings", label: "Memo controls" },
+      { id: "history-reports", label: "Screening memo", icon: FileText },
+      { id: "history-settings", label: "Memo controls", icon: Settings },
     ],
   },
   { id: "file-library", label: "Deal files", icon: FileStack },
@@ -1126,25 +1129,36 @@ export function ChatDashboard() {
             <span className="flex-1 text-left">{item.label}</span>
           )}
           {isSidebarOpen && item.children && (
-            <span>{isExpanded ? "−" : "+"}</span>
+            isExpanded ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )
           )}
         </Button>
 
         {isSidebarOpen && item.children && isExpanded && (
-          <div className="mt-2 space-y-2 pl-6 text-muted-foreground text-sm">
-            {item.children.map((child) => (
-              <button
-                className={cn(
-                  "block w-full text-left transition hover:text-foreground",
-                  activeNavId === child.id && "font-medium text-foreground"
-                )}
-                key={child.id}
-                onClick={() => setActiveNavId(child.id)}
-                type="button"
-              >
-                {child.label}
-              </button>
-            ))}
+          <div className="mt-2 space-y-1">
+            {item.children.map((child) => {
+              const isChildActive = activeNavId === child.id;
+              return (
+                <Button
+                  key={child.id}
+                  className={cn(
+                    "w-full justify-start gap-3 pl-8 border border-transparent text-sm",
+                    isChildActive
+                      ? "bg-primary text-primary-foreground shadow"
+                      : "bg-transparent text-muted-foreground hover:bg-muted/60 hover:text-foreground"
+                  )}
+                  onClick={() => setActiveNavId(child.id)}
+                  variant={isChildActive ? "default" : "ghost"}
+                  size="sm"
+                >
+                  <child.icon className="h-3.5 w-3.5" />
+                  <span className="flex-1 text-left">{child.label}</span>
+                </Button>
+              );
+            })}
           </div>
         )}
       </div>
