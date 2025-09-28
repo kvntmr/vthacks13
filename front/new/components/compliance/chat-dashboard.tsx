@@ -2768,77 +2768,77 @@ function ChatInterface({ setActiveNavId, handleOpenFolder }: {
     }
   }, [state.clickedButton]);
 
-  // Poll for JSON data every 5 seconds
+  // Poll for JSON data every 5 seconds when dataset details sidebar is open
   useEffect(() => {
+    if (!state.showDatasetDetails) return;
+
+    const datasetId = state.showDatasetDetails;
     const pollJsonData = async () => {
-      for (const folder of availableFolders) {
-        const datasetId = folder.id;
-        const lastFetched = state.datasetJsonData[datasetId]?.lastFetched || 0;
-        const now = Date.now();
-        
-        // Only fetch if it's been more than 5 seconds since last fetch
-        if (now - lastFetched > 5000) {
-          try {
+      const lastFetched = state.datasetJsonData[datasetId]?.lastFetched || 0;
+      const now = Date.now();
+      
+      // Only fetch if it's been more than 5 seconds since last fetch
+      if (now - lastFetched > 5000) {
+        try {
+          setState(prev => ({
+            ...prev,
+            datasetJsonData: {
+              ...prev.datasetJsonData,
+              [datasetId]: {
+                ...prev.datasetJsonData[datasetId],
+                loading: true,
+                error: null,
+              }
+            }
+          }));
+
+          // Fetch JSON data for this dataset
+          const response = await fetch(`/api/datasets/${datasetId}/data.json`);
+          
+          if (response.ok) {
+            const jsonData = await response.json();
             setState(prev => ({
               ...prev,
               datasetJsonData: {
                 ...prev.datasetJsonData,
                 [datasetId]: {
-                  ...prev.datasetJsonData[datasetId],
-                  loading: true,
+                  data: jsonData,
+                  lastFetched: now,
+                  loading: false,
                   error: null,
                 }
               }
             }));
-
-            // Fetch JSON data for this dataset
-            const response = await fetch(`/api/datasets/${datasetId}/data.json`);
-            
-            if (response.ok) {
-              const jsonData = await response.json();
-              setState(prev => ({
-                ...prev,
-                datasetJsonData: {
-                  ...prev.datasetJsonData,
-                  [datasetId]: {
-                    data: jsonData,
-                    lastFetched: now,
-                    loading: false,
-                    error: null,
-                  }
-                }
-              }));
-            } else if (response.status === 404) {
-              // JSON file doesn't exist yet, clear any existing data
-              setState(prev => ({
-                ...prev,
-                datasetJsonData: {
-                  ...prev.datasetJsonData,
-                  [datasetId]: {
-                    data: null,
-                    lastFetched: now,
-                    loading: false,
-                    error: null,
-                  }
-                }
-              }));
-            } else {
-              throw new Error(`HTTP ${response.status}`);
-            }
-          } catch (error) {
+          } else if (response.status === 404) {
+            // JSON file doesn't exist yet, clear any existing data
             setState(prev => ({
               ...prev,
               datasetJsonData: {
                 ...prev.datasetJsonData,
                 [datasetId]: {
-                  ...prev.datasetJsonData[datasetId],
-                  loading: false,
-                  error: error instanceof Error ? error.message : 'Failed to fetch data',
+                  data: null,
                   lastFetched: now,
+                  loading: false,
+                  error: null,
                 }
               }
             }));
+          } else {
+            throw new Error(`HTTP ${response.status}`);
           }
+        } catch (error) {
+          setState(prev => ({
+            ...prev,
+            datasetJsonData: {
+              ...prev.datasetJsonData,
+              [datasetId]: {
+                ...prev.datasetJsonData[datasetId],
+                loading: false,
+                error: error instanceof Error ? error.message : 'Failed to fetch data',
+                lastFetched: now,
+              }
+            }
+          }));
         }
       }
     };
@@ -2850,7 +2850,7 @@ function ChatInterface({ setActiveNavId, handleOpenFolder }: {
     const interval = setInterval(pollJsonData, 5000);
 
     return () => clearInterval(interval);
-  }, [availableFolders, state.datasetJsonData]);
+  }, [state.showDatasetDetails]);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
