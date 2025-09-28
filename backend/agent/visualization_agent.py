@@ -206,8 +206,8 @@ When users provide data or request visualizations:
             # Add user message
             messages.append(("user", user_input))
             
-            # Stream the agent's response
-            events = self.agent.stream(
+            # Stream the agent's response (async)
+            events = self.agent.astream(
                 {"messages": messages},
                 stream_mode="values",
                 config={"callbacks": [langfuse_handler]}
@@ -215,7 +215,7 @@ When users provide data or request visualizations:
             
             # Collect all messages
             all_messages = []
-            for event in events:
+            async for event in events:
                 all_messages.extend(event.get("messages", []))
             
             # Get the final response

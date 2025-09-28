@@ -2203,7 +2203,7 @@ def download_small_dataset(resource_url: str, format_hint: str = None) -> Dict[s
                     print(f"CSV file saved to: {csv_file_path}")
                     
                     csv_status: Dict[str, dict] = {}
-                    csv_status[csv_filename] = {"ready": True, "path": csv_file_path}
+                    csv_status[csv_filename] = {"ready": True, "path": str(csv_file_path.absolute())}
                     with open("csv_status.json", "w") as f:
                         json.dump(csv_status, f)
                     
@@ -2218,58 +2218,44 @@ def download_small_dataset(resource_url: str, format_hint: str = None) -> Dict[s
 
 
 # ========================
-# StructuredTool Wrappers for Sync/Async Compatibility  
+# LangChain Tool Decorators (Async-only for compatibility)
 # ========================
 
-# Create StructuredTool instances that support both sync and async invocation
-search_packages = StructuredTool.from_function(
-    func=search_packages_sync,
-    coroutine=search_packages_async,
-    name="search_packages",
-    description="Search for datasets using the CKAN package_search endpoint."
-)
+# Using @tool decorator for better compatibility with LangGraph agents
+@tool
+async def search_packages(query: str, limit: int = 20) -> Dict[str, Any]:
+    """Search for datasets using the CKAN package_search endpoint."""
+    return await search_packages_async(query, limit)
 
-get_package_details = StructuredTool.from_function(
-    func=get_package_details_sync,
-    coroutine=get_package_details_async,
-    name="get_package_details",
-    description="Retrieve detailed information about a specific dataset."
-)
+@tool 
+async def get_package_details(package_id: str) -> Dict[str, Any]:
+    """Retrieve detailed information about a specific dataset."""
+    return await get_package_details_async(package_id)
 
-list_groups = StructuredTool.from_function(
-    func=list_groups_sync,
-    coroutine=list_groups_async,
-    name="list_groups", 
-    description="Retrieve all available groups/organizations in the Data.gov catalog."
-)
+@tool
+async def list_groups(limit: int = 100) -> Dict[str, Any]:
+    """Retrieve all available groups/organizations in the Data.gov catalog."""
+    return await list_groups_async(limit)
 
-list_tags = StructuredTool.from_function(
-    func=list_tags_sync,
-    coroutine=list_tags_async,
-    name="list_tags",
-    description="Retrieve all available tags used across datasets in the Data.gov catalog."
-)
+@tool
+async def list_tags(query: str = "", limit: int = 100) -> Dict[str, Any]:
+    """Retrieve all available tags used across datasets in the Data.gov catalog."""
+    return await list_tags_async(query, limit)
 
-fetch_resource_data = StructuredTool.from_function(
-    func=fetch_resource_data_sync,
-    coroutine=fetch_resource_data_async,
-    name="fetch_resource_data",
-    description="Download and parse data from a dataset resource URL."
-)
+@tool
+async def fetch_resource_data(resource_url: str, max_size_mb: int = 50) -> Dict[str, Any]:
+    """Download and parse data from a dataset resource URL."""
+    return await fetch_resource_data_async(resource_url, max_size_mb)
 
-validate_resource_url = StructuredTool.from_function(
-    func=validate_resource_url_sync,
-    coroutine=validate_resource_url_async,
-    name="validate_resource_url",
-    description="Validate if a resource URL is accessible and downloadable."
-)
+@tool
+async def validate_resource_url(resource_url: str) -> Dict[str, Any]:
+    """Validate if a resource URL is accessible and downloadable."""
+    return await validate_resource_url_async(resource_url)
 
-get_package_resources = StructuredTool.from_function(
-    func=get_package_resources_sync,
-    coroutine=get_package_resources_async,
-    name="get_package_resources",
-    description="Extract all resource URLs and metadata from a package."
-)
+@tool
+async def get_package_resources(package_id: str) -> Dict[str, Any]:
+    """Extract all resource URLs and metadata from a package."""
+    return await get_package_resources_async(package_id)
 
 # Collection of all Data.gov tools for easy import
 DATA_GOV_TOOLS = [
@@ -2287,7 +2273,7 @@ DATA_GOV_TOOLS = [
     download_small_dataset,
     build_search_query,
     get_catalog_info,
-    # Add the new StructuredTool wrappers
+    # Async-compatible tools using @tool decorator
     search_packages,
     fetch_resource_data,
     validate_resource_url
