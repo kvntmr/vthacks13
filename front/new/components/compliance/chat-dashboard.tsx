@@ -921,7 +921,7 @@ function UploadManager({
 
 export function ChatDashboard() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [activeNavId, setActiveNavId] = useState<string>("file-library");
+  const [activeNavId, setActiveNavId] = useState<string>("home");
   const [expandedNav, setExpandedNav] = useState<string[]>(["history"]);
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [searchQuery, setSearchQuery] = useState("");
@@ -1300,6 +1300,13 @@ export function ChatDashboard() {
               if (value === "file-library") {
                 handleOpenFolder(fileLibraryData.id);
               }
+              // Handle child navigation items
+              if (value === "history-reports") {
+                setActiveNavId("history-reports");
+              }
+              if (value === "history-settings") {
+                setActiveNavId("history-settings");
+              }
             }}
             value={activeNavId}
           >
@@ -1308,9 +1315,16 @@ export function ChatDashboard() {
             </SelectTrigger>
             <SelectContent>
               {NAV_ITEMS.map((item) => (
-                <SelectItem key={item.id} value={item.id}>
-                  {item.label}
-                </SelectItem>
+                <React.Fragment key={item.id}>
+                  <SelectItem value={item.id}>
+                    {item.label}
+                  </SelectItem>
+                  {item.children?.map((child) => (
+                    <SelectItem key={child.id} value={child.id}>
+                      &nbsp;&nbsp;{child.label}
+                    </SelectItem>
+                  ))}
+                </React.Fragment>
               ))}
             </SelectContent>
           </Select>
@@ -1503,10 +1517,12 @@ function FileLibraryView({
               <DropdownMenuItem onClick={() => fileInputRef.current?.click()}>
                 <Upload className="h-4 w-4 mr-2" />
                 Upload Files
+                <span className="ml-auto text-xs text-muted-foreground">to current folder</span>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => folderInputRef.current?.click()}>
                 <Folder className="h-4 w-4 mr-2" />
                 Upload Folder
+                <span className="ml-auto text-xs text-muted-foreground">with subfolders</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -1547,12 +1563,20 @@ function FileLibraryView({
             )
           ) : isSearching ? (
             <div className="flex h-full flex-col items-center justify-center gap-3 py-12 text-center text-muted-foreground text-sm">
-              <FileStack className="h-10 w-10" />
+              <Search className="h-10 w-10" />
               <div>
                 <p>No files match your search.</p>
                 <p className="text-muted-foreground/80 text-xs">
                   Try different keywords or clear the filter.
                 </p>
+                <Button
+                  onClick={() => onSearchChange("")}
+                  size="sm"
+                  variant="outline"
+                  className="mt-3"
+                >
+                  Clear search
+                </Button>
               </div>
             </div>
           ) : (
@@ -1563,6 +1587,24 @@ function FileLibraryView({
                 <p className="text-muted-foreground/80 text-xs">
                   Upload files or create a subfolder to organize documents.
                 </p>
+                <div className="flex gap-2 mt-3">
+                  <Button
+                    onClick={() => fileInputRef.current?.click()}
+                    size="sm"
+                    variant="outline"
+                  >
+                    <Upload className="h-4 w-4 mr-2" />
+                    Upload Files
+                  </Button>
+                  <Button
+                    onClick={() => folderInputRef.current?.click()}
+                    size="sm"
+                    variant="outline"
+                  >
+                    <Folder className="h-4 w-4 mr-2" />
+                    Upload Folder
+                  </Button>
+                </div>
               </div>
             </div>
           )}
@@ -1752,6 +1794,14 @@ function HomeOverviewView({
           Track active deals, monitor ingestion progress, and jump into the
           latest deliverables.
         </p>
+        {metrics.every(m => m.value === "0") && (
+          <div className="mt-2 p-3 rounded-lg bg-blue-50 border border-blue-200 text-blue-800 text-sm">
+            <p className="font-medium">Welcome to Stag! 🎉</p>
+            <p className="text-blue-700 mt-1">
+              Start by uploading some real estate documents to the File Library, then use the Chat to ask questions about your data.
+            </p>
+          </div>
+        )}
       </div>
 
       <div className="grid gap-4 md:grid-cols-3">
@@ -2618,6 +2668,11 @@ function ChatInterface() {
             AI will analyze documents from the selected datasets to provide more relevant insights.
           </p>
         )}
+        {state.selectedFolders.length === 0 && (
+          <p className="text-xs text-muted-foreground">
+            Select datasets above to give the AI context from your uploaded documents.
+          </p>
+        )}
       </div>
 
       {/* Input Area */}
@@ -2738,10 +2793,23 @@ function FileCard({ file }: FileCardProps) {
         {file.status === "indexing" ? (
           <div>
             <div className="flex items-center justify-between text-xs">
-              <span className="font-medium text-foreground">Indexing</span>
+              <span className="font-medium text-foreground flex items-center gap-1">
+                <Loader2 className="h-3 w-3 animate-spin" />
+                Indexing
+              </span>
               <span>{file.progress}%</span>
             </div>
             <Progress className="mt-2 h-1.5" value={file.progress} />
+            <p className="text-muted-foreground/70 text-[10px] mt-1">
+              Processing for AI analysis
+            </p>
+          </div>
+        ) : file.status === "queued" ? (
+          <div className="flex items-center gap-1">
+            <RotateCcw className="h-3 w-3" />
+            <Badge className="text-[11px] text-amber-600" variant="outline">
+              Queued for processing
+            </Badge>
           </div>
         ) : (
           <Badge className="text-[11px] text-emerald-600" variant="outline">
@@ -2772,8 +2840,14 @@ function FileRow({ file }: FileRowProps) {
       <div className="flex items-center gap-3 text-muted-foreground text-xs">
         {file.status === "indexing" ? (
           <div className="flex items-center gap-2">
+            <Loader2 className="h-3 w-3 animate-spin" />
             <span>Indexing {file.progress}%</span>
             <Progress className="h-1.5 w-24" value={file.progress} />
+          </div>
+        ) : file.status === "queued" ? (
+          <div className="flex items-center gap-1">
+            <RotateCcw className="h-3 w-3" />
+            <span className="text-amber-600">Queued</span>
           </div>
         ) : (
           <Badge className="text-[11px] text-emerald-600" variant="outline">
