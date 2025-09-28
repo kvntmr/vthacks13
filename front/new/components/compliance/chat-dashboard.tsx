@@ -2736,6 +2736,8 @@ function ChatInterface({
   const setStateRef = useRef<typeof setState>();
   const attachedFilesRef = useRef<File[]>([]);
   const isProcessingUploadRef = useRef(false);
+  const [showScrollButton, setShowScrollButton] = useState(false);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   // Update the ref whenever setState changes
   useEffect(() => {
@@ -2818,12 +2820,34 @@ function ChatInterface({
   }, [state.selectedFolders, availableFolders]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    // Use setTimeout to ensure the DOM has updated
+    setTimeout(() => {
+      messagesEndRef.current?.scrollIntoView({ 
+        behavior: "smooth",
+        block: "end",
+        inline: "nearest"
+      });
+    }, 100);
   };
 
+  // Auto-scroll to bottom when messages change
   useEffect(() => {
     scrollToBottom();
-  }, [state.messages]);
+  }, [state.messages.length, state.isStreaming]);
+
+  // Also scroll when streaming starts/stops
+  useEffect(() => {
+    if (state.isStreaming) {
+      scrollToBottom();
+    }
+  }, [state.isStreaming]);
+
+  // Handle scroll detection to show/hide scroll button
+  const handleScroll = (event: React.UIEvent<HTMLDivElement>) => {
+    const { scrollTop, scrollHeight, clientHeight } = event.currentTarget;
+    const isNearBottom = scrollHeight - scrollTop - clientHeight < 100;
+    setShowScrollButton(!isNearBottom);
+  };
 
   // Clear clicked button animation after 600ms
   useEffect(() => {
@@ -3139,7 +3163,7 @@ function ChatInterface({
   };
 
   return (
-    <div className="flex h-full flex-col gap-6 rounded-3xl border border-border/60 bg-background/95 px-6 py-6 shadow-sm">
+    <div className="flex flex-col gap-6 rounded-3xl border border-border/60 bg-background/95 px-6 py-6 shadow-sm">
       {/* Header */}
       <div className="flex items-start justify-between">
         <div className="flex flex-col gap-2">
@@ -3162,9 +3186,13 @@ function ChatInterface({
       </div>
 
       {/* Messages Area */}
-      <div className="flex-1 overflow-hidden">
-        <ScrollArea className="h-full pr-2">
-          <div className="space-y-4">
+      <div className="flex-1 overflow-hidden min-h-0 relative">
+        <ScrollArea 
+          className="h-full pr-2" 
+          style={{ maxHeight: 'calc(100vh - 320px)' }}
+          onScrollCapture={handleScroll}
+        >
+          <div className="space-y-4 p-1">
             {state.messages.map((message) => (
               <div
                 key={message.id}
@@ -3281,6 +3309,17 @@ function ChatInterface({
             <div ref={messagesEndRef} />
           </div>
         </ScrollArea>
+        
+        {/* Scroll to Bottom Button */}
+        {showScrollButton && (
+          <Button
+            onClick={scrollToBottom}
+            className="absolute bottom-4 right-4 h-8 w-8 rounded-full p-0 shadow-lg z-10"
+            size="sm"
+          >
+            <ChevronDown className="h-4 w-4" />
+          </Button>
+        )}
       </div>
 
       {/* File Attachments */}
@@ -3853,3 +3892,4 @@ function relativeTime(timestamp: string) {
     return "just now";
   }
 }
+
