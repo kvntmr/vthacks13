@@ -1821,9 +1821,18 @@ function HomeOverviewView({
         </div>
 
         <div className="flex flex-col gap-3 rounded-3xl border border-border/60 bg-background/95 p-5 shadow-sm">
-          <h2 className="font-semibold text-foreground text-sm">
-            Recent activity
-          </h2>
+          <div className="flex items-center justify-between">
+            <h2 className="font-semibold text-foreground text-sm">
+              Recent activity
+            </h2>
+            <Button
+              onClick={() => onNavigate("history")}
+              size="sm"
+              variant="outline"
+            >
+              View All
+            </Button>
+          </div>
           <div className="space-y-3">
             {activity.map((item) => {
               const handleAction = () => {
