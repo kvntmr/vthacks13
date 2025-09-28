@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useCallback, useRef } from "react";
 import Spreadsheet from "react-spreadsheet";
+import { useTheme } from "next-themes";
 import { Button } from "./ui/button";
 import { Download, Upload } from "lucide-react";
 
@@ -206,7 +207,7 @@ export default function SpreadsheetEditor() {
   const [data, setData] = useState(generateInitialData);
   const [selectedCells, setSelectedCells] = useState<any>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
+  const { resolvedTheme } = useTheme();
   // Handle data changes - allow dynamic expansion
   const handleDataChange = useCallback((newData: any) => {
     // Ensure minimum grid size for usability
@@ -395,7 +396,7 @@ export default function SpreadsheetEditor() {
                 data={data} 
                 onChange={handleDataChange}
                 onSelect={(selected: any) => setSelectedCells(selected)}
-                darkMode={true}
+                darkMode={resolvedTheme === "dark"}
               />
             </div>
           </div>
