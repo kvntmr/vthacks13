@@ -395,6 +395,7 @@ export default function SpreadsheetEditor() {
                 data={data} 
                 onChange={handleDataChange}
                 onSelect={(selected: any) => setSelectedCells(selected)}
+                darkMode={true}
               />
             </div>
           </div>
