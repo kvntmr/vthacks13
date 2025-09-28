@@ -11,15 +11,17 @@ import {
   Home,
   LayoutGrid,
   List,
+  MessageSquare,
   RotateCcw,
   Search,
   Sparkles,
   Upload,
 } from "lucide-react";
-import { type ElementType, Fragment, useMemo, useRef, useState } from "react";
+import { type ElementType, Fragment, useEffect, useMemo, useRef, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -34,9 +36,6 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import SpreadsheetEditor from "@/components/spreadsheet";
 import React from "react";
-import { Spreadsheet, Worksheet, jspreadsheet } from "@jspreadsheet-ce/react";
-import "jsuites/dist/jsuites.css";
-import "jspreadsheet-ce/dist/jspreadsheet.css";
 
 // ---------------------------------------------------------------------------
 // Types & mock data for the real estate file library
@@ -153,12 +152,12 @@ function collectFolderStats(folder: RealEstateFolder): FolderStats {
 
 const NAV_ITEMS: NavItem[] = [
   { id: "home", label: "Overview", icon: Home },
+  { id: "chat", label: "Chat", icon: MessageSquare },
   {
     id: "history",
     label: "Deliverables",
     icon: ClipboardList,
     children: [
-      { id: "history-chats", label: "Deal chat" },
       { id: "history-reports", label: "Screening memo" },
       { id: "history-settings", label: "Memo controls" },
     ],
@@ -861,22 +860,14 @@ export function ChatDashboard() {
             onOpenFolder={openFolderInLibrary}
           />
         );
+      case "chat":
+        return <ChatInterface />;
       case "history":
         return (
           <HistoryOverviewView
             onNavigate={navigateTo}
             onOpenFolder={openFolderInLibrary}
             timeline={HISTORY_TIMELINE}
-          />
-        );
-      case "history-chats":
-        return (
-          <ConversationWorkspaceView
-            actions={CONVERSATION_ACTIONS}
-            memoSections={MEMO_SECTIONS}
-            messages={CONVERSATION_MESSAGES}
-            onNavigate={navigateTo}
-            onOpenFolder={openFolderInLibrary}
           />
         );
       case "history-reports":
@@ -948,7 +939,7 @@ export function ChatDashboard() {
           {NAV_ITEMS.map((item) => renderNavItem(item))}
         </nav>
 
-        <div className="mt-6 flex-1 space-y-3 overflow-y-auto pr-1">
+        <div className="mt-auto space-y-3 overflow-y-auto pr-1">
           {isSidebarOpen && <SidebarSummary />}
         </div>
 
@@ -1901,37 +1892,385 @@ function ComingSoonView({ label }: ComingSoonViewProps) {
 }
 
 // ---------------------------------------------------------------------------
-// Upload queue panel
+// Chat Interface Component
 // ---------------------------------------------------------------------------
 
+type ChatMessage = {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  timestamp: string;
+  attachments?: File[];
+  visualizations?: VisualizationData[];
+};
 
+type VisualizationData = {
+  id: string;
+  type: "chart" | "spreadsheet" | "map";
+  title: string;
+  data: any;
+};
 
+type ChatInterfaceState = {
+  messages: ChatMessage[];
+  isStreaming: boolean;
+  currentMessage: string;
+  attachedFiles: File[];
+  showVisualization: VisualizationData | null;
+  selectedFolders: string[];
+};
 
-// ---------------------------------------------------------------------------
-// Sidebar summary placeholder (when expanded)
-// ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
-// Sidebar summary placeholder (when expanded)
-// ---------------------------------------------------------------------------
+function ChatInterface() {
+  const [state, setState] = useState<ChatInterfaceState>({
+    messages: [
+      {
+        id: "welcome",
+        role: "assistant",
+        content: "Hello! I'm here to help you analyze real estate data. You can upload files, ask questions, and I'll provide insights with interactive visualizations. What would you like to explore?",
+        timestamp: new Date().toLocaleTimeString(),
+      },
+    ],
+    isStreaming: false,
+    currentMessage: "",
+    attachedFiles: [],
+    showVisualization: null,
+    selectedFolders: [],
+  });
 
-function SidebarSummary() {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Get all available folders for selection
+  const availableFolders = useMemo(() => {
+    const folders = [];
+    if (FILE_LIBRARY_ROOT.children) {
+      for (const folder of FILE_LIBRARY_ROOT.children) {
+        folders.push({
+          id: folder.id,
+          name: folder.name,
+          description: folder.description,
+        });
+        // Also include subfolders
+        if (folder.children) {
+          for (const subfolder of folder.children) {
+            folders.push({
+              id: subfolder.id,
+              name: `${folder.name} > ${subfolder.name}`,
+              description: subfolder.description,
+            });
+          }
+        }
+      }
+    }
+    return folders;
+  }, []);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [state.messages]);
+
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    setState(prev => ({
+      ...prev,
+      attachedFiles: [...prev.attachedFiles, ...files],
+    }));
+  };
+
+  const removeFile = (index: number) => {
+    setState(prev => ({
+      ...prev,
+      attachedFiles: prev.attachedFiles.filter((_, i) => i !== index),
+    }));
+  };
+
+  const sendMessage = async () => {
+    if (!state.currentMessage.trim() && state.attachedFiles.length === 0) return;
+
+    const userMessage: ChatMessage = {
+      id: Date.now().toString(),
+      role: "user",
+      content: state.currentMessage,
+      timestamp: new Date().toLocaleTimeString(),
+      attachments: state.attachedFiles.length > 0 ? [...state.attachedFiles] : undefined,
+    };
+
+    setState(prev => ({
+      ...prev,
+      messages: [...prev.messages, userMessage],
+      currentMessage: "",
+      attachedFiles: [],
+      isStreaming: true,
+    }));
+
+    // Simulate streaming response with folder context
+    setTimeout(() => {
+      const selectedFolderNames = state.selectedFolders.length > 0
+        ? state.selectedFolders.map(folderId => availableFolders.find(f => f.id === folderId)?.name).filter(Boolean)
+        : [];
+
+      const assistantContent = selectedFolderNames.length > 0
+        ? `I've analyzed your query using documents from the following datasets: ${selectedFolderNames.join(", ")}. Here are some insights based on that context.`
+        : "I've analyzed your data and found some interesting insights.";
+
+      const assistantMessage: ChatMessage = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: `${assistantContent} Let me show you a visualization of the property values over time.`,
+        timestamp: new Date().toLocaleTimeString(),
+        visualizations: [
+          {
+            id: "chart-1",
+            type: "chart",
+            title: "Property Value Trends",
+            data: {
+              labels: ["2020", "2021", "2022", "2023", "2024"],
+              datasets: [{
+                label: "Average Property Value",
+                data: [250000, 275000, 310000, 345000, 380000],
+                borderColor: "rgb(75, 192, 192)",
+                tension: 0.1
+              }]
+            }
+          }
+        ],
+      };
+
+      setState(prev => ({
+        ...prev,
+        messages: [...prev.messages, assistantMessage],
+        isStreaming: false,
+      }));
+    }, 2000);
+  };
+
+  const openVisualization = (viz: VisualizationData) => {
+    setState(prev => ({ ...prev, showVisualization: viz }));
+  };
+
+  const closeVisualization = () => {
+    setState(prev => ({ ...prev, showVisualization: null }));
+  };
+
   return (
-    <div className="space-y-4 text-muted-foreground text-xs">
-      <div>
-        <p className="font-semibold text-foreground">Last activity</p>
-        <p className="mt-1">
-          Screening memo generated for Horizon Logistics (5 min ago).
+    <div className="flex h-full flex-col gap-6 rounded-3xl border border-border/60 bg-background/95 px-6 py-6 shadow-sm">
+      {/* Header */}
+      <div className="flex flex-col gap-2">
+        <h1 className="font-semibold text-2xl text-foreground">AI Assistant</h1>
+        <p className="text-muted-foreground text-sm">
+          Upload files, ask questions, and get AI-powered insights with interactive visualizations.
         </p>
       </div>
-      <Separator />
-      <div>
-        <p className="font-semibold text-foreground">Team</p>
-        <p className="mt-1">
-          Adam O'Neill and 3 others reviewing deal documents.
-        </p>
+
+      {/* Messages Area */}
+      <div className="flex-1 overflow-hidden">
+        <ScrollArea className="h-full pr-2">
+          <div className="space-y-4">
+            {state.messages.map((message) => (
+              <div
+                key={message.id}
+                className={cn(
+                  "flex gap-3",
+                  message.role === "user" ? "justify-end" : "justify-start"
+                )}
+              >
+                <div
+                  className={cn(
+                    "max-w-[80%] rounded-2xl px-4 py-3 text-sm",
+                    message.role === "user"
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-muted text-foreground"
+                  )}
+                >
+                  {message.attachments && message.attachments.length > 0 && (
+                    <div className="mb-2 space-y-1">
+                      {message.attachments.map((file, index) => (
+                        <div key={index} className="flex items-center gap-2 text-xs">
+                          <FileStack className="h-3 w-3" />
+                          <span>{file.name}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <p className="whitespace-pre-wrap">{message.content}</p>
+                  {message.visualizations && message.visualizations.length > 0 && (
+                    <div className="mt-3 space-y-2">
+                      {message.visualizations.map((viz) => (
+                        <Button
+                          key={viz.id}
+                          onClick={() => openVisualization(viz)}
+                          size="sm"
+                          variant="outline"
+                          className="text-xs"
+                        >
+                          📊 {viz.title}
+                        </Button>
+                      ))}
+                    </div>
+                  )}
+                  <p className="mt-2 text-xs opacity-70">{message.timestamp}</p>
+                </div>
+              </div>
+            ))}
+            {state.isStreaming && (
+              <div className="flex justify-start">
+                <div className="max-w-[80%] rounded-2xl bg-muted px-4 py-3 text-sm">
+                  <div className="flex items-center gap-2">
+                    <div className="flex space-x-1">
+                      <div className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/50"></div>
+                      <div className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/50" style={{ animationDelay: '0.1s' }}></div>
+                      <div className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground/50" style={{ animationDelay: '0.2s' }}></div>
+                    </div>
+                    <span className="text-muted-foreground">Analyzing...</span>
+                  </div>
+                </div>
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+        </ScrollArea>
       </div>
+
+      {/* File Attachments */}
+      {state.attachedFiles.length > 0 && (
+        <div className="flex flex-wrap gap-2">
+          {state.attachedFiles.map((file, index) => (
+            <div
+              key={index}
+              className="flex items-center gap-2 rounded-lg border border-border/60 bg-muted/30 px-3 py-2 text-sm"
+            >
+              <FileStack className="h-4 w-4" />
+              <span className="max-w-32 truncate">{file.name}</span>
+              <Button
+                onClick={() => removeFile(index)}
+                size="sm"
+                variant="ghost"
+                className="h-4 w-4 p-0"
+              >
+                ×
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Dataset Selection */}
+      <div className="flex flex-col gap-3">
+        <div className="flex items-center gap-2 text-sm">
+          <Folder className="h-4 w-4 text-muted-foreground" />
+          <span className="text-muted-foreground">Active datasets:</span>
+          <span className="text-xs text-muted-foreground/80">
+            {state.selectedFolders.length} selected
+          </span>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {availableFolders.map((folder) => {
+            const isSelected = state.selectedFolders.includes(folder.id);
+            return (
+              <div
+                key={folder.id}
+                className={cn(
+                  "flex items-center gap-2 rounded-lg border px-3 py-2 text-sm cursor-pointer transition-colors",
+                  isSelected
+                    ? "border-primary bg-primary/5 text-primary"
+                    : "border-border/60 bg-muted/30 hover:bg-muted/50"
+                )}
+                onClick={() => {
+                  setState(prev => ({
+                    ...prev,
+                    selectedFolders: isSelected
+                      ? prev.selectedFolders.filter(id => id !== folder.id)
+                      : [...prev.selectedFolders, folder.id]
+                  }));
+                }}
+              >
+                <Checkbox
+                  checked={isSelected}
+                  onChange={() => {}}
+                  className="pointer-events-none"
+                />
+                <span className="font-medium">{folder.name}</span>
+              </div>
+            );
+          })}
+        </div>
+        {state.selectedFolders.length > 0 && (
+          <p className="text-xs text-muted-foreground">
+            AI will analyze documents from the selected datasets to provide more relevant insights.
+          </p>
+        )}
+      </div>
+
+      {/* Input Area */}
+      <div className="flex gap-2">
+        <Button
+          onClick={() => fileInputRef.current?.click()}
+          size="icon"
+          variant="outline"
+          className="shrink-0"
+        >
+          <Upload className="h-4 w-4" />
+        </Button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          multiple
+          onChange={handleFileUpload}
+          className="hidden"
+        />
+        <Input
+          value={state.currentMessage}
+          onChange={(e) => setState(prev => ({ ...prev, currentMessage: e.target.value }))}
+          onKeyPress={(e) => e.key === "Enter" && sendMessage()}
+          placeholder="Ask about your real estate data..."
+          className="flex-1"
+        />
+        <Button onClick={sendMessage} disabled={state.isStreaming}>
+          Send
+        </Button>
+      </div>
+
+      {/* Visualization Popup */}
+      {state.showVisualization && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="max-w-4xl max-h-[80vh] w-full mx-4 overflow-hidden rounded-lg bg-background p-6 shadow-lg">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-lg">{state.showVisualization.title}</h3>
+              <Button onClick={closeVisualization} size="icon" variant="ghost">
+                ×
+              </Button>
+            </div>
+            <div className="h-96 overflow-auto">
+              {state.showVisualization.type === "chart" && (
+                <div className="flex items-center justify-center h-full text-muted-foreground">
+                  📊 Chart visualization would render here
+                  <pre className="mt-4 text-xs">
+                    {JSON.stringify(state.showVisualization.data, null, 2)}
+                  </pre>
+                </div>
+              )}
+              {state.showVisualization.type === "spreadsheet" && (
+                <SpreadsheetEditor />
+              )}
+              {state.showVisualization.type === "map" && (
+                <div className="flex items-center justify-center h-full text-muted-foreground">
+                  🗺️ Map visualization would render here
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
+}
+
+function SidebarSummary() {
+  return null;
 }
 
 // ---------------------------------------------------------------------------
