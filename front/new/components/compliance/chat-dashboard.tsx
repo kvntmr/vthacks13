@@ -26,6 +26,7 @@ import {
   Maximize2,
   ChevronDown,
   ChevronUp,
+  Plus,
 } from "lucide-react";
 import { type ElementType, Fragment, useEffect, useMemo, useRef, useState } from "react";
 
@@ -197,34 +198,8 @@ function collectFolderStats(folder: RealEstateFolder): FolderStats {
   };
 }
 
-const NAV_ITEMS: NavItem[] = [
-  { id: "home", label: "Overview", icon: Home },
-  { id: "chat", label: "Chat", icon: MessageSquare },
-  {
-    id: "history",
-    label: "Reports",
-    icon: ClipboardList,
-    children: [
-      { id: "history-reports", label: "Screening memo", icon: FileText },
-      { id: "history-settings", label: "Memo controls", icon: Settings },
-    ],
-  },
-  { id: "file-library", label: "Deal files", icon: FileStack },
-  { id: "sheets", label: "Sheets sync", icon: Building2 },
-];
 
-const NAV_LABEL_LOOKUP = NAV_ITEMS.reduce<Record<string, string>>(
-  (accumulator, item) => {
-    accumulator[item.id] = item.label;
-    if (item.children) {
-      for (const child of item.children) {
-        accumulator[child.id] = child.label;
-      }
-    }
-    return accumulator;
-  },
-  {}
-);
+
 
 const FILE_LIBRARY_ROOT: RealEstateFolder = {
   id: "library-root",
@@ -495,38 +470,40 @@ const HOME_DEALS: DealSummary[] = [
   },
 ];
 
-const HOME_ACTIVITY: ActivityItem[] = [
+const NAV_ITEMS: NavItem[] = [
+  { id: "home", label: "Overview", icon: Home },
+  { id: "chat", label: "Chat", icon: MessageSquare },
   {
-    id: "activity-memo",
-    title: "Screening memo draft ready",
-    timestamp: "10 minutes ago",
-    summary:
-      "Stag drafted the Horizon Logistics screening memo with rent roll highlights and risk flags.",
-    actionLabel: "Review memo",
-    actionNavId: "history-reports",
+    id: "reports",
+    label: "Reports",
+    icon: ClipboardList,
+    children: [
+      ...HOME_DEALS.map(deal => ({
+        id: `memo-${deal.id}`,
+        label: `${deal.name} Memo`,
+        icon: FileText,
+      })),
+      { id: "history-settings", label: "Memo controls", icon: Settings },
+    ],
   },
-  {
-    id: "activity-argus",
-    title: "ARGUS export synced",
-    timestamp: "1 hour ago",
-    summary:
-      "Latest ARGUS sensitivity scenarios pushed to Sheets for Seaside Multifamily.",
-    actionLabel: "Open Sheets",
-    actionNavId: "sheets",
-  },
-  {
-    id: "activity-files",
-    title: "New diligence docs indexed",
-    timestamp: "Yesterday",
-    summary:
-      "CAM reconciliation and traffic study processed for Suncrest Retail.",
-    actionLabel: "View files",
-    actionNavId: "file-library",
-    actionFolderId: "folder-suncrest-retail",
-  },
+  { id: "file-library", label: "Deal files", icon: FileStack },
+  { id: "sheets", label: "Sheets sync", icon: Building2 },
 ];
 
-const HISTORY_TIMELINE: ActivityItem[] = [
+const NAV_LABEL_LOOKUP = NAV_ITEMS.reduce<Record<string, string>>(
+  (accumulator, item) => {
+    accumulator[item.id] = item.label;
+    if (item.children) {
+      for (const child of item.children) {
+        accumulator[child.id] = child.label;
+      }
+    }
+    return accumulator;
+  },
+  {}
+);
+
+const HOME_ACTIVITY: ActivityItem[] = [
   {
     id: "timeline-memo",
     title: "Screening memo delivered",
@@ -552,6 +529,49 @@ const HISTORY_TIMELINE: ActivityItem[] = [
     actionNavId: "sheets",
   },
 ]
+
+const HISTORY_TIMELINE: ActivityItem[] = [
+  {
+    id: "history-memo-1",
+    title: "Screening memo delivered",
+    timestamp: "Today · 10:12 AM",
+    summary: "Shared to deal team and staged for IC review.",
+    actionLabel: "Open memo",
+    actionNavId: "history-reports",
+  },
+  {
+    id: "history-chat-1",
+    title: "Conversation: rent roll QA",
+    timestamp: "Yesterday · 4:36 PM",
+    summary: "Analyst confirmed missing suite details for Horizon Logistics.",
+    actionLabel: "View chat",
+    actionNavId: "history-chats",
+  },
+  {
+    id: "history-sheet-1",
+    title: "Sheets export refreshed",
+    timestamp: "Yesterday · 9:05 AM",
+    summary: "Updated waterfall assumptions synced to 'Deal Scorecard'.",
+    actionLabel: "Open Sheets",
+    actionNavId: "sheets",
+  },
+  {
+    id: "history-memo-2",
+    title: "Previous screening memo",
+    timestamp: "Last week · 2:15 PM",
+    summary: "Suncrest Retail memo shared with underwriting team.",
+    actionLabel: "View memo",
+    actionNavId: "memo-deal-suncrest",
+  },
+  {
+    id: "history-chat-2",
+    title: "Conversation: tenant analysis",
+    timestamp: "Last week · 11:30 AM",
+    summary: "Reviewed anchor lease terms and CAM reconciliation.",
+    actionLabel: "View chat",
+    actionNavId: "history-chats",
+  },
+];
 
 //hardcoded conversation messages for the chat view
 const CONVERSATION_MESSAGES: ConversationMessage[] = [
@@ -691,6 +711,66 @@ const REPORT_SECTIONS: MemoSection[] = [
       "Finalize IC deck export and circulate by Thursday 2 PM.",
       "Collect updated utility audit and attach before distribution.",
       "Confirm Redwood renewal terms ahead of investment committee review.",
+    ],
+  },
+];
+
+const SUNCREST_REPORT_SECTIONS: MemoSection[] = [
+  {
+    id: "suncrest-overview",
+    title: "Executive highlights",
+    bullets: [
+      "Suncrest Retail pricing at $45M, going-in cap 6.8% with strong tenant concentration.",
+      "Phoenix submarket vacancy at 3.2% with limited new supply supporting rent growth.",
+      "Anchor tenant mix led by national retailers with staggered lease maturities.",
+    ],
+  },
+  {
+    id: "suncrest-operations",
+    title: "Operations snapshot",
+    bullets: [
+      "Occupancy stabilized at 94% with minimal rollover risk in near term.",
+      "Expense ratio at 12.5% with recent CAM reconciliation reducing landlord expenses.",
+      "Property management contract renewed with performance incentives.",
+    ],
+  },
+  {
+    id: "suncrest-tasks",
+    title: "Next steps",
+    bullets: [
+      "Complete tenant estoppel certificates for anchor spaces.",
+      "Review 2025 budget assumptions with property manager.",
+      "Schedule property inspection ahead of year-end reporting.",
+    ],
+  },
+];
+
+const SEASIDE_REPORT_SECTIONS: MemoSection[] = [
+  {
+    id: "seaside-overview",
+    title: "Executive highlights",
+    bullets: [
+      "Seaside Multifamily acquisition at $185M, going-in cap 5.2% with value-add potential.",
+      "San Diego coastal submarket showing 2.1% vacancy with strong rental demand.",
+      "88-unit portfolio with mix of one and two-bedroom units averaging 850 SF.",
+    ],
+  },
+  {
+    id: "seaside-operations",
+    title: "Operations snapshot",
+    bullets: [
+      "Occupancy at 93% with waiting list for move-ins supporting rent growth.",
+      "Operating expenses at $8,450 per unit with recent utility cost reductions.",
+      "Capital improvement program focused on unit upgrades and common area enhancements.",
+    ],
+  },
+  {
+    id: "seaside-tasks",
+    title: "Next steps",
+    bullets: [
+      "Complete unit renovation schedule for Q1 2025.",
+      "Negotiate service contracts for HVAC and landscaping.",
+      "Update market rent analysis with recent comparable data.",
     ],
   },
 ];
@@ -1171,7 +1251,7 @@ export function ChatDashboard() {
         >
           <item.icon className="h-4 w-4" />
           {isSidebarOpen && (
-            <span className="flex-1 text-left">{item.label}</span>
+            <span className="flex-1 text-left truncate">{item.label}</span>
           )}
           {isSidebarOpen && item.children && (
             isExpanded ? (
@@ -1200,7 +1280,7 @@ export function ChatDashboard() {
                   size="sm"
                 >
                   <child.icon className="h-3.5 w-3.5" />
-                  <span className="flex-1 text-left">{child.label}</span>
+                  <span className="flex-1 text-left truncate">{child.label}</span>
                 </Button>
               );
             })}
@@ -1256,7 +1336,7 @@ export function ChatDashboard() {
           />
         );
       case "chat":
-        return <ChatInterface />;
+        return <ChatInterface setActiveNavId={setActiveNavId} handleOpenFolder={handleOpenFolder} />;
       case "history":
         return (
           <HistoryOverviewView
@@ -1278,6 +1358,33 @@ export function ChatDashboard() {
       case "sheets":
         return (
           <SpreadsheetEditor />
+        );
+      case "memo-deal-horizon":
+        return (
+          <ReportWorkspaceView
+            onNavigate={navigateTo}
+            onOpenFolder={openFolderInLibrary}
+            sections={REPORT_SECTIONS}
+            dealSummary={HOME_DEALS[0]}
+          />
+        );
+      case "memo-deal-suncrest":
+        return (
+          <ReportWorkspaceView
+            onNavigate={navigateTo}
+            onOpenFolder={openFolderInLibrary}
+            sections={SUNCREST_REPORT_SECTIONS}
+            dealSummary={HOME_DEALS[1]}
+          />
+        );
+      case "memo-deal-seaside":
+        return (
+          <ReportWorkspaceView
+            onNavigate={navigateTo}
+            onOpenFolder={openFolderInLibrary}
+            sections={SEASIDE_REPORT_SECTIONS}
+            dealSummary={HOME_DEALS[2]}
+          />
         );
       default:
         return (
@@ -1367,6 +1474,15 @@ export function ChatDashboard() {
               }
               if (value === "history-settings") {
                 setActiveNavId("history-settings");
+              }
+              if (value === "memo-deal-horizon") {
+                setActiveNavId("memo-deal-horizon");
+              }
+              if (value === "memo-deal-suncrest") {
+                setActiveNavId("memo-deal-suncrest");
+              }
+              if (value === "memo-deal-seaside") {
+                setActiveNavId("memo-deal-seaside");
               }
             }}
             value={activeNavId}
@@ -1618,23 +1734,6 @@ function FileLibraryView({
                 </p>
               ) : null}
             </div>
-            {headerMeta.length > 0 && (
-              <div className="flex flex-wrap items-center gap-2 text-muted-foreground text-xs">
-                {headerMeta.map((item, index) => (
-                  <Fragment key={item}>
-                    {index > 0 ? (
-                      <span
-                        aria-hidden="true"
-                        className="text-muted-foreground/50"
-                      >
-                        |
-                      </span>
-                    ) : null}
-                    <span>{item}</span>
-                  </Fragment>
-                ))}
-              </div>
-            )}
           </div>
         </div>
       </div>
@@ -2346,12 +2445,14 @@ function ConversationWorkspaceView({
 
 type ReportWorkspaceViewProps = {
   sections: MemoSection[];
+  dealSummary?: DealSummary;
   onNavigate: (viewId: string) => void;
   onOpenFolder: (folderId: string) => void;
 };
 
 function ReportWorkspaceView({
   sections,
+  dealSummary,
   onNavigate,
   onOpenFolder,
 }: ReportWorkspaceViewProps) {
@@ -2383,7 +2484,7 @@ function ReportWorkspaceView({
             </Badge>
             <div>
               <h1 className="font-semibold text-2xl text-foreground">
-                Horizon Logistics Park
+                {dealSummary?.name || "Horizon Logistics Park"}
               </h1>
               <p className="text-muted-foreground text-sm">
                 Real estate diligence memo generated by Stag with analyst commentary.
@@ -2394,7 +2495,7 @@ function ReportWorkspaceView({
             <Button onClick={() => onNavigate("history-settings")} variant="outline">
               Memo controls
             </Button>
-            <Button onClick={() => onOpenFolder("folder-horizon-logistics")} variant="outline">
+            <Button onClick={() => onOpenFolder(dealSummary?.folderId || "folder-horizon-logistics")} variant="outline">
               Deal files
             </Button>
           </div>
@@ -2438,7 +2539,7 @@ function ReportWorkspaceView({
         <Button onClick={() => onNavigate("history-chats")} variant="outline">
           View deal chat
         </Button>
-        <Button onClick={() => onOpenFolder("folder-horizon-logistics")} variant="outline">
+        <Button onClick={() => onOpenFolder(dealSummary?.folderId || "folder-horizon-logistics")} variant="outline">
           Export source files
         </Button>
       </div>
@@ -2540,9 +2641,15 @@ type ChatInterfaceState = {
   attachedFiles: File[];
   showVisualization: VisualizationData | null;
   selectedFolders: string[];
+  showDatasetSidebar: boolean;
+  showDatasetDetails: string | null; // ID of dataset to show details for
+  clickedButton: string | null; // ID of button that was just clicked for animation
 };
 
-function ChatInterface() {
+function ChatInterface({ setActiveNavId, handleOpenFolder }: { 
+  setActiveNavId: (id: string) => void;
+  handleOpenFolder: (id: string) => void;
+}) {
   const [state, setState] = useState<ChatInterfaceState>({
     messages: [
       {
@@ -2557,6 +2664,9 @@ function ChatInterface() {
     attachedFiles: [],
     showVisualization: null,
     selectedFolders: [],
+    showDatasetSidebar: false,
+    showDatasetDetails: null,
+    clickedButton: null,
   });
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -2595,6 +2705,16 @@ function ChatInterface() {
   useEffect(() => {
     scrollToBottom();
   }, [state.messages]);
+
+  // Clear clicked button animation after 600ms
+  useEffect(() => {
+    if (state.clickedButton) {
+      const timer = setTimeout(() => {
+        setState(prev => ({ ...prev, clickedButton: null }));
+      }, 600);
+      return () => clearTimeout(timer);
+    }
+  }, [state.clickedButton]);
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
@@ -2685,6 +2805,22 @@ function ChatInterface() {
 
   const closeVisualization = () => {
     setState(prev => ({ ...prev, showVisualization: null }));
+  };
+
+  const openDatasetSidebar = () => {
+    setState(prev => ({ ...prev, showDatasetSidebar: true }));
+  };
+
+  const closeDatasetSidebar = () => {
+    setState(prev => ({ ...prev, showDatasetSidebar: false }));
+  };
+
+  const openDatasetDetails = (datasetId: string) => {
+    setState(prev => ({ ...prev, showDatasetDetails: datasetId }));
+  };
+
+  const closeDatasetDetails = () => {
+    setState(prev => ({ ...prev, showDatasetDetails: null }));
   };
 
   return (
@@ -2791,43 +2927,114 @@ function ChatInterface() {
 
       {/* Dataset Selection */}
       <div className="flex flex-col gap-3">
-        <div className="flex items-center gap-2 text-sm">
-          <Folder className="h-4 w-4 text-muted-foreground" />
-          <span className="text-muted-foreground">Active datasets:</span>
-          <span className="text-xs text-muted-foreground/80">
-            {state.selectedFolders.length} selected
-          </span>
+        <div className="flex items-center justify-between text-sm">
+          <div className="flex items-center gap-2">
+            <Folder className="h-4 w-4 text-muted-foreground" />
+            <span className="text-muted-foreground">Active datasets:</span>
+            <span className="text-xs text-muted-foreground/80">
+              {state.selectedFolders.length} selected
+            </span>
+          </div>
+          <Button
+            onClick={openDatasetSidebar}
+            size="sm"
+            variant="ghost"
+            className="h-6 w-6 p-0 text-muted-foreground hover:text-foreground"
+          >
+            <ChevronRight className="h-3 w-3" />
+          </Button>
         </div>
         <div className="flex flex-wrap gap-2">
-          {availableFolders.map((folder) => {
-            const isSelected = state.selectedFolders.includes(folder.id);
-            return (
-              <div
-                key={folder.id}
-                className={cn(
-                  "flex items-center gap-2 rounded-lg border px-3 py-2 text-sm cursor-pointer transition-colors",
-                  isSelected
-                    ? "border-primary bg-primary/5 text-primary"
-                    : "border-border/60 bg-muted/30 hover:bg-muted/50"
-                )}
-                onClick={() => {
-                  setState(prev => ({
-                    ...prev,
-                    selectedFolders: isSelected
-                      ? prev.selectedFolders.filter(id => id !== folder.id)
-                      : [...prev.selectedFolders, folder.id]
-                  }));
-                }}
-              >
-                <Checkbox
-                  checked={isSelected}
-                  onChange={() => {}}
-                  className="pointer-events-none"
-                />
-                <span className="font-medium">{folder.name}</span>
+          {availableFolders.length === 0 ? (
+            <div className="w-full rounded-lg border border-dashed border-border/60 bg-muted/20 p-8 text-center">
+              <div className="flex flex-col items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-muted/50">
+                  <Folder className="h-6 w-6 text-muted-foreground" />
+                </div>
+                <div className="space-y-1">
+                  <h4 className="font-medium text-sm text-foreground">No datasets available</h4>
+                  <p className="text-xs text-muted-foreground max-w-sm">
+                    Upload files or folders to create datasets that the AI can analyze. 
+                    Your documents will be organized and indexed for intelligent insights.
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    onClick={() => fileInputRef.current?.click()}
+                    size="sm"
+                    variant="outline"
+                    className="gap-2"
+                  >
+                    <Upload className="h-3 w-3" />
+                    Upload Files
+                  </Button>
+                  <Button
+                    onClick={() => folderInputRef.current?.click()}
+                    size="sm"
+                    variant="outline"
+                    className="gap-2"
+                  >
+                    <Folder className="h-3 w-3" />
+                    Upload Folder
+                  </Button>
+                </div>
               </div>
-            );
-          })}
+            </div>
+          ) : (
+            availableFolders.map((folder) => {
+              const isSelected = state.selectedFolders.includes(folder.id);
+              return (
+                <div
+                  key={folder.id}
+                  className={cn(
+                    "flex items-center gap-2 rounded-lg border px-3 py-2 text-sm transition-colors",
+                    isSelected
+                      ? "border-primary bg-primary/5 text-primary"
+                      : "border-border/60 bg-muted/30 hover:bg-muted/50"
+                  )}
+                >
+                  <Button
+                    onClick={() => {
+                      const buttonId = `add-${folder.id}`;
+                      setState(prev => ({
+                        ...prev,
+                        selectedFolders: isSelected
+                          ? prev.selectedFolders.filter(id => id !== folder.id)
+                          : [...prev.selectedFolders, folder.id],
+                        clickedButton: buttonId
+                      }));
+                    }}
+                    size="sm"
+                    variant="ghost"
+                    className={cn(
+                      "h-4 w-4 p-0 transition-all duration-300",
+                      isSelected
+                        ? "text-green-600 hover:text-green-700"
+                        : "text-muted-foreground hover:text-foreground",
+                      state.clickedButton === `add-${folder.id}` && "animate-pulse scale-110 text-green-500"
+                    )}
+                    title={isSelected ? "Remove from context" : "Add to context"}
+                  >
+                    {isSelected ? (
+                      <CheckCircle className="h-3 w-3" />
+                    ) : (
+                      <Plus className="h-3 w-3" />
+                    )}
+                  </Button>
+                  <span className="font-medium">{folder.name}</span>
+                  <Button
+                    onClick={() => openDatasetDetails(folder.id)}
+                    size="sm"
+                    variant="ghost"
+                    className="h-4 w-4 p-0 text-muted-foreground hover:text-foreground ml-1"
+                    title={`View dataset details: ${folder.name}`}
+                  >
+                    <ChevronRight className="h-3 w-3" />
+                  </Button>
+                </div>
+              );
+            })
+          )}
         </div>
         {state.selectedFolders.length > 0 && (
           <p className="text-xs text-muted-foreground">
@@ -2917,6 +3124,164 @@ function ChatInterface() {
                   🗺️ Map visualization would render here
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Dataset Details Sidebar */}
+      {state.showDatasetDetails && (
+        <div className="fixed inset-y-0 right-0 z-50 w-80 bg-background border-l border-border/60 shadow-xl">
+          <div className="flex flex-col h-full">
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-border/60">
+              <h3 className="font-semibold text-lg">Dataset Details</h3>
+              <Button onClick={closeDatasetDetails} size="icon" variant="ghost">
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto p-4">
+              <div className="space-y-6">
+                {(() => {
+                  const dataset = availableFolders.find(f => f.id === state.showDatasetDetails);
+                  if (!dataset) return null;
+
+                  const stats = collectFolderStats(
+                    FILE_LIBRARY_ROOT.children?.find(c => c.id === dataset.id) || 
+                    FILE_LIBRARY_ROOT.children?.find(c => c.children?.some(sc => sc.id === dataset.id))?.children?.find(sc => sc.id === dataset.id) ||
+                    FILE_LIBRARY_ROOT
+                  );
+
+                  return (
+                    <>
+                      {/* Dataset Header */}
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3">
+                          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                            <Folder className="h-5 w-5" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-lg">{dataset.name}</h4>
+                            <p className="text-sm text-muted-foreground">
+                              Dataset • {stats.total} files
+                            </p>
+                          </div>
+                        </div>
+
+                        {dataset.description && (
+                          <p className="text-sm text-muted-foreground leading-relaxed">
+                            {dataset.description}
+                          </p>
+                        )}
+                      </div>
+
+                      {/* Statistics */}
+                      <div className="space-y-3">
+                        <h5 className="font-medium text-sm">File Statistics</h5>
+                        <div className="grid grid-cols-2 gap-3">
+                          <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+                            <p className="text-2xl font-bold text-primary">{stats.total}</p>
+                            <p className="text-xs text-muted-foreground">Total Files</p>
+                          </div>
+                          <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+                            <p className="text-2xl font-bold text-green-600">{stats.indexed}</p>
+                            <p className="text-xs text-muted-foreground">Ready</p>
+                          </div>
+                          <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+                            <p className="text-2xl font-bold text-blue-600">{stats.indexing}</p>
+                            <p className="text-xs text-muted-foreground">Indexing</p>
+                          </div>
+                          <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+                            <p className="text-2xl font-bold text-amber-600">{stats.queued}</p>
+                            <p className="text-xs text-muted-foreground">Queued</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Recent Files */}
+                      <div className="space-y-3">
+                        <h5 className="font-medium text-sm">Recent Files</h5>
+                        <div className="space-y-2">
+                          {(() => {
+                            const folder = FILE_LIBRARY_ROOT.children?.find(c => c.id === dataset.id) || 
+                                          FILE_LIBRARY_ROOT.children?.find(c => c.children?.some(sc => sc.id === dataset.id))?.children?.find(sc => sc.id === dataset.id);
+                            
+                            if (!folder?.files?.length) {
+                              return (
+                                <p className="text-sm text-muted-foreground">No files in this dataset yet.</p>
+                              );
+                            }
+
+                            return folder.files
+                              .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+                              .slice(0, 5)
+                              .map((file) => (
+                                <div key={file.id} className="flex items-center gap-3 rounded-lg border border-border/60 bg-muted/30 p-3">
+                                  <FileTypeBadge type={file.type} />
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium truncate">{file.name}</p>
+                                    <p className="text-xs text-muted-foreground">
+                                      {file.size} • {relativeTime(file.updatedAt)}
+                                    </p>
+                                  </div>
+                                  <Badge 
+                                    variant="outline" 
+                                    className={cn(
+                                      "text-xs",
+                                      file.status === "indexed" && "text-green-600",
+                                      file.status === "indexing" && "text-blue-600",
+                                      file.status === "queued" && "text-amber-600"
+                                    )}
+                                  >
+                                    {file.status}
+                                  </Badge>
+                                </div>
+                              ));
+                          })()}
+                        </div>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="space-y-3">
+                        <h5 className="font-medium text-sm">Actions</h5>
+                        <div className="space-y-2">
+                          <Button 
+                            variant="outline" 
+                            className="w-full justify-start"
+                            onClick={() => {
+                              closeDatasetDetails();
+                              setActiveNavId("file-library");
+                              handleOpenFolder(dataset.id);
+                            }}
+                          >
+                            <Folder className="h-4 w-4 mr-2" />
+                            Open in File Library
+                          </Button>
+                          <Button 
+                            variant="outline" 
+                            className="w-full justify-start"
+                            onClick={() => {
+                              // Add to context if not already selected
+                              if (!state.selectedFolders.includes(dataset.id)) {
+                                setState(prev => ({
+                                  ...prev,
+                                  selectedFolders: [...prev.selectedFolders, dataset.id]
+                                }));
+                              }
+                              closeDatasetDetails();
+                            }}
+                          >
+                            <Plus className="h-4 w-4 mr-2" />
+                            Add to Context
+                          </Button>
+                        </div>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
             </div>
           </div>
         </div>

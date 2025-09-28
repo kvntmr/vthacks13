@@ -353,9 +353,9 @@ export default function SpreadsheetEditor() {
   return (
     <>
       <style>{spreadsheetStyles}</style>
-      <div className="flex flex-col h-full w-full bg-background rounded-lg border border-border shadow-sm overflow-hidden">
+      <div className="flex flex-col h-full w-full bg-background rounded-3xl border border-border shadow-sm overflow-hidden">
         {/* Toolbar */}
-        <div className="flex items-center gap-2 p-3 border-b border-border bg-muted/30 rounded-t-lg flex-shrink-0">
+        <div className="flex items-center gap-2 p-3 border-b border-border bg-muted/30 rounded-t-3xl flex-shrink-0">
           <div className="flex items-center gap-1">
             <Button variant="outline" size="sm" onClick={handleImportCSV} className="flex items-center gap-2">
               <Upload className="h-4 w-4" />
@@ -383,7 +383,7 @@ export default function SpreadsheetEditor() {
         </div>
 
         {/* Spreadsheet Container */}
-        <div className="flex-1 bg-background rounded-b-lg overflow-hidden">
+        <div className="flex-1 bg-background rounded-b-3xl overflow-hidden">
           <div 
             className="spreadsheet-wrapper w-full h-full"
             style={{ 
