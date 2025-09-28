@@ -1607,37 +1607,39 @@ function FileLibraryView({
       <div className="flex flex-col gap-3">
         <BreadcrumbTrail items={breadcrumbs} onSelect={onBreadcrumbSelect} />
         <div className="flex flex-col gap-2">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <h1 className="font-semibold text-2xl text-foreground">
-              {activeFolder.name}
-            </h1>
-          </div>
-          {activeFolder.description ? (
-            <p className="text-muted-foreground text-sm">
-              {activeFolder.description}
-            </p>
-          ) : null}
-          {headerMeta.length > 0 ? (
-            <div className="flex flex-wrap items-center gap-2 text-muted-foreground text-xs">
-              {headerMeta.map((item, index) => (
-                <Fragment key={item}>
-                  {index > 0 ? (
-                    <span
-                      aria-hidden="true"
-                      className="text-muted-foreground/50"
-                    >
-                      |
-                    </span>
-                  ) : null}
-                  <span>{item}</span>
-                </Fragment>
-              ))}
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex flex-col gap-2">
+              <h1 className="font-semibold text-2xl text-foreground">
+                {activeFolder.name}
+              </h1>
+              {activeFolder.description ? (
+                <p className="text-muted-foreground text-sm">
+                  {activeFolder.description}
+                </p>
+              ) : null}
             </div>
-          ) : null}
+            {headerMeta.length > 0 && (
+              <div className="flex flex-wrap items-center gap-2 text-muted-foreground text-xs">
+                {headerMeta.map((item, index) => (
+                  <Fragment key={item}>
+                    {index > 0 ? (
+                      <span
+                        aria-hidden="true"
+                        className="text-muted-foreground/50"
+                      >
+                        |
+                      </span>
+                    ) : null}
+                    <span>{item}</span>
+                  </Fragment>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
+      <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between xl:gap-6">
         <div className="flex flex-1 items-center gap-2 rounded-2xl border border-border/60 bg-muted/20 px-4 py-3">
           <Search className="h-4 w-4 text-muted-foreground" />
           <Input
@@ -1649,7 +1651,7 @@ function FileLibraryView({
           <Separator className="h-6" orientation="vertical" />
           <span className="text-muted-foreground text-xs">{resultLabel}</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3 xl:gap-2">
           <Button
             className="h-9 w-9"
             onClick={() => onViewModeChange("grid")}
@@ -2942,7 +2944,6 @@ function FileCard({ file }: FileCardProps) {
         <div>
           <div className="flex items-center gap-2 text-muted-foreground">
             <FileTypeBadge type={file.type} />
-            <span className="text-xs">{file.size}</span>
           </div>
           <p className="mt-2 line-clamp-2 font-semibold text-foreground text-sm">
             {file.name}
@@ -2997,7 +2998,7 @@ function FileRow({ file }: FileRowProps) {
         <div>
           <p className="font-semibold text-foreground text-sm">{file.name}</p>
           <p className="text-muted-foreground text-xs">
-            {file.size} · Updated {relativeTime(file.updatedAt)}
+            Updated {relativeTime(file.updatedAt)}
           </p>
         </div>
       </div>
