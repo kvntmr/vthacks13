@@ -198,9 +198,6 @@ The system can process and extract data from:
 #### Backend (.env.local)
 ```bash
 GEMINI_API_KEY=your_gemini_api_key_here
-DATABASE_URL=sqlite:///./app.db
-REDIS_URL=redis://localhost:6379
-SECRET_KEY=your_secret_key_here
 ```
 
 #### Frontend (.env.local)
