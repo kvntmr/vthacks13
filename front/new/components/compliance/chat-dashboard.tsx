@@ -3416,6 +3416,57 @@ function ChatInterface({
     }
   };
 
+  const askDeepAgent = async () => {
+    const query = state.currentMessage.trim() || 'Provide a comprehensive real estate due diligence analysis focusing on crime, demographics, zoning, environmental, and infrastructure factors.';
+
+    // Construct a user message that triggers the deep agent
+    const userMessage: ChatMessage = {
+      id: (Date.now() + 3).toString(),
+      role: 'user',
+      content: `@deep ${query}`,
+      timestamp: new Date().toLocaleTimeString(),
+    };
+
+    // Push user message
+    setPersistentState(prev => ({
+      ...prev,
+      messages: [...prev.messages, userMessage],
+      currentMessage: '',
+      isStreaming: true,
+    }));
+
+    try {
+      const response = await backendAPI.chat({ message: userMessage.content, conversation_id: state.conversationId || undefined });
+      const assistantMessage: ChatMessage = {
+        id: (Date.now() + 4).toString(),
+        role: 'assistant',
+        content: response.response,
+        timestamp: response.timestamp || new Date().toLocaleTimeString(),
+      };
+
+      setPersistentState(prev => ({
+        ...prev,
+        messages: [...prev.messages, assistantMessage],
+        isStreaming: false,
+        conversationId: response.conversation_id || prev.conversationId,
+      }));
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Deep agent request failed';
+      const assistantMessage: ChatMessage = {
+        id: (Date.now() + 4).toString(),
+        role: 'assistant',
+        content: `Error: ${errorMessage}`,
+        timestamp: new Date().toLocaleTimeString(),
+      };
+      setPersistentState(prev => ({
+        ...prev,
+        messages: [...prev.messages, assistantMessage],
+        isStreaming: false,
+      }));
+      toast.error(`Deep agent failed: ${errorMessage}`);
+    }
+  };
+
   const openVisualization = (viz: VisualizationData) => {
     setState(prev => ({ ...prev, showVisualization: viz }));
   };
@@ -3455,11 +3506,22 @@ function ChatInterface({
           <Button
             variant="outline"
             size="sm"
-            onClick={runDeepAnalysis}
+            onClick={askDeepAgent}
             className="text-muted-foreground hover:text-foreground"
+            title="Ask the Data.gov deep analysis agent"
           >
             <Sparkles className="h-4 w-4 mr-2" />
-            Run Deep Analysis
+            Deep Agent
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={runDeepAnalysis}
+            className="text-muted-foreground hover:text-foreground"
+            title="Run RAG-based screening on memory"
+          >
+            <Sparkles className="h-4 w-4 mr-2" />
+            Run Screening
           </Button>
           {state.messages.length > 1 && (
             <Button

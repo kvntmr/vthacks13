@@ -360,6 +360,9 @@ async def chat_with_agent(request: ChatRequest):
         # Handle @screener command
         elif "@screener" in message_lower:
             response = await handle_screener_command(request, conversation_id)
+        # Handle @deep command (Data.gov deep analysis agent)
+        elif "@deep" in message_lower:
+            response = await handle_deep_command(request, conversation_id)
         # Handle @memory command
         elif "@memory" in message_lower:
             response = await handle_memory_command(request, conversation_id)
@@ -496,6 +499,103 @@ Include the actual analysis summary and mention how many documents were analyzed
             timestamp=datetime.now()
         )
 
+async def handle_deep_command(request: ChatRequest, conversation_id: str) -> ChatResponse:
+    """Handle @deep command - route to Data.gov deep analysis agent and integrate context"""
+    try:
+        # Extract deep query after @deep
+        message = request.message
+        if "@deep" in message.lower():
+            parts = message.split("@deep", 1)
+            deep_query = parts[1].strip() or "Provide a comprehensive real estate due diligence analysis."
+        else:
+            deep_query = message
+
+        # Build conversation and memory context to pass into deep agent
+        conversation_history = conversation_context.get_conversation_context(conversation_id)
+        doc_metadata = await get_cached_document_metadata()
+        doc_list = "\n".join([
+            f"- {doc.get('filename', 'Unknown')} ({doc.get('document_type', 'Unknown')})"
+            for doc in (doc_metadata[:10] if doc_metadata else [])
+        ])
+
+        # Try to find the most relevant documents and include brief excerpts
+        relevant_excerpt = ""
+        try:
+            if doc_metadata:
+                relevant_docs = await ai_analyze_document_relevance(deep_query, doc_metadata)
+                if relevant_docs:
+                    excerpts = []
+                    for doc in relevant_docs[:2]:
+                        content = doc.get("content", "")
+                        if content:
+                            snippet = content[:800] + ("..." if len(content) > 800 else "")
+                            excerpts.append(f"Document: {doc.get('filename', 'Unknown')}\n{snippet}")
+                    if excerpts:
+                        relevant_excerpt = "\n\nRELEVANT DOCUMENT EXCERPTS:\n" + "\n\n".join(excerpts)
+        except Exception:
+            # Best-effort: ignore relevance errors
+            pass
+
+        context_block = (
+            f"\n\nCONTEXT FROM CHAT HISTORY:\n{conversation_history}\n\n"
+            f"DOCUMENTS AVAILABLE IN MEMORY ({len(doc_metadata) if doc_metadata else 0}):\n{doc_list}"
+            f"{relevant_excerpt}\n\n"
+            "Use the context above if it is relevant to the user's request."
+        )
+
+        full_query = f"{deep_query}\n{context_block}"
+
+        # Ensure we can import the deep agent modules
+        import sys, os
+        backend_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
+        agent_dir = os.path.join(backend_root, "agent")
+        if agent_dir not in sys.path:
+            sys.path.append(agent_dir)
+
+        # Map GEMINI_API_KEY to the key expected by the deep agent if needed
+        if not os.getenv("GOOGLE_API_KEY") and os.getenv("GEMINI_API_KEY"):
+            os.environ["GOOGLE_API_KEY"] = os.getenv("GEMINI_API_KEY", "")
+
+        # Import and invoke the deep agent
+        try:
+            from real_estate_agent import RealEstateAgent  # type: ignore
+        except Exception as import_err:
+            return ChatResponse(
+                response=f"❌ Deep analysis agent is unavailable: {import_err}",
+                function_used="deep_analysis",
+                conversation_id=conversation_id,
+                timestamp=datetime.now(),
+            )
+
+        # Instantiate agent per request to avoid stale state
+        agent = RealEstateAgent()
+        deep_result = await agent.query(full_query)
+
+        if deep_result.get("success"):
+            response_text = deep_result.get("response", "")
+        else:
+            response_text = f"Deep analysis failed: {deep_result.get('error', 'Unknown error')}"
+
+        return ChatResponse(
+            response=response_text,
+            function_used="deep_analysis",
+            conversation_id=conversation_id,
+            timestamp=datetime.now(),
+            memory_context={
+                "documents_available": len(doc_metadata) if doc_metadata else 0,
+                "used_deep_agent": True,
+            },
+        )
+    except HTTPException:
+        raise
+    except Exception as e:
+        return ChatResponse(
+            response=f"❌ Deep analysis error: {str(e)}",
+            function_used="deep_analysis",
+            conversation_id=conversation_id,
+            timestamp=datetime.now(),
+        )
+
 async def handle_memory_command(request: ChatRequest, conversation_id: str) -> ChatResponse:
     """Handle @memory command - search memory for specific information"""
     try:
@@ -579,15 +679,16 @@ async def handle_help_command(request: ChatRequest, conversation_id: str) -> Cha
     help_text = """🤖 **AI AGENT COMMANDS**
 
 **Available Commands:**
-- `@screener` - Run comprehensive screening on all documents in memory
-- `@memory [query]` - Search memory for specific information
+- `@screener` - Run comprehensive screening on all documents in memory (RAG)
+- `@memory [query]` - Search memory for specific information (RAG)
+- `@deep [question]` - Ask the Data.gov deep analysis agent; it will use chat history and document context where relevant
 - `@stats` - Show memory statistics and document counts
 - `@help` - Show this help message
 
 **Examples:**
 - `@screener` - Analyze all your real estate documents
 - `@memory market trends` - Find information about market trends
-- `@memory financing options` - Search for financing information
+- `@deep Crime data for Austin, TX` - Run the deep analysis agent on a location/topic
 - `@stats` - See how many documents you have stored
 
 **Regular Chat:**
@@ -609,7 +710,8 @@ You can also just ask questions normally, and I'll help you with real estate inv
 1. Upload documents using the file upload endpoint
 2. Use `@screener` to analyze them
 3. Use `@memory` to search for specific information
-4. Ask me questions about your investments!
+4. Ask `@deep` questions about locations, crime, zoning, demographics, and more
+5. Ask me questions about your investments!
 
 **Note:** I will always be completely honest about my capabilities and limitations."""
     
