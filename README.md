@@ -182,7 +182,7 @@ AI: 📊 **Deep Analysis** [Findings using Data.gov datasets, leveraging chat/do
 
 User: What's my portfolio performance?
 AI: [Data-driven analysis based on uploaded documents]
-
+```
 
 ## 📊 Supported Document Types
 
