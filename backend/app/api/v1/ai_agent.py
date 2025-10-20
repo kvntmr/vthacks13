@@ -549,8 +549,18 @@ async def handle_deep_command(request: ChatRequest, conversation_id: str) -> Cha
         import sys, os
         backend_root = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
         agent_dir = os.path.join(backend_root, "agent")
-        if agent_dir not in sys.path:
-            sys.path.append(agent_dir)
+        # Prefer the agent directory first so its tooling.py is used
+        if agent_dir in sys.path:
+            sys.path.remove(agent_dir)
+        sys.path.insert(0, agent_dir)
+
+        # If a different 'tooling' module is already loaded, drop it so the agent version can load
+        try:
+            existing_tooling = sys.modules.get("tooling")
+            if existing_tooling is not None and not hasattr(existing_tooling, "DATA_GOV_TOOLS"):
+                del sys.modules["tooling"]
+        except Exception:
+            pass
 
         # Map GEMINI_API_KEY to the key expected by the deep agent if needed
         if not os.getenv("GOOGLE_API_KEY") and os.getenv("GEMINI_API_KEY"):
@@ -567,8 +577,21 @@ async def handle_deep_command(request: ChatRequest, conversation_id: str) -> Cha
                 timestamp=datetime.now(),
             )
 
+        # Ensure API key available to avoid interactive prompt
+        google_key = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+        if not google_key:
+            return ChatResponse(
+                response=(
+                    "❌ Deep analysis requires a Google Gemini API key. "
+                    "Please set GEMINI_API_KEY (or GOOGLE_API_KEY) on the backend and try again."
+                ),
+                function_used="deep_analysis",
+                conversation_id=conversation_id,
+                timestamp=datetime.now(),
+            )
+
         # Instantiate agent per request to avoid stale state
-        agent = RealEstateAgent()
+        agent = RealEstateAgent(google_key)
         deep_result = await agent.query(full_query)
 
         if deep_result.get("success"):
