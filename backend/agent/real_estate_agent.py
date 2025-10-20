@@ -15,9 +15,15 @@ from langchain.chat_models import init_chat_model
 from langchain_core.messages import HumanMessage
 from langchain_core.tools import tool
 from langgraph.prebuilt import create_react_agent
-from langfuse.langchain import CallbackHandler
-langfuse_handler = CallbackHandler()
-config={"callbacks": [langfuse_handler]}
+
+# Optional Langfuse callback support
+try:
+    from langfuse.langchain import CallbackHandler  # type: ignore
+    langfuse_handler = CallbackHandler()
+    _lc_callbacks = [langfuse_handler]
+except Exception:
+    langfuse_handler = None  # type: ignore
+    _lc_callbacks = []
 
 # Import all data.gov tools from tooling.py
 from tooling import (
@@ -178,7 +184,7 @@ financial investments. Accuracy, recency, and comprehensive analysis are critica
             events = self.agent.astream(
                 {"messages": messages},
                 stream_mode="values",
-                config={"callbacks": [langfuse_handler]}
+                config={"callbacks": _lc_callbacks}
             )
             
             # Collect all messages

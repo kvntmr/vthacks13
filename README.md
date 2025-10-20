@@ -163,8 +163,9 @@ vthacks13/
 
 The AI agent supports special commands for enhanced functionality:
 
-- `@screener` - Run comprehensive screening on all documents
-- `@memory [query]` - Search memory for specific information
+- `@screener` - Run comprehensive screening on all documents (RAG)
+- `@memory [query]` - Search memory for specific information (RAG)
+- `@deep [question]` - Ask the Data.gov deep analysis agent; it uses chat and document context where relevant
 - `@stats` - Show memory statistics and document counts
 - `@help` - Display available commands
 
@@ -175,6 +176,9 @@ AI: 🔍 **MEMORY SCREENING RESULTS** [Detailed analysis of all documents]
 
 User: @memory market trends
 AI: 🔍 **Memory Search Results** [Relevant market trend information]
+
+User: @deep Crime data for Austin, TX
+AI: 📊 **Deep Analysis** [Findings using Data.gov datasets, leveraging chat/document context]
 
 User: What's my portfolio performance?
 AI: [Data-driven analysis based on uploaded documents]
