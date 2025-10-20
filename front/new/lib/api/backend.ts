@@ -55,6 +55,13 @@ export interface DeleteSelectedResponse {
   message: string;
 }
 
+export interface ScreeningResponse {
+  success: boolean;
+  summary?: string;
+  error?: string;
+  metadata?: Record<string, unknown>;
+}
+
 class BackendAPIError extends Error {
   constructor(
     message: string,
@@ -73,23 +80,14 @@ async function handleResponse<T>(response: Response): Promise<T> {
     
     try {
       const responseText = await response.text();
-      console.log('Error response text:', responseText);
-      
+      // Avoid using console in production; errors are thrown below
       if (responseText) {
         errorData = JSON.parse(responseText);
         errorMessage = errorData.detail || errorData.message || errorMessage;
       }
-    } catch (parseError) {
-      console.log('Could not parse error response as JSON');
+    } catch {
+      // ignore parse errors
     }
-    
-    console.error('API Error:', {
-      status: response.status,
-      statusText: response.statusText,
-      errorMessage,
-      errorData,
-      url: response.url
-    });
     
     throw new BackendAPIError(errorMessage, response.status, errorData);
   }
@@ -209,6 +207,23 @@ export class BackendAPI {
     });
 
     return handleResponse<DeleteSelectedResponse>(response);
+  }
+
+  /**
+   * Run comprehensive deep analysis across all documents in memory
+   */
+  async runDeepAnalysis(options?: { includePropertyDataOnly?: boolean }): Promise<ScreeningResponse> {
+    const response = await fetch(`${this.baseUrl}/api/v1/memory-screening/screen-all`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        include_property_data_only: options?.includePropertyDataOnly ?? true,
+      }),
+    });
+
+    return handleResponse<ScreeningResponse>(response);
   }
 
   /**

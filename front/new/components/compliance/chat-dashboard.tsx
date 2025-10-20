@@ -3336,20 +3336,13 @@ function ChatInterface({
       isStreaming: true,
     }));
     setAttachedFiles([]);
-    
-    console.log('Adding user message to state:', userMessage);
-    console.log('New messages array:', newMessages);
 
     try {
-      // Make real API call to the backend
-      console.log('Sending message to backend:', userMessage.content);
       const response = await backendAPI.chat({
         message: userMessage.content,
         conversation_id: state.conversationId || undefined,
       });
-      
-      console.log('Received response from backend:', response);
-      
+
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
@@ -3358,36 +3351,68 @@ function ChatInterface({
       };
 
       // Add assistant message directly to persistent state
-      setPersistentState(prev => {
-        const newMessages = [...prev.messages, assistantMessage];
-        const newState = {
-          ...prev,
-          messages: newMessages,
-          isStreaming: false,
-          conversationId: response.conversation_id || prev.conversationId,
-        };
-        console.log('Adding assistant message to state:', assistantMessage);
-        console.log('Final messages array:', newMessages);
-        return newState;
-      });
+      setPersistentState(prev => ({
+        ...prev,
+        messages: [...prev.messages, assistantMessage],
+        isStreaming: false,
+        conversationId: response.conversation_id || prev.conversationId,
+      }));
     } catch (error) {
-      console.error('Error sending message to backend:', error);
       const errorMessage = error instanceof Error ? error.message : 'Failed to send message';
-      
+
       const errorChatMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
         content: `Error: ${errorMessage}`,
         timestamp: new Date().toLocaleTimeString(),
       };
-      
+
       setPersistentState(prev => ({
         ...prev,
         messages: [...prev.messages, errorChatMessage],
         isStreaming: false,
       }));
-      
+
       toast.error(`Failed to send message: ${errorMessage}`);
+    }
+  };
+
+  const runDeepAnalysis = async () => {
+    // Show streaming indicator while analysis runs
+    setPersistentState(prev => ({ ...prev, isStreaming: true }));
+
+    try {
+      const result = await backendAPI.runDeepAnalysis({ includePropertyDataOnly: true });
+      const content = result.success && result.summary ? result.summary : (result.error || 'Deep analysis failed');
+
+      const assistantMessage: ChatMessage = {
+        id: (Date.now() + 2).toString(),
+        role: 'assistant',
+        content,
+        timestamp: new Date().toLocaleTimeString(),
+      };
+
+      setPersistentState(prev => ({
+        ...prev,
+        messages: [...prev.messages, assistantMessage],
+        isStreaming: false,
+      }));
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Deep analysis failed';
+      const assistantMessage: ChatMessage = {
+        id: (Date.now() + 2).toString(),
+        role: 'assistant',
+        content: `Error: ${errorMessage}`,
+        timestamp: new Date().toLocaleTimeString(),
+      };
+
+      setPersistentState(prev => ({
+        ...prev,
+        messages: [...prev.messages, assistantMessage],
+        isStreaming: false,
+      }));
+
+      toast.error(`Deep analysis failed: ${errorMessage}`);
     }
   };
 
@@ -3426,17 +3451,28 @@ function ChatInterface({
             Upload files, ask questions, and get AI-powered insights with interactive visualizations.
           </p>
         </div>
-        {state.messages.length > 1 && (
+        <div className="flex items-center gap-2">
           <Button
             variant="outline"
             size="sm"
-            onClick={clearChat}
+            onClick={runDeepAnalysis}
             className="text-muted-foreground hover:text-foreground"
           >
-            <X className="h-4 w-4 mr-2" />
-            Clear Chat
+            <Sparkles className="h-4 w-4 mr-2" />
+            Run Deep Analysis
           </Button>
-        )}
+          {state.messages.length > 1 && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={clearChat}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-4 w-4 mr-2" />
+              Clear Chat
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Messages Area */}

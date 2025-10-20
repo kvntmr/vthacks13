@@ -4,6 +4,7 @@ import Spreadsheet from "react-spreadsheet";
 import { useTheme } from "next-themes";
 import { Button } from "./ui/button";
 import { Download, Upload } from "lucide-react";
+import * as XLSX from "xlsx";
 
 // Simplified styles that rely on CSS variables and system theme detection
 const spreadsheetStyles = `
@@ -297,21 +298,30 @@ export default function SpreadsheetEditor({ fileToLoad }: SpreadsheetEditorProps
   const handleExcelFile = useCallback((file: File) => {
     const reader = new FileReader();
     reader.onload = (e) => {
-      const data = e.target?.result;
-      if (!data) return;
+      const arrayBuffer = e.target?.result as ArrayBuffer | undefined;
+      if (!arrayBuffer) return;
 
       try {
-        // For now, we'll show a message that Excel parsing is not fully implemented
-        // In a real implementation, you would use a library like xlsx or exceljs
-        alert('Excel file parsing is not fully implemented yet. Please convert to CSV format.');
-      } catch (error) {
-        console.error('Error parsing Excel file:', error);
+        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+        const firstSheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[firstSheetName];
+        const rows: unknown[] = XLSX.utils.sheet_to_json(worksheet, { header: 1, raw: true });
+
+        // Convert to react-spreadsheet cell format
+        const sheetData: any[][] = (rows as any[][]).map((row) =>
+          row.map((cell) => ({ value: cell != null ? String(cell) : "" }))
+        );
+
+        // Ensure at least one row/col
+        const safeData = sheetData.length > 0 ? sheetData : [[{ value: "" }]];
+        loadDataIntoSpreadsheet(safeData, file.name);
+      } catch (_error) {
         alert('Error parsing Excel file. Please check the format.');
       }
     };
 
     reader.readAsArrayBuffer(file);
-  }, []);
+  }, [loadDataIntoSpreadsheet]);
 
   const loadDataIntoSpreadsheet = useCallback((fileData: any[][], fileName: string) => {
     // Find the maximum number of columns in the data
@@ -479,6 +489,29 @@ export default function SpreadsheetEditor({ fileToLoad }: SpreadsheetEditorProps
             </Button>
             <Button variant="outline" size="sm" onClick={handleUnderline} className="h-8 w-8 p-0">
               <u>U</u>
+            </Button>
+            <div className="w-px h-6 bg-border mx-2" />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                const cols = data[0]?.length || 20;
+                const newRow = Array.from({ length: cols }, () => ({ value: "" }));
+                setData((prev) => [...prev, newRow]);
+              }}
+              className="px-2"
+            >
+              + Row
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                setData((prev) => prev.map((row) => [...row, { value: "" }]));
+              }}
+              className="px-2"
+            >
+              + Column
             </Button>
           </div>
         </div>
